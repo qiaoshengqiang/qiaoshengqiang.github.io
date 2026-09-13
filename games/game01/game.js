@@ -395,10 +395,10 @@ function refreshRandomTasks(){
    历练
    ============================================================ */
 function trainingMenu(){
-  choicesEl.innerHTML="";
-  refreshRandomTasks();
-  print(""); print("【外出历练】");
-  print("当前年份：第 "+getCurrentYear()+" 年。"); print("");
+    choicesEl.innerHTML="";
+      refreshRandomTasks();
+      print("【外出历练】");
+      print("当前年份：第 "+getCurrentYear()+" 年。"); print("");
   const acts=TRAINING_ACTIVITIES[s.realm]||[];
   addSection("── 常驻任务 ──");
   acts.forEach(act=>{addChoice(act.name+"（约 "+act.years+" 年）",()=>startTraining(act,false));});
@@ -651,10 +651,9 @@ function returnToTraining(){
   trainingMenu();
 }
 async function showTrainingSummary(summary,totalYears,activity,isRandom){
-  print("");
   const title=isRandom?(activity.limited?("☆ "+activity.name):("★ "+activity.name)):activity.name;
-  await typePrint(totalYears+" 年【"+title+"】结束。",18); await sleep(400);
-  await typePrint("你共经历 "+(summary.events||summary.wins)+" 件事：",18); await sleep(400);
+  await typePrint(totalYears+" 年【"+title+"】结束。",18);
+  await typePrint("你共经历 "+(summary.events||summary.wins)+" 件事：",18);
   const lines=[];
   if(summary.cult>0) lines.push("- 修为 +"+summary.cult);
   else if(summary.cult<0) lines.push("- 修为 "+summary.cult);
@@ -664,8 +663,8 @@ async function showTrainingSummary(summary,totalYears,activity,isRandom){
   if(summary.lifespan) lines.push("- 寿元 "+summary.lifespan);
   summary.items.forEach(id=>lines.push("- 获得【"+ITEMS[id].name+"】"));
   summary.skills.forEach(id=>lines.push("- 学会【"+ITEMS[id].name+"】"));
-  for(const line of lines){await typePrint(line,18);await sleep(280);}
-  print(""); await sleep(400); returnToTraining();
+  for(const line of lines){await typePrint(line,18);await sleep(120);}
+  returnToTraining();
 }
 
 /* ============================================================
@@ -1737,7 +1736,21 @@ function ascendToImmortal(){
   }
   setTimeout(nextLine,300);
 }
-
+/* 自动滚到底：只要 #text 内容变化，就滚到最下方 */
+let _scrollPending=false;
+const _textObserver=new MutationObserver(()=>{
+  if(_scrollPending) return;
+  _scrollPending=true;
+  requestAnimationFrame(()=>{
+    textEl.scrollTop=textEl.scrollHeight;
+    _scrollPending=false;
+  });
+});
+_textObserver.observe(textEl,{
+  childList:true,      // 新增/删除 <p>
+  subtree:true,        // 监听子节点内部
+  characterData:true   // 监听文字变化（打字机效果）
+});
 /* ============================================================
    启动
    ============================================================ */
