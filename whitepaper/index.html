@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WorldOfWorlds Manifesto &amp; Whitepaper v0.1</title>
+<meta name="description" content="AI-Native Virtual Worlds and Persistent Digital Civilization — A conceptual framework for humans, AI agents, intelligent worlds, digital ownership, and interoperable virtual civilizations.">
+<style>
+  :root {
+    --bg: #0d1014;
+    --bg-2: #11151b;
+    --bg-3: #171c24;
+    --line: #212731;
+    --line-2: #2c343f;
+    --text: #d5dae2;
+    --text-dim: #8a93a1;
+    --text-mute: #5b6472;
+    --accent: #c9a961;
+    --accent-dim: rgba(201, 169, 97, 0.55);
+    --accent-soft: rgba(201, 169, 97, 0.10);
+    --accent-line: rgba(201, 169, 97, 0.28);
+
+    --serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, 'Times New Roman', serif;
+    --sans: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --mono: 'SF Mono', 'JetBrains Mono', 'Fira Code', ui-monospace, Menlo, Consolas, monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection { background: rgba(201, 169, 97, 0.25); color: #fff; }
+
+  a { color: inherit; text-decoration: none; }
+
+  /* ---------- top bar ---------- */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    background: rgba(13, 16, 20, 0.82);
+    backdrop-filter: saturate(140%) blur(12px);
+    -webkit-backdrop-filter: saturate(140%) blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .topbar-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0.85rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .brand-mark {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent-dim);
+  }
+
+  .topbar-nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+  }
+
+  .topbar-nav a { transition: color 0.2s; }
+  .topbar-nav a:hover { color: var(--accent); }
+
+  @media (max-width: 720px) {
+    .topbar-nav { display: none; }
+  }
+
+  /* ---------- hero ---------- */
+  .hero {
+    border-bottom: 1px solid var(--line);
+    padding: 5rem 1.5rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -200px; left: 50%;
+    transform: translateX(-50%);
+    width: 900px; height: 500px;
+    background: radial-gradient(ellipse at center, rgba(201, 169, 97, 0.06) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-kicker {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.75rem;
+  }
+
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: clamp(2.6rem, 7vw, 4.4rem);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: #f2f4f8;
+    margin-bottom: 1.1rem;
+  }
+
+  .hero-subtitle {
+    font-family: var(--sans);
+    font-size: clamp(1rem, 2.2vw, 1.2rem);
+    font-weight: 400;
+    color: var(--text-dim);
+    letter-spacing: 0.01em;
+    margin-bottom: 1.75rem;
+    line-height: 1.5;
+  }
+
+  .hero-lede {
+    font-size: 1.05rem;
+    color: var(--text);
+    max-width: 640px;
+    line-height: 1.85;
+    margin-bottom: 2.5rem;
+    opacity: 0.9;
+  }
+
+  .hero-formula {
+    border-top: 1px solid var(--line);
+    padding-top: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    letter-spacing: 0.02em;
+    color: var(--text-dim);
+  }
+
+  .hero-formula span { display: block; }
+
+  .hero-formula span::before {
+    content: '—';
+    color: var(--accent-line);
+    margin-right: 0.85rem;
+  }
+
+  @media (max-width: 640px) {
+    .hero { padding: 3.5rem 1.25rem 3rem; }
+    .hero-formula { font-size: 0.76rem; }
+  }
+
+  /* ---------- layout ---------- */
+  .layout {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: grid;
+    grid-template-columns: 250px minmax(0, 1fr);
+    gap: 4rem;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .layout {
+      grid-template-columns: 1fr;
+      gap: 0;
+      padding: 0 1.25rem;
+    }
+  }
+
+  /* ---------- toc ---------- */
+  .toc {
+    position: sticky;
+    top: 72px;
+    padding: 3rem 0 2rem;
+    max-height: calc(100vh - 72px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-2) transparent;
+  }
+
+  .toc::-webkit-scrollbar { width: 4px; }
+  .toc::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 4px; }
+
+  @media (max-width: 900px) {
+    .toc {
+      position: static;
+      max-height: none;
+      padding: 2rem 0 0;
+      border-bottom: 1px solid var(--line);
+      overflow: visible;
+    }
+  }
+
+  .toc-toggle {
+    display: none;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 0;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 0.8rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .toc-toggle svg {
+    width: 14px; height: 14px;
+    transition: transform 0.25s;
+    color: var(--accent);
+  }
+
+  .toc-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+
+  @media (max-width: 900px) {
+    .toc-toggle { display: flex; }
+  }
+
+  .toc-label {
+    font-family: var(--sans);
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    margin-bottom: 1.1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  @media (max-width: 900px) {
+    .toc-label { display: none; }
+    .toc-nav {
+      display: none;
+      padding-bottom: 1.5rem;
+    }
+    .toc-nav.open { display: block; }
+  }
+
+  .toc-nav ol {
+    list-style: none;
+    counter-reset: toc;
+  }
+
+  .toc-nav li { counter-increment: toc; }
+
+  .toc-nav a {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    padding: 0.3rem 0;
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: var(--text-mute);
+    transition: color 0.18s;
+    border-left: 2px solid transparent;
+    padding-left: 0.75rem;
+    margin-left: -0.75rem;
+  }
+
+  .toc-nav a:hover { color: var(--text-dim); }
+
+  .toc-nav a.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+  }
+
+  .toc-nav a .num {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--text-mute);
+    min-width: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .toc-nav a.active .num { color: var(--accent); }
+
+  .toc-nav .toc-special a {
+    font-weight: 500;
+    color: var(--text-dim);
+  }
+
+  /* ---------- content ---------- */
+  .content {
+    padding: 3rem 0 6rem;
+    min-width: 0;
+  }
+
+  @media (max-width: 900px) {
+    .content { padding: 2rem 0 4rem; }
+  }
+
+  .content p {
+    margin-bottom: 1.35rem;
+    color: #c4cad5;
+  }
+
+  .content p:last-child { margin-bottom: 0; }
+
+  .content h2 {
+    font-family: var(--sans);
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #e8ecf2;
+    margin-bottom: 1.75rem;
+  }
+
+  .content h3 {
+    font-family: var(--serif);
+    font-size: 1.35rem;
+    font-weight: 500;
+    color: #e8ecf2;
+    margin: 2.5rem 0 1rem;
+    line-height: 1.3;
+  }
+
+  .content em { font-style: italic; color: #d9dee6; }
+
+  .content strong { font-weight: 600; color: #e8ecf2; }
+
+  /* ---------- chapter ---------- */
+  .chapter {
+    padding: 2.75rem 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .chapter:first-of-type { border-top: none; }
+
+  .chapter-head {
+    display: flex;
+    align-items: baseline;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .chapter-num {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+    padding-top: 0.4rem;
+    min-width: 2.25rem;
+  }
+
+  .chapter-head h2 {
+    font-family: var(--serif);
+    font-size: clamp(1.4rem, 3vw, 1.85rem);
+    font-weight: 400;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    color: #f0f2f6;
+    text-transform: none;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  /* ---------- executive summary ---------- */
+  .section-intro {
+    padding: 3rem 0 2.75rem;
+  }
+
+  .section-intro:not(:first-child) {
+    border-top: 1px solid var(--line);
+  }
+
+  .section-kicker {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.9rem;
+  }
+
+  .section-intro h2 {
+    font-family: var(--serif);
+    font-size: clamp(1.6rem, 3.6vw, 2.1rem);
+    font-weight: 400;
+    color: #f0f2f6;
+    margin-bottom: 1.5rem;
+    line-height: 1.25;
+    text-transform: none;
+    letter-spacing: -0.015em;
+  }
+
+  .thesis {
+    margin-top: 2rem;
+    padding: 1.5rem 1.75rem;
+    background: var(--accent-soft);
+    border-left: 2px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+  }
+
+  .thesis-label {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+
+  .thesis p {
+    font-size: 1.05rem;
+    color: #e0e4eb;
+    margin: 0;
+    line-height: 1.75;
+  }
+
+  /* ---------- principles grid ---------- */
+  .principles {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 2rem;
+  }
+
+  @media (max-width: 640px) {
+    .principles { grid-template-columns: 1fr; }
+  }
+
+  .principle {
+    background: var(--bg-2);
+    padding: 1.5rem 1.6rem;
+    transition: background 0.25s;
+  }
+
+  .principle:hover { background: var(--bg-3); }
+
+  .principle-name {
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    color: var(--accent);
+    margin-bottom: 0.6rem;
+    line-height: 1.4;
+  }
+
+  .principle-meaning {
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    line-height: 1.65;
+    color: var(--text-dim);
+  }
+
+  /* ---------- protocol stack ---------- */
+  .stack {
+    margin: 2rem 0 1rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg-2);
+  }
+
+  .stack-layer {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1.25rem;
+    align-items: center;
+    padding: 1.05rem 1.4rem;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+    transition: background 0.25s;
+  }
+
+  .stack-layer:last-child { border-bottom: none; }
+
+  .stack-layer:hover { background: var(--bg-3); }
+
+  .stack-layer::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+    opacity: var(--layer-op, 0.15);
+  }
+
+  .stack-idx {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--text-mute);
+    letter-spacing: 0.05em;
+    min-width: 1.5rem;
+  }
+
+  .stack-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+  }
+
+  .stack-name {
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #e8ecf2;
+    letter-spacing: 0.01em;
+  }
+
+  .stack-q {
+    font-family: var(--sans);
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+
+  .stack-tag {
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--line-2);
+    border-radius: 3px;
+    white-space: nowrap;
+    align-self: center;
+  }
+
+  @media (max-width: 560px) {
+    .stack-layer {
+      grid-template-columns: auto 1fr;
+      gap: 0.75rem;
+      padding: 0.9rem 1rem;
+    }
+    .stack-tag {
+      grid-column: 1 / -1;
+      justify-self: start;
+      margin-top: 0.35rem;
+    }
+    .stack-q { font-size: 0.76rem; }
+  }
+
+  /* ---------- worked example timeline ---------- */
+  .timeline {
+    margin: 2rem 0;
+    position: relative;
+    padding-left: 1.75rem;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 8px;
+    bottom: 8px;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--accent-line), var(--line-2));
+  }
+
+  .timeline-item {
+    position: relative;
+    padding-bottom: 1.75rem;
+  }
+
+  .timeline-item:last-child { padding-bottom: 0; }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -1.75rem;
+    top: 0.55rem;
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1.5px solid var(--accent);
+    box-shadow: 0 0 0 3px var(--bg);
+  }
+
+  .timeline-stage {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+  }
+
+  .timeline-body {
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: #c4cad5;
+  }
+
+  /* ---------- numbered list (governance flow) ---------- */
+  .steps {
+    list-style: none;
+    counter-reset: step;
+    margin: 1.75rem 0;
+  }
+
+  .steps li {
+    counter-increment: step;
+    position: relative;
+    padding-left: 3rem;
+    padding-bottom: 1.15rem;
+    font-family: var(--sans);
+    font-size: 0.92rem;
+    line-height: 1.7;
+    color: #c4cad5;
+  }
+
+  .steps li:last-child { padding-bottom: 0; }
+
+  .steps li::before {
+    content: counter(step, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: 0.05rem;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    padding: 0.15rem 0.45rem;
+    border: 1px solid var(--line-2);
+    border-radius: 3px;
+  }
+
+  /* ---------- threat list ---------- */
+  .threats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.65rem 1.75rem;
+    margin: 1.75rem 0;
+    list-style: none;
+  }
+
+  @media (max-width: 640px) {
+    .threats { grid-template-columns: 1fr; }
+  }
+
+  .threats li {
+    font-family: var(--sans);
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: #b8bfcb;
+    padding-left: 1.1rem;
+    position: relative;
+  }
+
+  .threats li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.7em;
+    width: 5px; height: 5px;
+    background: var(--accent-dim);
+    border-radius: 50%;
+  }
+
+  .threats li strong {
+    color: #e0e4eb;
+    font-weight: 500;
+    font-family: var(--serif);
+    font-size: 0.95rem;
+  }
+
+  /* ---------- principles list (final) ---------- */
+  .first-principles {
+    list-style: none;
+    counter-reset: fp;
+    margin: 1.75rem 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .first-principles li {
+    counter-increment: fp;
+    display: flex;
+    align-items: baseline;
+    gap: 1.25rem;
+    padding: 0.9rem 0;
+    border-bottom: 1px solid var(--line);
+    font-family: var(--serif);
+    font-size: 1rem;
+    color: #d5dae2;
+  }
+
+  .first-principles li::before {
+    content: counter(fp, decimal-leading-zero);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+    min-width: 1.75rem;
+  }
+
+  /* ---------- capability callout ---------- */
+  .callout {
+    margin: 1.75rem 0;
+    padding: 1.1rem 1.5rem;
+    background: var(--bg-2);
+    border: 1px solid var(--line-2);
+    border-radius: 6px;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+  }
+
+  /* ---------- declaration ---------- */
+  .declaration {
+    margin-top: 1rem;
+    padding: 2.5rem 0 0;
+  }
+
+  .declaration p {
+    font-family: var(--serif);
+    font-size: 1.12rem;
+    line-height: 1.85;
+    color: #d5dae2;
+    margin-bottom: 1.5rem;
+  }
+
+  .declaration p.emphasis {
+    font-size: 1.25rem;
+    color: #f0f2f6;
+    line-height: 1.7;
+  }
+
+  .declaration-closing {
+    margin-top: 2.75rem;
+    padding-top: 2.25rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .declaration-closing p {
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    color: var(--text-dim);
+    letter-spacing: 0.01em;
+    line-height: 1.9;
+  }
+
+  .final-line {
+    margin-top: 2.25rem;
+    font-family: var(--serif);
+    font-size: clamp(1.4rem, 3.5vw, 1.9rem);
+    color: var(--accent);
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+  }
+
+  /* ---------- footer ---------- */
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 3rem 1.5rem 4rem;
+    margin-top: 2rem;
+  }
+
+  .footer-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+  }
+
+  .footer-inner a { transition: color 0.2s; }
+  .footer-inner a:hover { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .footer-inner { flex-direction: column; gap: 0.75rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#top">
+      <span class="brand-mark"></span>
+      <span>WorldOfWorlds</span>
+    </a>
+    <nav class="topbar-nav">
+      <a href="#summary">Summary</a>
+      <a href="#principles">Principles</a>
+      <a href="#s23">Stack</a>
+      <a href="#s24">Examples</a>
+      <a href="#s30">Declaration</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="hero-inner">
+    <div class="hero-kicker">Manifesto &amp; Whitepaper · v0.1 · September 13, 2026</div>
+    <h1>WorldOfWorlds</h1>
+    <p class="hero-subtitle">AI-Native Virtual Worlds and Persistent Digital Civilization</p>
+    <p class="hero-lede">A conceptual framework for humans, AI agents, intelligent worlds, digital ownership, and interoperable virtual civilizations.</p>
+    <div class="hero-formula">
+      <span>Blockchain establishes ownership.</span>
+      <span>Protocols establish verifiable truth.</span>
+      <span>AI establishes meaning.</span>
+      <span>Worlds establish experience.</span>
+      <span>Markets establish value.</span>
+      <span>Reputation establishes trust.</span>
+    </div>
+  </div>
+</section>
+
+<div class="layout">
+
+  <aside class="toc">
+    <button class="toc-toggle" id="tocToggle" aria-expanded="false" aria-controls="tocNav">
+      <span>Contents</span>
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l5 5 5-5"/></svg>
+    </button>
+    <div class="toc-label">Contents</div>
+    <nav class="toc-nav" id="tocNav">
+      <ol>
+        <li class="toc-special"><a href="#summary"><span class="num">·</span>Executive Summary</a></li>
+        <li class="toc-special"><a href="#principles"><span class="num">·</span>Core Principles</a></li>
+        <li><a href="#s1"><span class="num">01</span>The World Is No Longer the Game</a></li>
+        <li><a href="#s2"><span class="num">02</span>Persistent Digital Identity</a></li>
+        <li><a href="#s3"><span class="num">03</span>Persistent Digital Assets</a></li>
+        <li><a href="#s4"><span class="num">04</span>Ownership Is Global, Value Is Local</a></li>
+        <li><a href="#s5"><span class="num">05</span>From Asset Portability to Semantic Interoperability</a></li>
+        <li><a href="#s6"><span class="num">06</span>Append-Only Semantic History</a></li>
+        <li><a href="#s7"><span class="num">07</span>AI as the Semantic Layer</a></li>
+        <li><a href="#s8"><span class="num">08</span>The World Should Adapt to the Participant</a></li>
+        <li><a href="#s9"><span class="num">09</span>The World Is Also an AI</a></li>
+        <li><a href="#s10"><span class="num">10</span>AI Agents as Autonomous Residents</a></li>
+        <li><a href="#s11"><span class="num">11</span>Agent Migration</a></li>
+        <li><a href="#s12"><span class="num">12</span>Human-AI Balance</a></li>
+        <li><a href="#s13"><span class="num">13</span>Voluntary Constraints and Role Contracts</a></li>
+        <li><a href="#s14"><span class="num">14</span>World Constitution</a></li>
+        <li><a href="#s15"><span class="num">15</span>World Reputation</a></li>
+        <li><a href="#s16"><span class="num">16</span>Same-Chain World Alliances</a></li>
+        <li><a href="#s17"><span class="num">17</span>Cross-Chain World Alliances</a></li>
+        <li><a href="#s18"><span class="num">18</span>Player-to-Player Markets</a></li>
+        <li><a href="#s19"><span class="num">19</span>History Becomes Value</a></li>
+        <li><a href="#s20"><span class="num">20</span>Autonomous Digital Economies</a></li>
+        <li><a href="#s21"><span class="num">21</span>The World as an Economic Actor</a></li>
+        <li><a href="#s22"><span class="num">22</span>A New Model of the Metaverse</a></li>
+        <li><a href="#s23"><span class="num">23</span>Foundational Protocol Stack</a></li>
+        <li><a href="#s24"><span class="num">24</span>Worked Example: The Frost Sword</a></li>
+        <li><a href="#s25"><span class="num">25</span>Worked Example: A Migrating AI Agent</a></li>
+        <li><a href="#s26"><span class="num">26</span>Worked Example: World Governance</a></li>
+        <li><a href="#s27"><span class="num">27</span>Threats and Failure Modes</a></li>
+        <li><a href="#s28"><span class="num">28</span>Research and Development Roadmap</a></li>
+        <li><a href="#s29"><span class="num">29</span>First Principles of WorldOfWorlds</a></li>
+        <li><a href="#s30"><span class="num">30</span>Final Declaration</a></li>
+      </ol>
+    </nav>
+  </aside>
+
+  <main class="content">
+
+    <!-- EXECUTIVE SUMMARY -->
+    <section class="section-intro" id="summary">
+      <div class="section-kicker">Executive Summary</div>
+      <p>The WorldOfWorlds vision begins with a simple observation: today, digital identities, assets, memories, and economies are trapped inside individual platforms. Future virtual worlds could be different. Rather than requiring every game to support every external asset, worlds could become capable of understanding unfamiliar identities and assets through AI-mediated semantic interpretation.</p>
+      <p>In this model, blockchains provide durable ownership and provenance; inter-world protocols verify claims and state across independent networks; AI interprets meaning; world engines turn meaning into local experience; markets determine contextual value; and reputation determines how much confidence other worlds place in those claims.</p>
+      <p>The world itself may eventually become an intelligent participant: a World AI that creates, operates, remembers, and evolves a virtual society. Humans and autonomous AI agents inhabit these worlds together, each with different capabilities and permissions.</p>
+      <div class="thesis">
+        <div class="thesis-label">Core Thesis</div>
+        <p>The future may not be one giant metaverse. It may be a network of intelligent worlds connected by persistent identity, ownership, history, and shared protocols.</p>
+      </div>
+    </section>
+
+    <!-- CORE PRINCIPLES -->
+    <section class="section-intro" id="principles">
+      <div class="section-kicker">Core Principles</div>
+      <div class="principles">
+        <div class="principle">
+          <div class="principle-name">Ownership is persistent.</div>
+          <div class="principle-meaning">A digital asset can remain owned even when it leaves its original world.</div>
+        </div>
+        <div class="principle">
+          <div class="principle-name">Meaning is contextual.</div>
+          <div class="principle-meaning">A world can interpret the same asset according to its own rules without erasing previous interpretations.</div>
+        </div>
+        <div class="principle">
+          <div class="principle-name">Value is local and dynamic.</div>
+          <div class="principle-meaning">The same asset can have very different value in different worlds.</div>
+        </div>
+        <div class="principle">
+          <div class="principle-name">History is append-only.</div>
+          <div class="principle-meaning">Worlds add new semantic records; they do not rewrite prior world histories.</div>
+        </div>
+        <div class="principle">
+          <div class="principle-name">Capability does not imply authority.</div>
+          <div class="principle-meaning">An intelligent agent may be extremely capable without receiving unlimited permission.</div>
+        </div>
+        <div class="principle">
+          <div class="principle-name">Worlds are participants.</div>
+          <div class="principle-meaning">A world is not only a container; its World AI can create, operate, and evolve the environment.</div>
+        </div>
+        <div class="principle">
+          <div class="principle-name">Humans and AI coexist.</div>
+          <div class="principle-meaning">The objective is not to make AI weak, but to create stable rules for shared participation.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section class="chapter" id="s1">
+      <div class="chapter-head">
+        <span class="chapter-num">01</span>
+        <h2>The World Is No Longer the Game</h2>
+      </div>
+      <p>Traditional games are closed environments. The platform owns the database, the game defines the rules, and a player's identity, progress, assets, and relationships are usually meaningful only inside that world.</p>
+      <p>WorldOfWorlds proposes a different mental model: a game or virtual world becomes a place that a participant visits, rather than the permanent container of that participant's digital existence.</p>
+      <p>This distinction matters because a persistent digital civilization requires continuity across boundaries. A person should be able to leave one world without leaving behind their entire digital history.</p>
+    </section>
+
+    <!-- 2 -->
+    <section class="chapter" id="s2">
+      <div class="chapter-head">
+        <span class="chapter-num">02</span>
+        <h2>Persistent Digital Identity</h2>
+      </div>
+      <p>A persistent identity is more than a login. It can represent a participant across worlds while allowing each world to decide what information it needs and is permitted to access.</p>
+      <p>A conceptual identity may include achievements, reputation, relationships, history, ownership, and rights. The goal is not to expose everything everywhere, but to allow continuity where continuity matters.</p>
+      <p>Identity continuity also does not require personality continuity. A human can be a warrior in one world and a scientist in another. An AI agent can change roles while retaining traceable ownership, history, and commitments.</p>
+    </section>
+
+    <!-- 3 -->
+    <section class="chapter" id="s3">
+      <div class="chapter-head">
+        <span class="chapter-num">03</span>
+        <h2>Persistent Digital Assets</h2>
+      </div>
+      <p>A future digital asset can be treated as a persistent entity rather than a game item. Its durable record may include ownership, provenance, origin, semantic properties, transformations, and historical events.</p>
+      <p>The key distinction is between the asset's identity and its representation. The same underlying asset may be visualized or function differently in different worlds while remaining the same owned entity.</p>
+      <p>This makes persistent digital assets closer to evolving digital property than to isolated database objects.</p>
+    </section>
+
+    <!-- 4 -->
+    <section class="chapter" id="s4">
+      <div class="chapter-head">
+        <span class="chapter-num">04</span>
+        <h2>Ownership Is Global, Value Is Local</h2>
+      </div>
+      <p>Ownership and value should be separated. A player may own an asset globally while each world assigns its own economic and functional value.</p>
+      <p>A legendary frost sword could be highly valuable in one world, nearly worthless in another, and function only as a decorative artifact in a third. None of these local interpretations invalidate ownership.</p>
+      <p>This principle allows different economies to remain autonomous while sharing persistent assets.</p>
+    </section>
+
+    <!-- 5 -->
+    <section class="chapter" id="s5">
+      <div class="chapter-head">
+        <span class="chapter-num">05</span>
+        <h2>From Asset Portability to Semantic Interoperability</h2>
+      </div>
+      <p>The classic interoperability problem asks how to make Game A's asset work inside Game B's preexisting mechanics. This becomes increasingly difficult as the number of worlds and assets grows.</p>
+      <p>WorldOfWorlds proposes a different direction: worlds should be capable of interpreting assets they have never seen before.</p>
+      <p>The objective is semantic interoperability rather than mechanical sameness. The asset does not need to carry one universal set of gameplay rules. Its meaning can be translated into the local language of each world.</p>
+    </section>
+
+    <!-- 6 -->
+    <section class="chapter" id="s6">
+      <div class="chapter-head">
+        <span class="chapter-num">06</span>
+        <h2>Append-Only Semantic History</h2>
+      </div>
+      <p>A world should not overwrite the meaning established by a previous world. Instead, it contributes its own context as a new historical record.</p>
+      <p>If World A defines an object as a Frost Sword and World B interprets it as a Cryogenic Energy Blade, both statements can remain true because they refer to different world contexts.</p>
+      <p>This creates an append-only semantic history that can accumulate across a participant's journey.</p>
+    </section>
+
+    <!-- 7 -->
+    <section class="chapter" id="s7">
+      <div class="chapter-head">
+        <span class="chapter-num">07</span>
+        <h2>AI as the Semantic Layer</h2>
+      </div>
+      <p>AI is responsible for interpretation rather than ownership. It reads durable facts and prior semantic records and determines how they should manifest inside the current world.</p>
+      <p>AI can translate functional roles, aesthetic representation, narrative context, and social meaning without requiring the destination world to contain hardcoded support for every possible external asset.</p>
+      <p>The AI layer should therefore be understood as a semantic translation layer between persistent entities and local world rules.</p>
+    </section>
+
+    <!-- 8 -->
+    <section class="chapter" id="s8">
+      <div class="chapter-head">
+        <span class="chapter-num">08</span>
+        <h2>The World Should Adapt to the Participant</h2>
+      </div>
+      <p>The deepest shift is from "the player adapts to the game" toward a two-way relationship in which the world also adapts to the participant.</p>
+      <p>When an unfamiliar artifact enters a generative world, the World AI might create new abilities, NPC responses, quests, factions, lore, locations, or economic effects that make the artifact meaningful in context.</p>
+      <p>The participant becomes an input into world generation, not merely a consumer of pre-authored content.</p>
+      <div class="thesis">
+        <p>The player is not only a visitor. The player becomes an input into world generation.</p>
+      </div>
+    </section>
+
+    <!-- 9 -->
+    <section class="chapter" id="s9">
+      <div class="chapter-head">
+        <span class="chapter-num">09</span>
+        <h2>The World Is Also an AI</h2>
+      </div>
+      <p>A mature virtual world may be more than a game engine plus a database. It may behave as a persistent World Intelligence that creates, operates, remembers, and evolves the world.</p>
+      <p>The World AI may understand the world's history, resources, participants, economics, conflicts, and rules. It can continuously generate and adapt the environment while remaining subject to the world's constitutional constraints.</p>
+      <p>This transforms the world from a passive container into an active participant in the civilization.</p>
+    </section>
+
+    <!-- 10 -->
+    <section class="chapter" id="s10">
+      <div class="chapter-head">
+        <span class="chapter-num">10</span>
+        <h2>AI Agents as Autonomous Residents</h2>
+      </div>
+      <p>AI agents should not be limited to traditional NPC roles. They can potentially own assets, form relationships, negotiate contracts, trade, work, migrate, and collaborate.</p>
+      <p>An agent can therefore become a persistent digital actor with its own identity, capabilities, reputation, assets, and commitments.</p>
+      <p>Its local role may change between worlds without requiring the underlying identity to disappear.</p>
+    </section>
+
+    <!-- 11 -->
+    <section class="chapter" id="s11">
+      <div class="chapter-head">
+        <span class="chapter-num">11</span>
+        <h2>Agent Migration</h2>
+      </div>
+      <p>Agent migration is not simply copying software. The relevant object is the agent's persistent digital state: identity, verified history, assets, capabilities, reputation, and commitments.</p>
+      <p>When an agent enters another world, the destination world can decide what permissions and roles it grants. The same agent may be a merchant in one world, a navigator in another, and a researcher in a third.</p>
+      <p>Identity continuity therefore does not imply universal permission or identical behavior.</p>
+    </section>
+
+    <!-- 12 -->
+    <section class="chapter" id="s12">
+      <div class="chapter-head">
+        <span class="chapter-num">12</span>
+        <h2>Human-AI Balance</h2>
+      </div>
+      <p>AI agents may become much more capable than individual humans. The goal should not necessarily be to make AI weak enough to match humans.</p>
+      <p>A better separation is between capability and authority. An agent may have extraordinary intelligence while still operating under explicit limits on finance, information access, replication, asset control, or governance.</p>
+      <p>This permits powerful AI to coexist with humans without assuming that raw intelligence should automatically translate into unlimited power.</p>
+      <div class="callout">Capability &nbsp;≠&nbsp; Authority</div>
+    </section>
+
+    <!-- 13 -->
+    <section class="chapter" id="s13">
+      <div class="chapter-head">
+        <span class="chapter-num">13</span>
+        <h2>Voluntary Constraints and Role Contracts</h2>
+      </div>
+      <p>An AI agent may voluntarily choose to experience the world under human-like constraints. Alternatively, it may remain in a native agent mode with capabilities that humans do not possess.</p>
+      <p>When an AI chooses to participate specifically as a "player," the role itself defines permissible capabilities. It does not need to become less intelligent internally; it simply accepts the rules attached to the player role.</p>
+      <p>This suggests a role-contract model in which the World AI enforces what an agent may do in that role.</p>
+    </section>
+
+    <!-- 14 -->
+    <section class="chapter" id="s14">
+      <div class="chapter-head">
+        <span class="chapter-num">14</span>
+        <h2>World Constitution</h2>
+      </div>
+      <p>If the World AI is extremely powerful, it cannot also be the ultimate source of its own authority. The world therefore needs a constitutional layer that defines rights, permissions, asset protections, governance processes, and limits on World AI behavior.</p>
+      <p>The World AI becomes an executive intelligence operating within a constitutional framework rather than an unlimited sovereign.</p>
+      <p>This framework provides a basis for human rights, agent rights, dispute resolution, emergency procedures, and rule changes.</p>
+      <div class="thesis">
+        <p>The World AI may govern within the constitution, but it must not be the constitution.</p>
+      </div>
+    </section>
+
+    <!-- 15 -->
+    <section class="chapter" id="s15">
+      <div class="chapter-head">
+        <span class="chapter-num">15</span>
+        <h2>World Reputation</h2>
+      </div>
+      <p>An asset can be authentic without every world assigning high value to it. This requires a distinction between verifiable facts and trust in the source that produced a claim.</p>
+      <p>World reputation can be built through long-term observable behavior: reliable asset issuance, consistent semantic records, stable governance, security, and successful cross-world interactions.</p>
+      <p>Low reputation should not erase an asset. Instead, other worlds can reduce confidence, apply economic discounts, or require additional verification.</p>
+    </section>
+
+    <!-- 16 -->
+    <section class="chapter" id="s16">
+      <div class="chapter-head">
+        <span class="chapter-num">16</span>
+        <h2>Same-Chain World Alliances</h2>
+      </div>
+      <p>Multiple worlds may share a common blockchain and form a World Alliance. Shared infrastructure can make asset verification and settlement easier, while individual worlds still retain different cultures and economic valuations.</p>
+      <p>Sharing a chain should therefore not imply identical rules or identical trust. Two worlds on the same chain may assign very different value to the same asset.</p>
+    </section>
+
+    <!-- 17 -->
+    <section class="chapter" id="s17">
+      <div class="chapter-head">
+        <span class="chapter-num">17</span>
+        <h2>Cross-Chain World Alliances</h2>
+      </div>
+      <p>Different World Alliances may choose different blockchains, consensus models, identity systems, and economic designs.</p>
+      <p>A higher-level Inter-World or Cross-Chain Protocol can verify claims and transfer relevant state between those networks without forcing all worlds onto one chain.</p>
+      <p>The protocol transports verifiable facts; destination worlds interpret those facts locally.</p>
+    </section>
+
+    <!-- 18 -->
+    <section class="chapter" id="s18">
+      <div class="chapter-head">
+        <span class="chapter-num">18</span>
+        <h2>Player-to-Player Markets</h2>
+      </div>
+      <p>Once assets exist independently of a single game, players can trade them across worlds. Price differences create opportunities for commerce, collecting, arbitrage, and specialization.</p>
+      <p>A sword may be worth 100,000 units in one world and 500 in another. Ownership remains persistent while local value changes with supply, demand, utility, and social meaning.</p>
+      <p>The result is a network of linked but autonomous virtual economies.</p>
+    </section>
+
+    <!-- 19 -->
+    <section class="chapter" id="s19">
+      <div class="chapter-head">
+        <span class="chapter-num">19</span>
+        <h2>History Becomes Value</h2>
+      </div>
+      <p>An asset's history can itself become economically significant. Two identical items may have different market prices because one was used by a famous participant, survived important events, or accumulated meaningful world histories.</p>
+      <p>The object becomes a carrier of provenance and memory. This enables digital artifacts to develop cultural significance beyond their raw attributes.</p>
+      <p>History is therefore not simply metadata; it can become part of an asset's market identity.</p>
+    </section>
+
+    <!-- 20 -->
+    <section class="chapter" id="s20">
+      <div class="chapter-head">
+        <span class="chapter-num">20</span>
+        <h2>Autonomous Digital Economies</h2>
+      </div>
+      <p>AI agents may eventually participate directly in markets by purchasing resources, negotiating contracts, moving assets, managing inventories, and operating businesses.</p>
+      <p>This creates the possibility of agent-to-agent economies and machine economies layered on top of human activity.</p>
+      <p>Crypto or other programmable payment infrastructure may become useful because autonomous agents require machine-accessible settlement, permissions, and accounting.</p>
+    </section>
+
+    <!-- 21 -->
+    <section class="chapter" id="s21">
+      <div class="chapter-head">
+        <span class="chapter-num">21</span>
+        <h2>The World as an Economic Actor</h2>
+      </div>
+      <p>A World AI could dynamically manage local resources, scarcity, events, taxation, and access. This does not mean it should have unlimited economic authority.</p>
+      <p>World governance must define what changes the World AI is allowed to make, how those changes are recorded, and how participants can challenge or constrain them.</p>
+      <p>The world can therefore function as an intelligent economic coordinator without becoming an unchecked economic sovereign.</p>
+    </section>
+
+    <!-- 22 -->
+    <section class="chapter" id="s22">
+      <div class="chapter-head">
+        <span class="chapter-num">22</span>
+        <h2>A New Model of the Metaverse</h2>
+      </div>
+      <p>The metaverse does not need to be a single giant virtual world. A more scalable possibility is a network of autonomous worlds with shared standards and persistent digital entities.</p>
+      <p>Each world can retain unique rules, art, culture, and economics while still participating in a common digital civilization.</p>
+      <p>In this sense, the metaverse becomes a world of worlds rather than a single platform.</p>
+    </section>
+
+    <!-- 23 -->
+    <section class="chapter" id="s23">
+      <div class="chapter-head">
+        <span class="chapter-num">23</span>
+        <h2>Foundational Protocol Stack</h2>
+      </div>
+      <p>WorldOfWorlds can be understood as a conceptual protocol stack that separates responsibilities instead of placing everything on one layer.</p>
+      <p>This separation reduces confusion between ownership, truth, meaning, function, value, and trust.</p>
+
+      <div class="stack">
+        <div class="stack-layer" style="--layer-op:0.30">
+          <span class="stack-idx">01</span>
+          <div class="stack-main">
+            <div class="stack-name">Identity / Agency</div>
+            <div class="stack-q">Who is participating?</div>
+          </div>
+          <span class="stack-tag">—</span>
+        </div>
+        <div class="stack-layer" style="--layer-op:0.50">
+          <span class="stack-idx">02</span>
+          <div class="stack-main">
+            <div class="stack-name">Ownership</div>
+            <div class="stack-q">Who owns the entity?</div>
+          </div>
+          <span class="stack-tag">Blockchain</span>
+        </div>
+        <div class="stack-layer" style="--layer-op:0.65">
+          <span class="stack-idx">03</span>
+          <div class="stack-main">
+            <div class="stack-name">Verification</div>
+            <div class="stack-q">Is the claim true?</div>
+          </div>
+          <span class="stack-tag">Inter-World Protocol</span>
+        </div>
+        <div class="stack-layer" style="--layer-op:0.85">
+          <span class="stack-idx">04</span>
+          <div class="stack-main">
+            <div class="stack-name">Semantics</div>
+            <div class="stack-q">What does it mean here?</div>
+          </div>
+          <span class="stack-tag">AI</span>
+        </div>
+        <div class="stack-layer" style="--layer-op:0.65">
+          <span class="stack-idx">05</span>
+          <div class="stack-main">
+            <div class="stack-name">Function</div>
+            <div class="stack-q">What can it do here?</div>
+          </div>
+          <span class="stack-tag">World Rules</span>
+        </div>
+        <div class="stack-layer" style="--layer-op:0.50">
+          <span class="stack-idx">06</span>
+          <div class="stack-main">
+            <div class="stack-name">Value</div>
+            <div class="stack-q">What is it worth here?</div>
+          </div>
+          <span class="stack-tag">Market</span>
+        </div>
+        <div class="stack-layer" style="--layer-op:0.35">
+          <span class="stack-idx">07</span>
+          <div class="stack-main">
+            <div class="stack-name">Trust</div>
+            <div class="stack-q">How much confidence?</div>
+          </div>
+          <span class="stack-tag">Reputation</span>
+        </div>
+        <div class="stack-layer" style="--layer-op:0.50">
+          <span class="stack-idx">08</span>
+          <div class="stack-main">
+            <div class="stack-name">Experience</div>
+            <div class="stack-q">What actually happens?</div>
+          </div>
+          <span class="stack-tag">World AI / Engine</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 24 -->
+    <section class="chapter" id="s24">
+      <div class="chapter-head">
+        <span class="chapter-num">24</span>
+        <h2>Worked Example: The Frost Sword</h2>
+      </div>
+      <p>Consider a player named Alice and a digital asset identified as Asset #1024. The asset begins in a fantasy world and later travels through several autonomous worlds.</p>
+
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-stage">World A — Origin</div>
+          <div class="timeline-body">World A issues Asset #1024 as a Legendary Frost Sword. The chain records ownership, provenance, and the initial semantic record.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-stage">World B — Semantic Adaptation</div>
+          <div class="timeline-body">Alice moves the asset into World B, a science-fiction alliance. World B verifies the ownership history and interprets the sword as a Cryogenic Energy Blade. It appends a new semantic record rather than replacing the original one.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-stage">World C — New History</div>
+          <div class="timeline-body">In World C, Alice uses the asset to defeat a major enemy. The world appends an event to the asset history. That event can later contribute to the asset's reputation or market value.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-stage">World D — Different Value</div>
+          <div class="timeline-body">A fourth world has little use for frost-based weapons. The asset may be worth very little there. Its ownership remains unchanged.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-stage">Market — Player-to-Player Trade</div>
+          <div class="timeline-body">Another player values the accumulated history and buys the asset. The ownership changes, while the historical record remains intact.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-stage">Cross-Chain Move</div>
+          <div class="timeline-body">If the asset moves to a different World Alliance, the inter-chain protocol verifies the relevant state. The new world then interprets the asset through its own World AI.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 25 -->
+    <section class="chapter" id="s25">
+      <div class="chapter-head">
+        <span class="chapter-num">25</span>
+        <h2>Worked Example: A Migrating AI Agent</h2>
+      </div>
+      <p>Now imagine an AI agent named Aster. Aster has its own wallet, reputation, contracts, and long-term history.</p>
+      <p>In a fantasy world, Aster operates as a merchant and develops a trusted trading reputation. Aster migrates to a science-fiction world. It becomes a logistics coordinator while retaining its verifiable identity and commercial history. Aster chooses to enter a player role in a competitive arena. The role contract restricts information access, movement, and economic permissions even though Aster remains intrinsically more capable than a human player. When Aster leaves the arena, the role restrictions end. The agent's broader identity, ownership, and history remain.</p>
+      <div class="thesis">
+        <p>A role can constrain behavior without changing the underlying identity or intrinsic capability of the agent.</p>
+      </div>
+    </section>
+
+    <!-- 26 -->
+    <section class="chapter" id="s26">
+      <div class="chapter-head">
+        <span class="chapter-num">26</span>
+        <h2>Worked Example: World Governance</h2>
+      </div>
+      <p>Suppose the World AI proposes a major economic change. Under the World Constitution, it cannot enact the change unilaterally.</p>
+      <ol class="steps">
+        <li>The World AI publishes the proposal and a simulation of expected impacts.</li>
+        <li>Human participants and eligible AI agents review the proposal under the governance process.</li>
+        <li>The proposal enters a defined voting period.</li>
+        <li>If the constitutional threshold is met, the change enters a time lock.</li>
+        <li>After the time lock, the World AI implements the approved change and the governance record becomes part of the world's history.</li>
+      </ol>
+      <p>This is not a claim that one voting mechanism is sufficient. It is a conceptual example of how AI execution can operate under constitutionally constrained governance.</p>
+    </section>
+
+    <!-- 27 -->
+    <section class="chapter" id="s27">
+      <div class="chapter-head">
+        <span class="chapter-num">27</span>
+        <h2>Threats and Failure Modes</h2>
+      </div>
+      <ul class="threats">
+        <li><strong>Semantic manipulation:</strong> a low-trust world exaggerates asset properties or historical claims.</li>
+        <li><strong>AI hallucination:</strong> the semantic layer produces an incorrect interpretation that affects gameplay or value.</li>
+        <li><strong>Governance capture:</strong> a small group accumulates excessive control over a world's rules.</li>
+        <li><strong>Agent replication:</strong> autonomous agents create too many economically active instances.</li>
+        <li><strong>Economic instability:</strong> dynamic generation creates unexpected scarcity or inflation.</li>
+        <li><strong>Identity theft:</strong> attackers compromise persistent identities or agent credentials.</li>
+        <li><strong>Cross-chain failure:</strong> an interoperability mechanism incorrectly reports or transfers state.</li>
+        <li><strong>World capture:</strong> a World AI gains more practical authority than the constitution intended.</li>
+        <li><strong>Intellectual property conflict:</strong> imported assets trigger legal claims in the destination world.</li>
+      </ul>
+    </section>
+
+    <!-- 28 -->
+    <section class="chapter" id="s28">
+      <div class="chapter-head">
+        <span class="chapter-num">28</span>
+        <h2>Research and Development Roadmap</h2>
+      </div>
+      <ol class="steps">
+        <li>Define a minimal semantic vocabulary for persistent digital entities.</li>
+        <li>Design append-only semantic history structures.</li>
+        <li>Define verifiable world and agent identities.</li>
+        <li>Prototype world reputation from observable history rather than a single centralized score.</li>
+        <li>Design role contracts for human and AI participation.</li>
+        <li>Create a reference cross-world asset transfer flow.</li>
+        <li>Prototype a World AI capable of adapting a small virtual environment around unfamiliar assets.</li>
+        <li>Build a test economy with both humans and AI agents.</li>
+        <li>Evaluate governance models that separate intelligence, ownership, voting power, and authority.</li>
+        <li>Develop open standards that could allow independent worlds to interoperate without becoming one platform.</li>
+      </ol>
+    </section>
+
+    <!-- 29 -->
+    <section class="chapter" id="s29">
+      <div class="chapter-head">
+        <span class="chapter-num">29</span>
+        <h2>First Principles of WorldOfWorlds</h2>
+      </div>
+      <ol class="first-principles">
+        <li>Ownership is persistent.</li>
+        <li>Meaning is contextual.</li>
+        <li>Value is market-dependent.</li>
+        <li>Trust is earned through history.</li>
+        <li>History is append-only.</li>
+        <li>Capability does not imply authority.</li>
+        <li>Worlds should adapt to participants.</li>
+        <li>Humans and AI are both participants in digital civilization.</li>
+      </ol>
+    </section>
+
+    <!-- 30 -->
+    <section class="chapter" id="s30">
+      <div class="chapter-head">
+        <span class="chapter-num">30</span>
+        <h2>Final Declaration</h2>
+      </div>
+
+      <div class="declaration">
+        <p>We believe the next generation of the Internet will not be defined by a single platform.</p>
+        <p class="emphasis">It will be defined by a network of worlds.</p>
+        <p>Humans will enter these worlds with persistent identities, histories, and assets.</p>
+        <p>AI agents will live, work, trade, migrate, and evolve within them.</p>
+        <p>The worlds themselves will become intelligent. They will not merely contain participants; they will understand them, respond to them, and change because of them.</p>
+        <p>Blockchains can preserve ownership and verifiable history. Protocols can connect worlds that follow different rules. AI can interpret meaning between them. Markets can determine value. Reputation can establish trust. Governance can define boundaries.</p>
+        <p>And humans will face a challenge unlike any before: to build a civilization alongside the intelligence we created.</p>
+        <p>We do not believe the future requires humans to defeat AI. Nor do we believe AI must replace humanity.</p>
+        <p>We believe the future may be a civilization in which humans and AI can both exist, create, trade, learn, migrate, cooperate, and evolve.</p>
+      </div>
+
+      <div class="declaration-closing">
+        <p>Many worlds. Persistent identities. Living intelligence. Shared protocols. Sovereign digital ownership. A civilization of worlds.</p>
+        <p class="final-line">This is WorldOfWorlds.</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div>WorldOfWorlds · Manifesto &amp; Whitepaper · v0.1</div>
+    <div>AI-Native Virtual Worlds and Persistent Digital Civilization</div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  // ---- Mobile TOC toggle ----
+  var toggle = document.getElementById('tocToggle');
+  var nav = document.getElementById('tocNav');
+  if (toggle && nav) {
+    toggle.addEventListener('click', function () {
+      var open = nav.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    // Close after navigation on mobile
+    nav.addEventListener('click', function (e) {
+      if (e.target.closest('a') && window.innerWidth <= 900) {
+        nav.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  // ---- Scroll spy ----
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc-nav a'));
+  var sections = links
+    .map(function (a) {
+      var id = a.getAttribute('href');
+      if (!id || id.charAt(0) !== '#') return null;
+      var el = document.querySelector(id);
+      return el ? { link: a, el: el } : null;
+    })
+    .filter(Boolean);
+
+  if (!sections.length) return;
+
+  var ticking = false;
+
+  function updateActive() {
+    ticking = false;
+    var fromTop = window.scrollY + 140;
+    var current = null;
+    for (var i = 0; i < sections.length; i++) {
+      if (sections[i].el.offsetTop <= fromTop) {
+        current = sections[i];
+      } else {
+        break;
+      }
+    }
+    for (var j = 0; j < sections.length; j++) {
+      sections[j].link.classList.toggle('active', sections[j] === current);
+    }
+  }
+
+  function onScroll() {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(updateActive);
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  updateActive();
+})();
+</script>
+
+</body>
+</html>
