@@ -495,9 +495,33 @@ async function triggerStrongEnemy(){
     await typePrint("你捏碎一张【"+ITEMS[escapeId].name+"】，瞬间传送千里，逃过一劫。",18);
     await sleep(400); updateStats(); return;
   }
-  s.hp=0;
-  await typePrint("对方一掌拍来，你躲闪不及，被当场击杀！",18);
-  await sleep(400); updateStats();
+  await typePrint("你没有逃脱符，只得咬紧牙关，正面迎敌！",18);
+  await sleep(400);
+  const npc=getNPC("strong_masked");
+  if(npc){
+    const log=doCombat(npc);
+    await typePrint(log,18);
+    await sleep(400);
+    /* ===== 新增：打死强敌走掉落 ===== */
+    if(s.hp>0){
+      await typePrint("你击败了蒙面强者！",18);
+      await sleep(300);
+      const pool=TRAINING_RARE_DROPS[s.realm];
+      const dropId=tryDropItem(pool,{items:[],skills:[]});
+      if(dropId){
+        await typePrint("你从他身上搜出【"+ITEMS[dropId].name+"】。",18);
+        await sleep(300);
+      }
+      /* 额外奖励：妖丹 + 灵石 */
+      addItemToInventory("yaodan");
+      const bonusSpirit=100+s.realm*50;
+      s.spirit+=bonusSpirit;
+      await typePrint("额外获得【妖丹】×1，灵石 +"+bonusSpirit+"。",18);
+      await sleep(300);
+    }
+    /* ===== 新增结束 ===== */
+  }
+  updateStats();
 }
 function showHpPauseMenu(resolve){
   choicesEl.innerHTML="";
