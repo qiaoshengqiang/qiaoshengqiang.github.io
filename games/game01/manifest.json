@@ -1,0 +1,15 @@
+{
+  "name": "修仙奇遇录",
+  "short_name": "修仙",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#14100c",
+  "theme_color": "#1e1710",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
