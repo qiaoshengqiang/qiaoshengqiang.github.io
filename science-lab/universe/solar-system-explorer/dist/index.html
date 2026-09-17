@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="theme-color" content="#05070d" />
+<meta name="description" content="Interactive 3D Solar System Explorer — 太阳系互动探索器" />
+<title>Solar System Explorer · 太阳系互动探索器</title>
+  <script type="module" crossorigin src="./assets/index-mGIlCNUx.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/three-HwrQUa8V.js">
+  <link rel="stylesheet" crossorigin href="./assets/index-BIGTGpVm.css">
+</head>
+<body>
+
+<!-- ===================== 加载层 ===================== -->
+<div id="loading">
+  <div class="loader-ring"></div>
+  <div class="loader-title">SOLAR SYSTEM EXPLORER</div>
+  <div class="loader-sub" id="loaderSub">正在生成天体纹理…</div>
+</div>
+
+<!-- ===================== 顶部栏 ===================== -->
+<header class="topbar" id="topbar">
+  <div class="brand">
+    <span class="brand-mark"></span>
+    <span class="brand-text">SOLAR SYSTEM<em>EXPLORER</em></span>
+  </div>
+
+  <div class="search-wrap">
+    <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+    <input id="searchInput" type="text" placeholder="搜索天体 / Search…" autocomplete="off" spellcheck="false" />
+    <div id="searchResults" class="search-results"></div>
+  </div>
+
+  <div class="top-actions">
+    <button class="tbtn" id="btnHome" title="返回太阳系全景">
+      <span>全景</span>
+    </button>
+    <button class="tbtn" id="btnFollow" title="跟随当前选中天体">
+      <span>跟随</span>
+    </button>
+    <button class="tbtn" id="btnQuality" title="切换画质">
+      <span id="qualityLabel">标准</span>
+    </button>
+  </div>
+</header>
+
+<!-- ===================== 左侧导航 ===================== -->
+<nav class="sidebar" id="sidebar">
+  <div class="side-scroll" id="sideScroll">
+    <!-- 由 ui.js 动态填充 -->
+  </div>
+  <button class="sidebar-toggle" id="sidebarToggle" title="收起/展开">
+    <span></span>
+  </button>
+</nav>
+
+<!-- ===================== 右侧信息面板 ===================== -->
+<aside class="info-panel" id="infoPanel">
+  <button class="info-close" id="infoClose" title="关闭">×</button>
+
+  <div class="info-head">
+    <div class="info-badge" id="infoBadge">行星</div>
+    <h2 id="infoName">—</h2>
+    <p id="infoEn">—</p>
+  </div>
+
+  <div class="info-body" id="infoBody"></div>
+
+  <div class="info-actions">
+    <button class="ibtn primary" id="btnInfoFollow">跟随</button>
+    <button class="ibtn" id="btnInfoMoons">卫星</button>
+    <button class="ibtn" id="btnInfoBack">返回</button>
+  </div>
+</aside>
+
+<!-- ===================== 底部时间控制 ===================== -->
+<footer class="time-bar" id="timeBar">
+  <div class="tb-left">
+    <button class="play-btn" id="btnPlay" title="暂停 / 继续">
+      <svg id="iconPause" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+      <svg id="iconPlay" viewBox="0 0 24 24" style="display:none"><path d="M8 5v14l11-7z"/></svg>
+    </button>
+  </div>
+
+  <div class="tb-center">
+    <div class="speed-presets" id="speedPresets">
+      <button data-speed="0.1">×0.1</button>
+      <button data-speed="1" class="active">×1</button>
+      <button data-speed="10">×10</button>
+      <button data-speed="100">×100</button>
+      <button data-speed="1000">×1K</button>
+      <button data-speed="10000">×10K</button>
+      <button data-speed="100000">×100K</button>
+      <button data-speed="1000000">×1M</button>
+    </div>
+    <div class="slider-row">
+      <span class="slider-label">时间流速</span>
+      <input type="range" id="speedSlider" min="0" max="1000" value="190" />
+      <span class="slider-value" id="speedValue">1 天 / 秒</span>
+    </div>
+  </div>
+
+  <div class="tb-right">
+    <div class="sim-date">
+      <span class="sd-label">模拟日期</span>
+      <span class="sd-value" id="simDate">—</span>
+    </div>
+    <button class="tbtn small" id="btnToday">今天</button>
+    <button class="tbtn small" id="btnReset">重置</button>
+  </div>
+</footer>
+
+<!-- ===================== 尺度导航条 ===================== -->
+<div class="scale-nav" id="scaleNav">
+  <button data-scale="sun">Sun</button>
+  <span class="sn-sep"></span>
+  <button data-scale="inner">Inner Planets</button>
+  <span class="sn-sep"></span>
+  <button data-scale="belt">Asteroid Belt</button>
+  <span class="sn-sep"></span>
+  <button data-scale="outer">Outer Planets</button>
+  <span class="sn-sep"></span>
+  <button data-scale="kuiper">Kuiper Belt</button>
+  <span class="sn-sep"></span>
+  <button data-scale="edge">Outer Solar System</button>
+</div>
+
+<!-- ===================== 底部提示 ===================== -->
+<div class="hint" id="hint">点击任意天体开始探索 · 拖拽旋转 · 滚轮缩放 · 右键平移</div>
+
+</body>
+</html>
