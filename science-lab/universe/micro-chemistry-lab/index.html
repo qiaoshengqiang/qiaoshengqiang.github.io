@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#04070e" />
+  <title>微观化学实验室</title>
+  <script type="module" crossorigin src="./assets/index-dyBomx2G.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-CgjoM-Jp.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ==================== 首页 ==================== -->
+  <section id="home-screen" class="screen is-active">
+    <div class="home-inner">
+      <header class="home-header">
+        <div class="brand"><span class="brand__dot"></span>MICRO CHEM LAB</div>
+        <h1 class="home-title">微观化学实验室</h1>
+        <p class="home-subtitle">把学生看不见的微观世界，变成可以直接观察、操作和探索的 3D 世界</p>
+      </header>
+
+      <div class="home-cards">
+        <button class="lab-card" data-open="water">
+          <div class="lab-card__badge">实验一</div>
+          <div class="lab-card__visual">
+            <svg viewBox="0 0 200 140" class="water-molecule-svg" aria-hidden="true">
+              <defs>
+                <!-- 氧原子发光渐变 -->
+                <radialGradient id="oGrad" cx="35%" cy="30%">
+                  <stop offset="0%" stop-color="#ff9a9a" />
+                  <stop offset="100%" stop-color="#e8342f" />
+                </radialGradient>
+                <!-- 氢原子发光渐变 -->
+                <radialGradient id="hGrad" cx="35%" cy="30%">
+                  <stop offset="0%" stop-color="#ffffff" />
+                  <stop offset="100%" stop-color="#b9c9e0" />
+                </radialGradient>
+                <!-- 发光滤镜 -->
+                <filter id="glowO" x="-30%" y="-30%" width="160%" height="160%">
+                  <feGaussianBlur stdDeviation="5" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+                <filter id="glowH" x="-30%" y="-30%" width="160%" height="160%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+
+              <!-- 化学键（先画，位置在原子下方） -->
+              <line x1="100" y1="80" x2="60" y2="45" stroke="#dfe9f7" stroke-width="5" stroke-linecap="round" opacity="0.85"/>
+              <line x1="100" y1="80" x2="140" y2="45" stroke="#dfe9f7" stroke-width="5" stroke-linecap="round" opacity="0.85"/>
+
+              <!-- 氧原子 -->
+              <circle cx="100" cy="80" r="26" fill="url(#oGrad)" filter="url(#glowO)"/>
+              
+              <!-- 氢原子 -->
+              <circle cx="60" cy="45" r="15" fill="url(#hGrad)" filter="url(#glowH)"/>
+              <circle cx="140" cy="45" r="15" fill="url(#hGrad)" filter="url(#glowH)"/>
+            </svg>
+          </div>
+          <h2>水分子的微观运动</h2>
+          <p>拖动温度滑块，观察水分子如何运动，以及固态 / 液态 / 气态的变化</p>
+          <span class="lab-card__cta">进入实验 <i>→</i></span>
+        </button>
+
+        <button class="lab-card" data-open="nacl">
+          <div class="lab-card__badge">实验二</div>
+          <div class="lab-card__visual lab-card__visual--ions">
+            <span class="ion ion--na"></span>
+            <span class="ion ion--cl"></span>
+            <span class="ion ion--na"></span>
+            <span class="ion ion--cl"></span>
+            <span class="ion ion--na"></span>
+            <span class="ion ion--cl"></span>
+            <span class="ion ion--na"></span>
+            <span class="ion ion--cl"></span>
+            <span class="ion ion--na"></span>
+          </div>
+          <h2>氯化钠在水中的溶解</h2>
+          <p>进入微观尺度，看 Na⁺ 和 Cl⁻ 如何离开晶体、均匀分散在水中</p>
+          <span class="lab-card__cta">进入实验 <i>→</i></span>
+        </button>
+      </div>
+
+      <footer class="home-footer">
+        <button class="btn btn-ghost" id="home-classmode">课堂模式</button>
+        <span class="home-tip">建议全屏使用 · 鼠标拖动旋转视角 · 滚轮缩放</span>
+      </footer>
+    </div>
+  </section>
+
+  <!-- ==================== 实验一：水分子 ==================== -->
+  <section id="water-screen" class="screen">
+    <canvas id="water-canvas" class="lab-canvas"></canvas>
+
+    <header class="lab-topbar">
+      <button class="btn btn-ghost" data-back>← 返回</button>
+      <div class="lab-title">
+        <span class="lab-title__tag">实验一</span>
+        <h2>水分子的微观运动</h2>
+      </div>
+      <div class="lab-topbar__right">
+        <button class="btn btn-ghost" data-classmode>课堂模式</button>
+        <button class="btn btn-ghost" id="water-reset">重新开始</button>
+      </div>
+    </header>
+
+    <aside class="panel panel--left">
+      <div class="panel__label">温度</div>
+      <div class="temp-readout">
+        <span id="water-temp-value">20</span><span class="unit">°C</span>
+      </div>
+      <input type="range" id="water-temp-slider" class="slider"
+             min="-20" max="120" step="1" value="20" />
+      <div class="slider-scale"><span>-20</span><span>50</span><span>120</span></div>
+
+      <div class="panel__label mt">状态切换</div>
+      <div class="seg seg--vertical">
+        <button class="btn btn-state" data-state="solid">固态</button>
+        <button class="btn btn-state" data-state="liquid">液态</button>
+        <button class="btn btn-state" data-state="gas">气态</button>
+      </div>
+    </aside>
+
+    <aside class="panel panel--right">
+      <div class="info-block">
+        <div class="info-block__label">当前温度</div>
+        <div class="info-block__value" id="water-info-temp">20 °C</div>
+      </div>
+      <div class="info-block">
+        <div class="info-block__label">粒子平均运动速度</div>
+        <div class="info-block__value info-block__value--num" id="water-info-speed">1.11</div>
+        <div class="speed-bar"><div class="speed-bar__fill" id="water-speed-fill"></div></div>
+      </div>
+      <div class="info-block">
+        <div class="info-block__label">宏观状态</div>
+        <div class="info-block__value" id="water-info-macro">液态水</div>
+      </div>
+      <div class="info-block">
+        <div class="info-block__label">微观粒子状态</div>
+        <div class="info-block__text" id="water-info-micro">粒子间距较小，粒子能够相互移动。</div>
+      </div>
+    </aside>
+
+    <div class="bottom-bar">
+      <div class="seg">
+        <button class="seg__btn is-active" data-speed="1">正常速度</button>
+        <button class="seg__btn" data-speed="0.5">0.5×</button>
+        <button class="seg__btn" data-speed="0.1">0.1×</button>
+      </div>
+      <div class="hint">拖动旋转视角 · 滚轮缩放 · <b>点击任意水分子可放大观察</b></div>
+    </div>
+  </section>
+
+  <!-- ==================== 实验二：氯化钠溶解 ==================== -->
+  <section id="nacl-screen" class="screen">
+    <canvas id="nacl-canvas" class="lab-canvas"></canvas>
+
+    <header class="lab-topbar">
+      <button class="btn btn-ghost" data-back>← 返回</button>
+      <div class="lab-title">
+        <span class="lab-title__tag">实验二</span>
+        <h2>氯化钠在水中的溶解</h2>
+      </div>
+      <div class="lab-topbar__right">
+        <button class="btn btn-ghost" data-classmode>课堂模式</button>
+        <button class="btn btn-ghost" id="nacl-reset">重新开始</button>
+      </div>
+    </header>
+
+    <aside class="panel panel--left">
+      <div class="panel__label">视角</div>
+      <div class="seg seg--vertical">
+        <button class="seg__btn is-active" data-view="micro">微观视角</button>
+        <button class="seg__btn" data-view="macro">宏观视角</button>
+      </div>
+
+      <div class="panel__label mt">溶解阶段</div>
+      <div class="seg seg--vertical">
+        <button class="seg__btn" data-stage="before">溶解前</button>
+        <button class="seg__btn is-active" data-stage="process">溶解过程</button>
+        <button class="seg__btn" data-stage="after">溶解后</button>
+      </div>
+
+      <button class="btn btn-primary btn-block mt" id="nacl-zoom">放大观察</button>
+    </aside>
+
+    <aside class="panel panel--right">
+      <div class="info-block">
+        <div class="info-block__label">溶解进度</div>
+        <div class="progress"><div class="progress__fill" id="nacl-progress-fill"></div></div>
+      </div>
+      <div class="info-block">
+        <div class="info-block__label">水中的粒子</div>
+        <div class="legend">
+          <span><i class="dot dot--h2o"></i>H₂O 水分子</span>
+          <span><i class="dot dot--na"></i>Na⁺ 钠离子</span>
+          <span><i class="dot dot--cl"></i>Cl⁻ 氯离子</span>
+        </div>
+      </div>
+      <div class="info-block">
+        <div class="info-block__text info-block__text--key" id="nacl-conclusion">
+          氯化钠溶解后，Na⁺ 和 Cl⁻ 均匀分散在水中。
+        </div>
+      </div>
+    </aside>
+
+    <div class="question-card hidden" id="nacl-question">
+      <p class="question-card__text" id="nacl-question-text"></p>
+      <div class="question-card__actions">
+        <button class="btn btn-primary btn-sm" id="nacl-explain">显示解释</button>
+        <button class="btn btn-ghost btn-sm" id="nacl-question-close">收起</button>
+      </div>
+      <p class="question-card__answer hidden" id="nacl-answer"></p>
+    </div>
+
+    <div class="bottom-bar">
+      <div class="seg">
+        <button class="seg__btn seg__btn--primary" id="nacl-toggle">开始溶解</button>
+        <button class="seg__btn" data-speed="1">1×</button>
+        <button class="seg__btn" data-speed="0.5">0.5×</button>
+        <button class="seg__btn" data-speed="0.2">0.2×</button>
+      </div>
+      <div class="hint">拖动旋转视角 · 滚轮缩放 · 可随时暂停观察晶体表面</div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ==================== 水分子放大查看弹窗 ==================== -->
+<div id="molecule-modal" class="modal hidden" aria-hidden="true">
+  <div class="modal__backdrop" data-close></div>
+  <div class="modal__panel">
+    <button class="modal__close" id="molecule-close" aria-label="关闭">✕</button>
+    <h3 class="modal__title">水分子 H₂O</h3>
+    <div class="modal__canvas-wrap">
+      <canvas id="molecule-canvas"></canvas>
+    </div>
+    <p class="modal__caption" id="molecule-caption">1 个氧原子</p>
+    <div class="modal__legend">
+      <span><i class="dot dot--o"></i>氧原子 O</span>
+      <span><i class="dot dot--h"></i>氢原子 H</span>
+    </div>
+    <p class="modal__hint">按住拖动可以旋转这个水分子</p>
+  </div>
+</div>
+
+</body>
+</html>
