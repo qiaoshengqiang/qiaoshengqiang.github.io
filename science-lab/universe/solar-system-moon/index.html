@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#03050a" />
+  <meta name="description" content="日—地—月系统互动探索：用 3D 空间视角与地球观察者视角，理解月相为什么会形成。" />
+  <title>日—地—月系统互动探索 · 月相是怎么形成的</title>
+  <script type="module" crossorigin src="./assets/index-D6KEvoeU.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-1iu-kbPG.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- ===================== 顶部栏 ===================== -->
+    <header class="header">
+      <div class="brand">
+        <span class="brand-logo">🌗</span>
+        <div class="brand-text">
+          <h1>日—地—月系统互动探索</h1>
+          <p>理解月相为什么会形成</p>
+        </div>
+      </div>
+
+      <nav class="mode-nav" id="mode-nav">
+        <button type="button" class="nav-btn active" data-mode="observe">观察月相</button>
+        <button type="button" class="nav-btn" data-mode="explore">探索月球运动</button>
+        <button type="button" class="nav-btn" data-mode="why">为什么有月相？</button>
+        <button type="button" class="nav-btn" data-mode="eclipse">日食与月食</button>
+      </nav>
+
+      <div class="header-right">
+        <button type="button" class="ghost-btn" id="btn-quiz">猜一猜</button>
+        <button type="button" class="ghost-btn" id="btn-classroom">课堂模式</button>
+      </div>
+    </header>
+
+    <!-- ===================== 主舞台（3D 视口） ===================== -->
+    <main class="stage">
+      <canvas id="scene-canvas"></canvas>
+
+      <!-- 左上角状态徽标 -->
+      <div class="hud hud-top-left">
+        <span class="badge badge-blue">宇宙空间视角</span>
+        <span class="badge-note">示意图 · 不按真实尺度</span>
+      </div>
+
+      <!-- 右上角提示 -->
+      <div class="hud hud-top-right">
+        <div class="hint">拖动月球可改变公转位置 · 拖拽空白处旋转视角</div>
+      </div>
+
+      <!-- 左下角工具按钮 -->
+      <div class="hud hud-bottom-left">
+        <button type="button" class="pill-btn" id="btn-follow">
+          <span class="dot"></span>跟随月球
+        </button>
+        <button type="button" class="pill-btn active" id="btn-rays">太阳光线</button>
+        <button type="button" class="pill-btn" id="btn-sight">观察视线</button>
+        <button type="button" class="pill-btn" id="btn-reset">重置视角</button>
+      </div>
+
+      <!-- 拖动月球时显示的浮层提示 -->
+      <div class="hud hud-drag" id="drag-tip" hidden>
+        <span id="drag-tip-text">新月</span>
+      </div>
+    </main>
+
+    <!-- ===================== 右侧信息面板 ===================== -->
+    <aside class="side-panel" id="side-panel">
+
+      <section class="card observer-card">
+        <div class="card-head">
+          <h2>地球观察者视角</h2>
+          <span class="tag">实时同步</span>
+        </div>
+        <canvas id="observer-canvas"></canvas>
+        <p class="observer-caption" id="observer-caption">站在地球上看到的月亮</p>
+      </section>
+      
+      <section class="card control-card">
+        <div class="row">
+          <button type="button" class="play-btn" id="btn-play">▶ 播放</button>
+        </div>
+        <div class="speed-group" id="speed-group">
+          <button type="button" data-speed="0.1">×0.1</button>
+          <button type="button" data-speed="1" class="active">×1</button>
+          <button type="button" data-speed="10">×10</button>
+          <button type="button" data-speed="100">×100</button>
+          <button type="button" data-speed="1000">×1000</button>
+        </div>
+        <div class="progress">
+          <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+          <div class="progress-labels">
+            <span>新月<b>Day 0</b></span>
+            <span>上弦月<b>Day 7.4</b></span>
+            <span>满月<b>Day 14.8</b></span>
+            <span>下弦月<b>Day 22.1</b></span>
+            <span>新月<b>Day 29.5</b></span>
+          </div>
+        </div>
+        <p class="tiny-note">月相周期（朔望月）约 29.5 天</p>
+      </section>
+      
+      <section class="card info-card">
+        <div class="phase-name" id="phase-name">新月</div>
+        <div class="phase-meta">
+          <div class="meta-item">
+            <span>亮面比例</span>
+            <b id="illum-value">0%</b>
+          </div>
+          <div class="meta-item">
+            <span>公转位置</span>
+            <b id="angle-value">0°</b>
+          </div>
+          <div class="meta-item">
+            <span>模拟时间</span>
+            <b id="day-value">第 0.0 天</b>
+          </div>
+        </div>
+        <p class="phase-desc" id="phase-desc"></p>
+      </section>
+
+
+
+      <section class="card keypoint-card">
+        <h3>核心结论</h3>
+        <p>太阳始终照亮月球的<b>大约一半</b>；月球绕地球公转，使我们从地球上看到的<b>亮面比例</b>不断变化——这就是月相。</p>
+        <p class="warn-line">月相 <b>不是</b> 地球的影子造成的。</p>
+      </section>
+
+    </aside>
+
+    <!-- ===================== 底部月相时间轴 ===================== -->
+    <footer class="footer">
+      <div class="timeline-wrap">
+        <div class="timeline-head">
+          <span class="timeline-title">月相时间轴</span>
+          <span class="timeline-sub">点击任意月相，月球会移动到对应轨道位置</span>
+        </div>
+        <div class="timeline" id="timeline"><!-- 由 JS 生成 --></div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ===================== 通用弹层 ===================== -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal-backdrop" data-close="1"></div>
+    <div class="modal-inner" role="dialog" aria-modal="true">
+      <button type="button" class="modal-close" id="modal-close" aria-label="关闭">×</button>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- ===================== 猜一猜面板 ===================== -->
+  <div class="quiz" id="quiz" hidden>
+    <div class="quiz-inner">
+      <button type="button" class="modal-close" id="quiz-close" aria-label="关闭">×</button>
+      <h2 class="quiz-title">猜一猜：现在是什么月相？</h2>
+      <p class="quiz-desc">看左侧 3D 场景中太阳、地球、月球的相对位置，判断从地球上看现在的月相。</p>
+      <div class="quiz-view">
+        <canvas id="quiz-canvas"></canvas>
+        <div class="quiz-mask">月相已隐藏</div>
+      </div>
+      <div class="quiz-options" id="quiz-options">
+        <button type="button" data-key="new">新月</button>
+        <button type="button" data-key="first-quarter">上弦月</button>
+        <button type="button" data-key="full">满月</button>
+        <button type="button" data-key="third-quarter">下弦月</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-feedback"></div>
+      <div class="quiz-actions">
+        <button type="button" class="pill-btn" id="quiz-next">换一题</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
