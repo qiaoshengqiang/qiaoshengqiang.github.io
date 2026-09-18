@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#03060e" />
+  <title>宇宙导航实验室 · Space Navigation Lab</title>
+  <script type="module" crossorigin src="./assets/index-FvLsU1Qy.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-VaTvMc-g.css">
+</head>
+<body>
+  <canvas id="gl"></canvas>
+
+  <!-- ===================== 首页 ===================== -->
+  <div id="home-screen" class="screen">
+    <div class="home-inner">
+      <h1>宇宙导航实验室</h1>
+      <p class="subtitle">从第一宇宙速度到太空任务</p>
+      <div class="home-buttons">
+        <button class="big-btn" data-goto="orbit">地球轨道实验</button>
+        <button class="big-btn" data-goto="gravity">引力实验室</button>
+        <button class="big-btn" data-goto="mission">太空导航任务</button>
+      </div>
+      <p class="tagline">改变速度，观察轨道；理解引力，探索太空。</p>
+    </div>
+  </div>
+
+  <!-- ===================== 顶栏 ===================== -->
+  <div id="topbar" class="hidden">
+    <button id="btn-back-home" class="mini-btn">← 首页</button>
+    <div id="mode-title">地球轨道实验</div>
+    <div class="topbar-right">
+      <button id="btn-classroom" class="mini-btn">课堂模式</button>
+      <button id="btn-about" class="mini-btn">? 说明</button>
+    </div>
+  </div>
+
+  <!-- ===================== 模式1：地球轨道实验 ===================== -->
+  <div id="panel-orbit" class="side-panel hidden">
+    <div class="panel-head">地球轨道实验</div>
+
+    <section class="block">
+      <div class="row"><span>中心天体</span><span class="val">地球</span></div>
+      <div class="row small"><span>质量</span><span>5.97 × 10²⁴ kg</span></div>
+      <div class="row small"><span>半径</span><span>6371 km</span></div>
+    </section>
+
+    <section class="block">
+      <label class="row"><span>发射高度</span><span class="val" id="orbit-alt-val">200 km</span></label>
+      <input type="range" id="orbit-alt" min="0" max="2000" step="10" value="200" />
+    </section>
+
+    <section class="block">
+      <label class="row"><span>初速度</span><span class="val" id="orbit-speed-val">7.00 km/s</span></label>
+      <input type="range" id="orbit-speed" min="0" max="15" step="0.01" value="7" />
+      <div class="chips">
+        <button data-spd="3">3</button>
+        <button data-spd="5">5</button>
+        <button data-spd="7">7</button>
+        <button data-spd="9">9</button>
+        <button data-spd="11">11</button>
+        <button data-spd="13">13</button>
+      </div>
+    </section>
+
+    <section class="block">
+      <label class="row"><span>发射方向（与水平夹角）</span><span class="val" id="orbit-angle-val">0°</span></label>
+      <input type="range" id="orbit-angle" min="0" max="90" step="5" value="0" />
+      <div class="chips">
+        <button data-ang="0">0°</button>
+        <button data-ang="15">15°</button>
+        <button data-ang="30">30°</button>
+        <button data-ang="45">45°</button>
+        <button data-ang="60">60°</button>
+        <button data-ang="75">75°</button>
+        <button data-ang="90">90°</button>
+      </div>
+    </section>
+
+    <section class="block btn-row">
+      <button id="orbit-launch" class="primary">🚀 发射</button>
+      <button id="orbit-pause">⏸ 暂停</button>
+      <button id="orbit-reset">⏮ 重置</button>
+    </section>
+
+    <section class="block">
+      <label class="check"><input type="checkbox" id="orbit-keep-trail" /> 保留轨迹（对比不同速度）</label>
+      <label class="check"><input type="checkbox" id="orbit-show-vectors" checked /> 显示速度箭头 / 引力箭头</label>
+    </section>
+
+    <section class="block">
+      <button id="orbit-find-v1" class="tool">🔭 寻找第一宇宙速度</button>
+      <button id="orbit-why-satellite" class="tool">❓ 为什么卫星不会掉下来？</button>
+      <button id="orbit-newton-cannon" class="tool">💥 牛顿大炮</button>
+      <button id="orbit-physics" class="tool">📐 显示物理原理</button>
+      <button id="orbit-clear-kept" class="tool ghost">🧹 清空保留轨迹</button>
+    </section>
+
+    <section class="block physics-box hidden" id="orbit-physics-box">
+      <div class="formula-title">万有引力</div>
+      <div class="formula">F = G · M · m / r²</div>
+      <div class="formula-title">近地圆轨道条件</div>
+      <div class="formula">m v² / R = G M m / R²</div>
+      <div class="formula">v₁ = √(G M / R) ≈ 7.9 km/s</div>
+      <div class="formula-title">第二宇宙速度</div>
+      <div class="formula">v₂ = √(2 G M / R) = √2 · v₁ ≈ 11.2 km/s</div>
+      <div class="note">
+        v₁ 是“环绕”地球做近地圆周运动所需的速度；<br />
+        v₂ 是“逃离”地球引力束缚所需的最小初速度。
+      </div>
+    </section>
+
+    <div class="result-box hidden" id="orbit-result"></div>
+  </div>
+
+  <!-- ===================== 模式2：引力实验室 ===================== -->
+  <div id="panel-gravity" class="side-panel hidden">
+    <div class="panel-head">引力实验室</div>
+
+    <section class="block">
+      <label class="row"><span>中心天体质量</span><span class="val" id="grav-mass-val">1.0 M⊕</span></label>
+      <input type="range" id="grav-mass" min="0.5" max="3" step="0.1" value="1" />
+      <div class="chips">
+        <button data-m="0.5">0.5 M⊕</button>
+        <button data-m="1">1.0 M⊕</button>
+        <button data-m="2">2.0 M⊕</button>
+        <button data-m="3">3.0 M⊕</button>
+      </div>
+    </section>
+
+    <section class="block">
+      <label class="row"><span>测试物体质量</span><span class="val" id="grav-objmass-val">100 kg</span></label>
+      <input type="range" id="grav-objmass" min="1" max="1000" step="1" value="100" />
+    </section>
+
+    <section class="block">
+      <label class="row"><span>距地心距离</span><span class="val" id="grav-dist-val">8000 km</span></label>
+      <input type="range" id="grav-dist" min="6500" max="40000" step="100" value="8000" />
+      <div class="chips">
+        <button data-d="7371">1000 km 高</button>
+        <button data-d="8371">2000 km 高</button>
+        <button data-d="11371">5000 km 高</button>
+        <button data-d="16371">10000 km 高</button>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="row big"><span>引力大小 F</span><span class="val highlight" id="grav-force">—</span></div>
+      <div class="row small"><span>引力加速度 a</span><span id="grav-accel">—</span></div>
+      <div class="row small"><span>环绕速度 v</span><span id="grav-v">—</span></div>
+    </section>
+
+    <section class="block">
+      <div class="formula-title">F = G M m / r²</div>
+      <canvas id="gravity-curve" class="curve-canvas"></canvas>
+      <div class="curve-legend"><span class="dot"></span> 当前状态</div>
+    </section>
+
+    <section class="block btn-row">
+      <button id="grav-reset" class="primary">重置为圆轨道</button>
+      <button id="grav-pause">⏸ 暂停</button>
+    </section>
+  </div>
+
+  <!-- ===================== 模式3：太空导航任务 ===================== -->
+  <div id="panel-mission" class="side-panel hidden">
+    <div class="panel-head">太空导航任务</div>
+
+    <div class="mission-tabs">
+      <button data-mission="1" class="active">任务1</button>
+      <button data-mission="2">任务2</button>
+      <button data-mission="3">任务3</button>
+      <button data-mission="4">任务4</button>
+    </div>
+
+    <div class="mission-brief" id="mission-brief"></div>
+
+    <section class="block">
+      <label class="row"><span>发射高度</span><span class="val" id="mis-alt-val">300 km</span></label>
+      <input type="range" id="mis-alt" min="0" max="2000" step="10" value="300" />
+    </section>
+
+    <section class="block">
+      <label class="row"><span>初速度</span><span class="val" id="mis-speed-val">7.00 km/s</span></label>
+      <input type="range" id="mis-speed" min="0" max="15" step="0.01" value="7" />
+    </section>
+
+    <section class="block">
+      <label class="row"><span>发射方向</span><span class="val" id="mis-angle-val">0°</span></label>
+      <input type="range" id="mis-angle" min="0" max="90" step="5" value="0" />
+    </section>
+
+    <section class="block btn-row">
+      <button id="mis-launch" class="primary">🚀 发射</button>
+      <button id="mis-reset">⏮ 重置</button>
+    </section>
+
+    <div class="mission-result hidden" id="mission-result"></div>
+  </div>
+
+  <!-- ===================== 数据面板 ===================== -->
+  <div id="data-panel" class="data-panel hidden">
+    <div class="d-row"><span>当前速度</span><b id="d-speed">—</b></div>
+    <div class="d-row"><span>高度</span><b id="d-alt">—</b></div>
+    <div class="d-row"><span>距地心</span><b id="d-r">—</b></div>
+    <div class="d-row"><span>引力加速度</span><b id="d-g">—</b></div>
+    <div class="d-row"><span>轨道状态</span><b id="d-state" class="state">—</b></div>
+  </div>
+
+  <!-- ===================== 底部时间条 ===================== -->
+  <div id="timebar" class="timebar hidden">
+    <button id="time-play" class="tb-btn">⏸</button>
+    <button id="time-reset" class="tb-btn">⏮</button>
+    <span class="tb-label">时间倍率</span>
+    <div class="tb-speeds">
+      <button data-ts="0.1">×0.1</button>
+      <button data-ts="1">×1</button>
+      <button data-ts="10">×10</button>
+      <button data-ts="100" class="active">×100</button>
+      <button data-ts="1000">×1000</button>
+      <button data-ts="10000">×10000</button>
+    </div>
+    <span class="tb-note">示意模型 · 仅考虑地球引力 · 忽略空气阻力</span>
+  </div>
+
+  <!-- ===================== 说明弹窗 ===================== -->
+  <div id="about-modal" class="modal hidden">
+    <div class="modal-inner">
+      <h2>关于本实验室</h2>
+      <p>本网页是为初中科学 / 物理教学设计的<strong>示意模型</strong>。</p>
+      <ul>
+        <li>采用简化二体问题模型，只考虑地球（或设定中心天体）的引力。</li>
+        <li>忽略空气阻力、地球自转、地球非球形引力、其他天体引力、火箭动力学等。</li>
+        <li>动画中天体的大小、距离、运动速度均经过视觉调整，不代表真实比例。</li>
+        <li>第一宇宙速度 ≈ 7.9 km/s，指近地圆轨道所需的环绕速度。</li>
+        <li>第二宇宙速度 ≈ 11.2 km/s，指从地球表面出发逃离地球引力束缚所需的最小初速度。</li>
+      </ul>
+      <button id="modal-close" class="primary">知道了</button>
+    </div>
+  </div>
+
+</body>
+</html>
