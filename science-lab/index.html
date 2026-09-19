@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#04070f">
+<title>科学互动实验室 | Science Interactive Laboratory</title>
+<meta name="description" content="面向初高中学生与课堂教师的互动科学实验网页集合：天文、物理、化学、生物、地理。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%94%AC%3C/text%3E%3C/svg%3E">
+
+<style>
+/* ============================================================
+   base.css
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --bg-0: #04070f;
+  --bg-1: #070c18;
+  --panel: #0d1526;
+  --panel-2: #111c31;
+  --panel-hover: #152340;
+  --border: rgba(110, 165, 255, 0.13);
+  --border-hover: rgba(110, 165, 255, 0.42);
+  --text-0: #eaf1ff;
+  --text-1: #a6b6d4;
+  --text-2: #66789a;
+  --accent: #4d9dff;
+  --accent-2: #35e0cf;
+  --accent-3: #9b7bff;
+  --ok: #34d17f;
+  --warn: #ffb648;
+  --plan: #7c8aa5;
+  --radius-s: 10px;
+  --radius: 16px;
+  --radius-l: 22px;
+  --shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+          "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  background: var(--bg-0);
+  color: var(--text-0);
+  line-height: 1.6;
+  overflow-x: hidden;
+  min-height: 100vh;
+  background-image:
+    radial-gradient(ellipse 900px 500px at 15% -10%, rgba(77,157,255,.13), transparent 60%),
+    radial-gradient(ellipse 800px 500px at 90% 5%, rgba(155,123,255,.10), transparent 60%),
+    radial-gradient(ellipse 900px 600px at 50% 110%, rgba(53,224,207,.07), transparent 60%);
+  background-attachment: fixed;
+}
+
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+input { font: inherit; }
+img, svg { display: block; max-width: 100%; }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+::selection { background: rgba(77, 157, 255, 0.35); }
+
+.skip-link {
+  position: absolute; left: -9999px; top: 0; z-index: 999;
+  padding: 10px 16px; background: var(--accent); color: #04070f;
+  border-radius: 0 0 8px 0; font-weight: 600;
+}
+.skip-link:focus { left: 0; }
+
+/* 滚动条 */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--bg-0); }
+::-webkit-scrollbar-thumb {
+  background: rgba(110, 165, 255, 0.18);
+  border-radius: 8px;
+  border: 2px solid var(--bg-0);
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(110, 165, 255, 0.35); }
+
+/* ============================================================
+   layout.css
+   ============================================================ */
+.site-header {
+  position: sticky; top: 0; z-index: 100;
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  background: rgba(4, 7, 15, 0.72);
+  border-bottom: 1px solid var(--border);
+  transition: background .25s ease, border-color .25s ease;
+}
+.site-header.is-scrolled {
+  background: rgba(4, 7, 15, 0.9);
+  border-bottom-color: rgba(110, 165, 255, 0.22);
+}
+
+.header-inner {
+  max-width: 1440px; margin: 0 auto;
+  padding: 12px 24px;
+  display: flex; align-items: center; gap: 20px;
+}
+
+.brand { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.brand-mark {
+  font-size: 26px; line-height: 1;
+  filter: drop-shadow(0 0 12px rgba(77,157,255,0.5));
+}
+.brand-text { display: flex; flex-direction: column; line-height: 1.15; }
+.brand-cn { font-size: 17px; font-weight: 700; letter-spacing: 0.5px; }
+.brand-en {
+  font-size: 10.5px; color: var(--text-2);
+  letter-spacing: 0.9px; text-transform: uppercase;
+}
+
+.header-actions {
+  margin-left: auto;
+  display: flex; align-items: center; gap: 10px;
+}
+
+/* 搜索框 */
+.search-box {
+  position: relative;
+  display: flex; align-items: center;
+  width: 260px; height: 40px;
+  padding: 0 12px 0 38px;
+  background: rgba(13, 21, 38, 0.85);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+.search-box:focus-within {
+  border-color: var(--border-hover);
+  background: rgba(17, 28, 49, 0.95);
+  box-shadow: 0 0 0 4px rgba(77, 157, 255, 0.10);
+}
+.search-icon {
+  position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+  width: 16px; height: 16px; color: var(--text-2); pointer-events: none;
+}
+.search-box input {
+  flex: 1; width: 100%;
+  background: none; border: none; outline: none;
+  color: var(--text-0); font-size: 14px;
+}
+.search-box input::placeholder { color: var(--text-2); }
+.search-box input::-webkit-search-cancel-button { display: none; }
+.search-clear {
+  width: 22px; height: 22px; line-height: 1;
+  border-radius: 50%; color: var(--text-2);
+  font-size: 18px; display: grid; place-items: center;
+  transition: background .15s ease, color .15s ease;
+}
+.search-clear:hover { background: rgba(110,165,255,0.15); color: var(--text-0); }
+
+/* 图标按钮 */
+.icon-btn {
+  width: 40px; height: 40px;
+  display: grid; place-items: center;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(13, 21, 38, 0.7);
+  color: var(--text-1);
+  transition: all .2s ease;
+}
+.icon-btn:hover {
+  color: var(--text-0);
+  border-color: var(--border-hover);
+  background: rgba(21, 35, 64, 0.9);
+  transform: translateY(-1px);
+}
+.icon-btn svg { width: 18px; height: 18px; }
+.icon-btn .icon-exit { display: none; }
+body.is-fullscreen .icon-btn .icon-enter { display: none; }
+body.is-fullscreen .icon-btn .icon-exit { display: block; }
+
+.menu-btn { display: none; }
+
+
+/* 顶部主导航：桌面端水平一行 */
+.header-inner { position: relative; }   /* 让移动端下拉能正确定位 */
+
+.main-nav {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  margin-left: 10px;
+}
+.main-nav button {
+  padding: 8px 14px;
+  font-size: 14px;
+  color: var(--text-1);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  white-space: nowrap;
+  transition: color .18s ease, background .18s ease, border-color .18s ease;
+}
+.main-nav button:hover {
+  color: var(--text-0);
+  background: rgba(110, 165, 255, 0.10);
+  border-color: var(--border);
+}
+
+/* 小屏：收起为汉堡菜单（从 header 下方弹出） */
+@media (max-width: 820px) {
+  .main-nav {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 12px;
+    right: 12px;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0;
+    padding: 10px;
+    background: rgba(7, 12, 24, 0.98);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(16px);
+  }
+  .main-nav.is-open { display: flex; }
+  .main-nav button {
+    width: 100%;
+    text-align: left;
+    padding: 12px 14px;
+    font-size: 15px;
+  }
+}
+.mobile-menu button:hover { background: rgba(110,165,255,0.10); color: var(--text-0); }
+
+/* Hero */
+.hero {
+  position: relative;
+  padding: 80px 24px 90px;
+  overflow: hidden;
+  isolation: isolate;
+}
+#heroCanvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  z-index: -1; opacity: .85;
+}
+.hero-inner {
+  max-width: 900px; margin: 0 auto;
+  text-align: center;
+  position: relative;
+}
+.hero-badge {
+  display: inline-block;
+  margin: 0 0 22px;
+  padding: 6px 16px;
+  font-size: 13px; letter-spacing: .5px;
+  color: var(--accent);
+  background: rgba(77, 157, 255, 0.10);
+  border: 1px solid rgba(77, 157, 255, 0.28);
+  border-radius: 999px;
+}
+.hero-title {
+  margin: 0;
+  font-size: clamp(38px, 7vw, 76px);
+  font-weight: 800;
+  letter-spacing: 4px;
+  line-height: 1.1;
+  background: linear-gradient(120deg, #ffffff 0%, #9cc6ff 45%, #6ff0dd 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 4px 40px rgba(77,157,255,.30));
+}
+.hero-sub {
+  margin: 18px 0 0;
+  font-size: clamp(15px, 2vw, 19px);
+  color: var(--text-1);
+  letter-spacing: 1.5px;
+}
+.hero-desc {
+  margin: 12px auto 0;
+  max-width: 560px;
+  font-size: 14.5px;
+  color: var(--text-2);
+}
+
+/* Hero 统计 */
+.hero-stats {
+  margin-top: 44px;
+  display: flex; justify-content: center; flex-wrap: wrap;
+  gap: 12px;
+}
+.stat {
+  min-width: 132px;
+  padding: 16px 22px;
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, rgba(17,28,49,.85), rgba(13,21,38,.65));
+  border: 1px solid var(--border);
+  backdrop-filter: blur(10px);
+  transition: transform .25s ease, border-color .25s ease;
+}
+.stat:hover { transform: translateY(-3px); border-color: var(--border-hover); }
+.stat-num {
+  font-size: 30px; font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  background: linear-gradient(120deg, #fff, #7fc4ff);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.stat.is-ok .stat-num { background: linear-gradient(120deg, #bfffe0, #34d17f); -webkit-background-clip: text; background-clip: text; }
+.stat.is-warn .stat-num { background: linear-gradient(120deg, #ffe4b0, #ffb648); -webkit-background-clip: text; background-clip: text; }
+.stat.is-plan .stat-num { background: linear-gradient(120deg, #d5dcec, #7c8aa5); -webkit-background-clip: text; background-clip: text; }
+.stat-label {
+  margin-top: 4px;
+  font-size: 12.5px; letter-spacing: .8px;
+  color: var(--text-2);
+}
+
+/* 主体 */
+.main { position: relative; }
+.section { padding: 46px 24px; }
+.section-inner { max-width: 1440px; margin: 0 auto; }
+
+.section-head { margin-bottom: 26px; }
+.section-title {
+  margin: 0;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 24px; font-weight: 700; letter-spacing: 1px;
+}
+.section-icon {
+  font-size: 22px;
+  filter: drop-shadow(0 0 10px rgba(77,157,255,.45));
+}
+.section-sub {
+  margin: 6px 0 0;
+  font-size: 13.5px; color: var(--text-2);
+}
+
+/* 分类导航 */
+.category-nav {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  margin-bottom: 26px;
+}
+.cat-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 18px;
+  font-size: 14px;
+  color: var(--text-1);
+  background: rgba(13, 21, 38, 0.7);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  transition: all .2s ease;
+}
+.cat-btn:hover {
+  color: var(--text-0);
+  border-color: var(--border-hover);
+  transform: translateY(-1px);
+}
+.cat-btn.is-active {
+  color: #04070f;
+  background: linear-gradient(120deg, var(--accent), var(--accent-2));
+  border-color: transparent;
+  font-weight: 600;
+  box-shadow: 0 6px 22px rgba(77, 157, 255, 0.35);
+}
+.cat-btn .cat-count {
+  font-size: 11.5px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgba(110, 165, 255, 0.16);
+  color: inherit;
+  opacity: .85;
+}
+.cat-btn.is-active .cat-count { background: rgba(4, 7, 15, 0.22); }
+
+/* 网格 */
+.lab-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+.lab-grid--featured {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+/* 卡片 */
+.lab-card {
+  position: relative;
+  display: flex; flex-direction: column;
+  padding: 22px 22px 18px;
+  border-radius: var(--radius-l);
+  background: linear-gradient(160deg, rgba(17,28,49,.92) 0%, rgba(11,18,33,.92) 100%);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform .28s cubic-bezier(.2,.8,.2,1),
+              border-color .28s ease,
+              box-shadow .28s ease,
+              background .28s ease;
+  animation: cardIn .45s cubic-bezier(.2,.8,.2,1) both;
+}
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.lab-card::before {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(600px 200px at 50% -20%, rgba(77,157,255,.18), transparent 70%);
+  opacity: 0;
+  transition: opacity .3s ease;
+  pointer-events: none;
+}
+.lab-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--border-hover);
+  box-shadow: 0 18px 50px -12px rgba(77, 157, 255, 0.35),
+              0 0 0 1px rgba(77,157,255,.12) inset;
+}
+.lab-card:hover::before { opacity: 1; }
+.lab-card:active { transform: translateY(-3px); }
+
+/* 分类色条 */
+.lab-card::after {
+  content: "";
+  position: absolute; top: 0; left: 22px; right: 22px;
+  height: 2px; border-radius: 0 0 3px 3px;
+  background: var(--cat-grad, linear-gradient(90deg, var(--accent), var(--accent-2)));
+  opacity: .85;
+}
+
+/* 卡片头 */
+.card-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.card-icon {
+  width: 52px; height: 52px;
+  display: grid; place-items: center;
+  font-size: 26px; line-height: 1;
+  border-radius: 14px;
+  background: rgba(77, 157, 255, 0.08);
+  border: 1px solid rgba(77, 157, 255, 0.18);
+  box-shadow: inset 0 0 22px rgba(77, 157, 255, 0.08);
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+.lab-card:hover .card-icon {
+  transform: scale(1.06) rotate(-3deg);
+  box-shadow: inset 0 0 30px rgba(77, 157, 255, 0.20),
+              0 0 24px rgba(77, 157, 255, 0.25);
+}
+
+/* 状态徽标 */
+.status-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 11px;
+  font-size: 11.5px; font-weight: 600;
+  letter-spacing: .4px;
+  border-radius: 999px;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+.status-badge.is-completed {
+  color: #6df2b0;
+  background: rgba(52, 209, 127, 0.10);
+  border-color: rgba(52, 209, 127, 0.35);
+}
+.status-badge.is-developing {
+  color: #ffd188;
+  background: rgba(255, 182, 72, 0.10);
+  border-color: rgba(255, 182, 72, 0.35);
+}
+.status-badge.is-planned {
+  color: #a3b0c7;
+  background: rgba(124, 138, 165, 0.10);
+  border-color: rgba(124, 138, 165, 0.30);
+}
+
+/* 卡片标题 */
+.card-title {
+  margin: 0;
+  font-size: 18px; font-weight: 700;
+  letter-spacing: .4px;
+  color: var(--text-0);
+  transition: color .2s ease;
+}
+.lab-card:hover .card-title { color: #cfe3ff; }
+.card-en {
+  margin: 3px 0 0;
+  font-size: 11.5px;
+  letter-spacing: .6px;
+  color: var(--text-2);
+  font-family: var(--mono);
+  text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.card-desc {
+  margin: 12px 0 16px;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--text-1);
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 卡片脚 */
+.card-foot {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 7px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(110, 165, 255, 0.08);
+}
+.tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px;
+  font-size: 11.5px;
+  border-radius: 8px;
+  color: var(--text-1);
+  background: rgba(110, 165, 255, 0.07);
+  border: 1px solid rgba(110, 165, 255, 0.12);
+}
+.tag--cat {
+  color: var(--accent);
+  background: rgba(77, 157, 255, 0.10);
+  border-color: rgba(77, 157, 255, 0.24);
+}
+
+/* 卡片入场动画延后 */
+.lab-card:nth-child(1) { animation-delay: .01s; }
+.lab-card:nth-child(2) { animation-delay: .05s; }
+.lab-card:nth-child(3) { animation-delay: .09s; }
+.lab-card:nth-child(4) { animation-delay: .13s; }
+.lab-card:nth-child(5) { animation-delay: .17s; }
+.lab-card:nth-child(6) { animation-delay: .21s; }
+.lab-card:nth-child(7) { animation-delay: .25s; }
+.lab-card:nth-child(8) { animation-delay: .29s; }
+.lab-card:nth-child(9) { animation-delay: .33s; }
+.lab-card:nth-child(n+10) { animation-delay: .36s; }
+
+/* 规划中卡片 */
+.lab-card.is-planned {
+  opacity: .62;
+  cursor: not-allowed;
+}
+.lab-card.is-planned:hover {
+  transform: translateY(-2px);
+  box-shadow: none;
+  border-color: var(--border);
+}
+.lab-card.is-planned::after { opacity: .35; }
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 70px 20px;
+  animation: cardIn .4s ease both;
+}
+.empty-icon { font-size: 52px; opacity: .35; margin-bottom: 14px; }
+.empty-title { margin: 0; font-size: 18px; font-weight: 600; color: var(--text-1); }
+.empty-desc { margin: 8px 0 22px; font-size: 14px; color: var(--text-2); }
+.btn-reset {
+  padding: 10px 24px;
+  border-radius: 999px;
+  font-size: 14px; font-weight: 600;
+  color: #04070f;
+  background: linear-gradient(120deg, var(--accent), var(--accent-2));
+  box-shadow: 0 6px 22px rgba(77,157,255,.32);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.btn-reset:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(77,157,255,.45); }
+
+/* 底部 */
+.site-footer {
+  margin-top: 40px;
+  border-top: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(7,12,24,.6), rgba(4,7,15,1));
+}
+.footer-inner {
+  max-width: 1440px; margin: 0 auto;
+  padding: 40px 24px 50px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+.footer-brand { display: flex; align-items: center; gap: 14px; }
+.footer-mark { font-size: 30px; filter: drop-shadow(0 0 12px rgba(77,157,255,.45)); }
+.footer-title { margin: 0; font-size: 15px; font-weight: 700; letter-spacing: 1px; color: var(--text-0); }
+.footer-sub { margin: 2px 0 0; font-size: 12.5px; color: var(--text-2); letter-spacing: .8px; }
+.footer-stats {
+  margin: 0;
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 8px 22px;
+  font-size: 13.5px;
+  color: var(--text-1);
+}
+.footer-stats b { color: var(--accent); font-weight: 700; }
+.footer-note { margin: 0; font-size: 12px; color: var(--text-2); }
+
+/* Toast */
+.toast {
+  position: fixed; left: 50%; bottom: 34px;
+  transform: translate(-50%, 20px);
+  padding: 12px 22px;
+  font-size: 14px;
+  color: var(--text-0);
+  background: rgba(17, 28, 49, 0.96);
+  border: 1px solid var(--border-hover);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(14px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+  z-index: 999;
+  max-width: calc(100vw - 40px);
+  text-align: center;
+}
+.toast.is-show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ============================================================
+   大屏 / 全屏模式
+   ============================================================ */
+body.is-fullscreen .brand-cn { font-size: 20px; }
+body.is-fullscreen .header-inner { padding-top: 16px; padding-bottom: 16px; }
+body.is-fullscreen .hero { padding-top: 110px; padding-bottom: 110px; }
+body.is-fullscreen .hero-title { letter-spacing: 7px; }
+body.is-fullscreen .hero-desc { font-size: 16px; }
+body.is-fullscreen .stat { min-width: 160px; padding: 20px 28px; }
+body.is-fullscreen .stat-num { font-size: 38px; }
+body.is-fullscreen .section { padding: 60px 32px; }
+body.is-fullscreen .section-title { font-size: 30px; }
+body.is-fullscreen .lab-grid { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; }
+body.is-fullscreen .lab-card { padding: 28px 26px 22px; }
+body.is-fullscreen .card-icon { width: 62px; height: 62px; font-size: 32px; }
+body.is-fullscreen .card-title { font-size: 21px; }
+body.is-fullscreen .card-desc { font-size: 15px; -webkit-line-clamp: 4; }
+body.is-fullscreen .cat-btn { font-size: 15.5px; padding: 11px 22px; }
+
+/* ============================================================
+   responsive.css
+   ============================================================ */
+@media (max-width: 1024px) {
+  .search-box { width: 210px; }
+  .lab-grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+}
+
+@media (max-width: 820px) {
+  .menu-btn { display: grid; }
+  .search-box { width: 180px; }
+  .brand-en { display: none; }
+}
+
+@media (max-width: 640px) {
+  .header-inner { padding: 10px 16px; gap: 10px; flex-wrap: wrap; }
+  .brand-cn { font-size: 15px; }
+  .header-actions { width: 100%; margin-left: 0; }
+  .search-box { flex: 1; width: auto; }
+  .hero { padding: 56px 18px 64px; }
+  .hero-title { letter-spacing: 2px; }
+  .hero-stats { gap: 8px; }
+  .stat { min-width: 0; flex: 1 1 calc(50% - 8px); padding: 13px 12px; }
+  .stat-num { font-size: 24px; }
+  .section { padding: 34px 16px; }
+  .section-title { font-size: 20px; }
+  .lab-grid { grid-template-columns: 1fr; gap: 16px; }
+  .lab-card { padding: 20px 18px 16px; }
+  .category-nav { gap: 8px; }
+  .cat-btn { padding: 8px 14px; font-size: 13px; }
+  .footer-inner { padding: 32px 18px 40px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+  #heroCanvas { display: none; }
+}
+</style>
+</head>
+
+<body>
+
+<a class="skip-link" href="#labs">跳到实验室列表</a>
+
+<!-- ==================== 顶部 Header ==================== -->
+<header class="site-header" id="siteHeader">
+  <div class="header-inner">
+    <a class="brand" href="./" aria-label="科学互动实验室 首页">
+      <span class="brand-mark" aria-hidden="true">🔬</span>
+      <span class="brand-text">
+        <span class="brand-cn">科学互动实验室</span>
+        <span class="brand-en">Science Interactive Laboratory</span>
+      </span>
+    </a>
+    <nav id="mobileMenu" class="main-nav" aria-label="页面导航">
+    <button type="button" data-jump="#featured">✨ 推荐探索</button>
+    <button type="button" data-jump="#labs">🧭 全部实验室</button>
+    <button type="button" data-jump="#footer">ℹ️ 关于本项目</button>
+    </nav>
+    <div class="header-actions">
+      <div class="search-box">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <line x1="16.5" y1="16.5" x2="21" y2="21"></line>
+        </svg>
+        <input id="searchInput" type="search" placeholder="搜索实验室……"
+               autocomplete="off" spellcheck="false" aria-label="搜索实验室">
+        <button id="searchClear" class="search-clear" type="button"
+                aria-label="清空搜索" hidden>&times;</button>
+      </div>
+
+      <button id="fullscreenBtn" class="icon-btn" type="button"
+              aria-label="全屏模式" aria-pressed="false" title="全屏模式">
+        <svg class="icon-enter" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3"></path>
+          <path d="M16 3h3a2 2 0 0 1 2 2v3"></path>
+          <path d="M8 21H5a2 2 0 0 1-2-2v-3"></path>
+          <path d="M16 21h3a2 2 0 0 0 2-2v-3"></path>
+        </svg>
+        <svg class="icon-exit" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 8h3a2 2 0 0 0 2-2V3"></path>
+          <path d="M21 8h-3a2 2 0 0 1-2-2V3"></path>
+          <path d="M3 16h3a2 2 0 0 1 2 2v3"></path>
+          <path d="M21 16h-3a2 2 0 0 0-2 2v3"></path>
+        </svg>
+      </button>
+
+      <button id="menuBtn" class="icon-btn menu-btn" type="button"
+              aria-label="菜单" aria-expanded="false" aria-controls="mobileMenu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <line x1="3" y1="7" x2="21" y2="7"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="17" x2="21" y2="17"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  
+</header>
+
+
+<!-- ==================== Hero ==================== -->
+<section class="hero" id="hero">
+  <canvas id="heroCanvas" aria-hidden="true"></canvas>
+  <div class="hero-inner">
+    <p class="hero-badge">🔬 面向初高中科学课堂</p>
+    <h1 class="hero-title">探索科学</h1>
+    <p class="hero-sub">从观察到实验，从现象到规律</p>
+    <p class="hero-desc">一个可以直接进入、操作和探索的互动科学实验室。</p>
+
+    <div class="hero-stats" id="heroStats" aria-label="实验室统计"></div>
+  </div>
+</section>
+
+
+<!-- ==================== 主体 ==================== -->
+<main class="main">
+
+  <!-- 推荐探索 -->
+  <section class="section" id="featured" hidden>
+    <div class="section-inner">
+      <div class="section-head">
+        <h2 class="section-title"><span class="section-icon" aria-hidden="true">✨</span>推荐探索</h2>
+        <p class="section-sub">从这里开始，进入最受欢迎的实验室</p>
+      </div>
+      <div class="lab-grid lab-grid--featured" id="featuredGrid"></div>
+    </div>
+  </section>
+
+  <!-- 全部实验室 -->
+  <section class="section" id="labs">
+    <div class="section-inner">
+      <div class="section-head">
+        <h2 class="section-title"><span class="section-icon" aria-hidden="true">🧭</span>探索实验室</h2>
+        <p class="section-sub" id="labsCount"></p>
+      </div>
+
+      <div class="category-nav" id="categoryNav" role="tablist" aria-label="学科分类"></div>
+
+      <div class="lab-grid" id="labGrid"></div>
+
+      <div class="empty-state" id="emptyState" hidden>
+        <div class="empty-icon" aria-hidden="true">🔍</div>
+        <p class="empty-title">没有找到匹配的实验室</p>
+        <p class="empty-desc">试试其它关键词，或者切换到「全部」分类。</p>
+        <button type="button" class="btn-reset" id="resetFilters">重置筛选</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+
+<!-- ==================== 底部 ==================== -->
+<footer class="site-footer" id="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span class="footer-mark" aria-hidden="true">🔬</span>
+      <div>
+        <p class="footer-title">Science Interactive Laboratory</p>
+        <p class="footer-sub">科学互动实验室 · 持续建设中</p>
+      </div>
+    </div>
+
+    <p class="footer-stats" id="footerStats"></p>
+
+    <p class="footer-note">
+      所有实验室均为纯前端网页，无需安装，无需登录，支持课堂大屏投屏。
+    </p>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+
+<script>
+/* ============================================================
+ * lab-config.js
+ * ——— 以后只改这一段即可新增 / 修改实验室 ———
+ * ============================================================ */
+
+/* 分类配置：新增学科只需在此处加一项 */
+const CATEGORY_CONFIG = {
+  all:             { label: "全部", icon: "🔬" },
+  physics:         { label: "物理", icon: "⚡" },
+  chemistry:       { label: "化学", icon: "🧪" },
+  biology:         { label: "生物", icon: "🧬" },
+  "earth-science": { label: "地理", icon: "🌏" },
+  astronomy:       { label: "天文", icon: "🌌" }
+};
+
+/* 每个分类的强调色（卡片顶部光条） */
+const CATEGORY_COLOR = {
+  physics:         "linear-gradient(90deg, #4d9dff, #35e0cf)",
+  chemistry:       "linear-gradient(90deg, #ffb648, #ff7a59)",
+  biology:         "linear-gradient(90deg, #34d17f, #6ff0dd)",
+  "earth-science": "linear-gradient(90deg, #35e0cf, #4d9dff)",
+  astronomy:       "linear-gradient(90deg, #9b7bff, #4d9dff)"
+};
+
+/* 状态配置 */
+const STATUS_CONFIG = {
+  completed:  { label: "已完成", icon: "✓", cls: "is-completed" },
+  developing: { label: "开发中", icon: "◐", cls: "is-developing" },
+  planned:    { label: "规划中", icon: "○", cls: "is-planned"   }
+};
+
+/* 实验室列表：新增实验室 → 在数组里加一条对象即可 */
+const LABS = [
+  {
+    id: "solar-system",
+    category: "astronomy",
+    title: "太阳系结构展示",
+    english: "Solar System Explorer",
+    description: "全景探索太阳系主要天体，查看太阳、行星、卫星、小行星带、彗星及太阳系边缘天体，并观察天体运行。",
+    path: "./astronomy/solar-system/",
+    icon: "☀️",
+    level: "初中 / 高中",
+    status: "completed",
+    featured: true,
+    available: true,
+    order: 1,
+    tags: ["天文", "太阳系", "行星"]
+  },
+  {
+    id: "earth-moon-sun",
+    category: "astronomy",
+    title: "日地月系统",
+    english: "Earth-Moon-Sun System",
+    description: "通过交互式观察太阳、地球和月球之间的位置变化，探索月相、上弦月、下弦月等天文现象。",
+    path: "./astronomy/earth-moon-sun/",
+    icon: "🌍",
+    level: "初中",
+    status: "completed",
+    featured: true,
+    available: true,
+    order: 2,
+    tags: ["天文", "月相", "地球"]
+  },
+  {
+    id: "space-navigation",
+    category: "astronomy",
+    title: "宇宙导航实验室",
+    english: "Space Navigation Lab",
+    description: "通过地球轨道、引力和太空导航任务，探索第一宇宙速度、第二宇宙速度、轨道运动和引力规律。",
+    path: "./astronomy/space-navigation/",
+    icon: "🚀",
+    level: "高中",
+    status: "completed",
+    featured: true,
+    available: true,
+    order: 3,
+    tags: ["天文", "引力", "宇宙速度"]
+  },
+  {
+    id: "black-hole",
+    category: "astronomy",
+    title: "黑洞展示",
+    english: "Black Hole Explorer",
+    description: "通过交互式方式观察黑洞及其周围的空间、引力和相关天文现象。",
+    path: "./astronomy/black-hole/",
+    icon: "🕳️",
+    level: "初中 / 高中",
+    status: "completed",
+    featured: true,
+    available: true,
+    order: 4,
+    tags: ["天文", "黑洞", "引力"]
+  },
+  {
+    id: "convex-lens",
+    category: "physics",
+    title: "凸透镜成像实验室",
+    english: "Convex Lens Imaging Lab",
+    description: "通过虚拟光具座自由移动蜡烛、凸透镜和光屏，探索凸透镜成像规律，并观察不同物距下像的变化。",
+    path: "./physics/convex-lens-lab/",
+    icon: "🔍",
+    level: "初中",
+    status: "completed",
+    featured: true,
+    available: true,
+    order: 5,
+    tags: ["物理", "光学", "凸透镜", "成像"]
+  },
+  {
+    id: "circuit-lab",
+    category: "physics",
+    title: "交互式电路实验室",
+    english: "Interactive Circuit Lab",
+    description: "通过搭建和分析真实感电路，探索电流、电压、电阻、滑动变阻器以及各种电路实验。",
+    path: "./physics/circuit-lab/",
+    icon: "🔌",
+    level: "初中 / 高中",
+    status: "completed",
+    featured: true,
+    available: true,
+    order: 6,
+    tags: ["物理", "电学", "电路", "欧姆定律"]
+  },
+  {
+    id: "geometric-optics",
+    category: "physics",
+    title: "几何光学实验室",
+    english: "Geometric Optics Lab",
+    description: "通过平行光束、点光源、平面镜、凸透镜、凹透镜和透明几何体，探索反射、折射、全反射及几何光路。",
+    path: "./physics/geometric-optics-lab/",
+    icon: "🔦",
+    level: "初中 / 高中",
+    status: "completed",
+    featured: true,
+    available: true,
+    order: 7,
+    tags: ["物理", "光学", "反射", "折射", "全反射"]
+  },
+  {
+    id: "micro-chemistry",
+    category: "chemistry",
+    title: "微观化学实验室",
+    english: "Micro Chemistry Lab",
+    description: "观察水分子的微观运动与氯化钠溶解过程，从微观角度理解物质的变化。",
+    path: "./chemistry/micro-chemistry/",
+    icon: "🧪",
+    level: "初中",
+    status: "completed",
+    featured: false,
+    available: true,
+    order: 9,
+    tags: ["化学", "微观世界", "分子运动", "氯化钠", "溶解"]
+},
+{
+    id: "density-buoyancy",
+    category: "physics",
+    title: "密度与浮力实验室",
+    english: "Density & Buoyancy Lab",
+    description: "探索密度、浮力、阿基米德原理以及物体浮沉条件。",
+    path: "./physics/density-buoyancy-lab/",
+    icon: "⚖️",
+    level: "初中",
+    status: "planned",       // completed | developing | planned
+    featured: false,
+    available: true,
+    order: 8,
+    tags: ["物理", "密度", "浮力"]
+  }
+];
+
+/* 如果你想追加未来实验室，直接复制下面模板即可：
+
+  {
+    id: "density-buoyancy",
+    category: "physics",
+    title: "密度与浮力实验室",
+    english: "Density & Buoyancy Lab",
+    description: "探索密度、浮力、阿基米德原理以及物体浮沉条件。",
+    path: "./physics/density-buoyancy-lab/",
+    icon: "⚖️",
+    level: "初中",
+    status: "planned",       // completed | developing | planned
+    featured: false,
+    available: true,
+    order: 8,
+    tags: ["物理", "密度", "浮力"]
+  },
+
+*/
+
+/* ============================================================
+ * ui.js
+ * ============================================================ */
+
+const $  = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+/* 归一化排序：有 order 的按 order 升序，无 order 的排后，同序按标题 */
+function sortLabs(list) {
+  return list.slice().sort((a, b) => {
+    const ao = Number.isFinite(a.order) ? a.order : Number.MAX_SAFE_INTEGER;
+    const bo = Number.isFinite(b.order) ? b.order : Number.MAX_SAFE_INTEGER;
+    if (ao !== bo) return ao - bo;
+    return (a.title || "").localeCompare(b.title || "", "zh-Hans-CN");
+  });
+}
+
+/* 根据 LABS 统计各状态数量 */
+function computeStats(list) {
+  const stats = { total: list.length, completed: 0, developing: 0, planned: 0 };
+  list.forEach(lab => {
+    if (lab.status === "completed")  stats.completed  += 1;
+    else if (lab.status === "developing") stats.developing += 1;
+    else if (lab.status === "planned")    stats.planned    += 1;
+  });
+  return stats;
+}
+
+/* 某分类下实验室数量（用于分类按钮徽标） */
+function countByCategory(list, cat) {
+  if (cat === "all") return list.length;
+  return list.filter(l => l.category === cat).length;
+}
+
+/* 转义 HTML，防止配置里出现特殊字符导致渲染异常 */
+function escapeHtml(str) {
+  return String(str == null ? "" : str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+/* Toast 提示 */
+let toastTimer = null;
+function showToast(msg) {
+  const el = $("#toast");
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add("is-show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("is-show"), 2200);
+}
+
+/* 生成一张实验室卡片（DOM 元素） */
+function createLabCard(lab) {
+  const cat = CATEGORY_CONFIG[lab.category] || { label: lab.category || "其它", icon: "🔬" };
+  const st  = STATUS_CONFIG[lab.status]  || STATUS_CONFIG.planned;
+
+  const card = document.createElement("article");
+  card.className = "lab-card " + st.cls;
+  card.dataset.id = lab.id;
+  card.dataset.category = lab.category || "";
+  card.tabIndex = 0;
+  card.setAttribute("role", "link");
+  card.setAttribute("aria-label", lab.title + "（" + st.label + "）");
+
+  if (lab.status === "planned" || lab.available === false) {
+    card.classList.add("is-planned");
+    card.removeAttribute("tabindex");
+  }
+
+  const color = CATEGORY_COLOR[lab.category];
+  if (color) card.style.setProperty("--cat-grad", color);
+
+  card.innerHTML = `
+    <div class="card-head">
+      <div class="card-icon" aria-hidden="true">${escapeHtml(lab.icon || cat.icon)}</div>
+      <span class="status-badge ${st.cls}">${st.icon} ${escapeHtml(st.label)}</span>
+    </div>
+    <h3 class="card-title">${escapeHtml(lab.title)}</h3>
+    <p class="card-en" title="${escapeHtml(lab.english || "")}">${escapeHtml(lab.english || "")}</p>
+    <p class="card-desc">${escapeHtml(lab.description || "")}</p>
+    <div class="card-foot">
+      <span class="tag tag--cat">${cat.icon} ${escapeHtml(cat.label)}</span>
+      ${lab.level ? `<span class="tag">🎓 ${escapeHtml(lab.level)}</span>` : ""}
+    </div>
+  `;
+
+  const go = () => handleEnterLab(lab);
+
+  card.addEventListener("click", go);
+  card.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      go();
+    }
+  });
+
+  return card;
+}
+
+/* 点击卡片时的行为 */
+function handleEnterLab(lab) {
+  if (lab.available === false) {
+    showToast("该实验室暂未开放");
+    return;
+  }
+  if (lab.status === "planned") {
+    showToast("该实验室仍在规划中，敬请期待");
+    return;
+  }
+  if (lab.status === "developing") {
+    if (!window.confirm(`「${lab.title}」正在开发中，可能存在功能不完整的情况。\n\n是否仍要进入？`)) {
+      return;
+    }
+  }
+  /* 使用相对路径，兼容 GitHub Pages 子目录部署 */
+  window.location.href = lab.path;
+}
+
+/* 渲染 Hero 统计 */
+function renderHeroStats(labs) {
+  const s = computeStats(labs);
+  const box = $("#heroStats");
+  if (!box) return;
+
+  const items = [
+    { num: s.completed,  label: "已完成实验室", cls: "is-ok"   },
+    { num: s.developing, label: "正在开发",     cls: "is-warn" },
+    { num: s.planned,    label: "持续扩展",     cls: "is-plan" }
+  ];
+
+  box.innerHTML = items.map(it => `
+    <div class="stat ${it.cls}">
+      <div class="stat-num">${it.num}</div>
+      <div class="stat-label">${it.label}</div>
+    </div>
+  `).join("");
+}
+
+/* 渲染页脚统计（自动计算） */
+function renderFooterStats(labs) {
+  const s = computeStats(labs);
+  const el = $("#footerStats");
+  if (!el) return;
+  el.innerHTML =
+    `<span><b>${s.total}</b> 个实验室</span>` +
+    `<span><b>${s.completed}</b> 个已完成</span>` +
+    `<span><b>${s.developing}</b> 个开发中</span>` +
+    `<span><b>${s.planned}</b> 个规划中</span>`;
+}
+
+/* 渲染分类导航按钮 */
+function renderCategoryNav(labs, activeCat, onPick) {
+  const nav = $("#categoryNav");
+  if (!nav) return;
+  nav.innerHTML = "";
+
+  Object.keys(CATEGORY_CONFIG).forEach(key => {
+    const cfg = CATEGORY_CONFIG[key];
+    const count = countByCategory(labs, key);
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "cat-btn" + (key === activeCat ? " is-active" : "");
+    btn.dataset.cat = key;
+    btn.setAttribute("role", "tab");
+    btn.setAttribute("aria-selected", key === activeCat ? "true" : "false");
+    btn.innerHTML = `<span aria-hidden="true">${cfg.icon}</span>${escapeHtml(cfg.label)}<span class="cat-count">${count}</span>`;
+    btn.addEventListener("click", () => onPick(key));
+
+    nav.appendChild(btn);
+  });
+}
+
+/* 渲染推荐区 */
+function renderFeatured(labs) {
+  const section = $("#featured");
+  const grid = $("#featuredGrid");
+  if (!section || !grid) return;
+
+  const featured = sortLabs(labs.filter(l => l.featured));
+  if (featured.length === 0) {
+    section.hidden = true;
+    return;
+  }
+  section.hidden = false;
+  grid.innerHTML = "";
+  featured.forEach(lab => grid.appendChild(createLabCard(lab)));
+}
+
+/* ============================================================
+ * main.js
+ * ============================================================ */
+
+const AppState = {
+  category: "all",
+  keyword: "",
+  labs: sortLabs(LABS)
+};
+
+/* ---------- 过滤 + 渲染实验室网格 ---------- */
+function applyFilters() {
+  const kw = AppState.keyword.trim().toLowerCase();
+  const cat = AppState.category;
+
+  const list = AppState.labs.filter(lab => {
+    // 分类过滤
+    if (cat !== "all" && lab.category !== cat) return false;
+
+    // 关键词过滤
+    if (!kw) return true;
+
+    const haystack = [
+      lab.title,
+      lab.english,
+      lab.description,
+      CATEGORY_CONFIG[lab.category] ? CATEGORY_CONFIG[lab.category].label : "",
+      lab.level,
+      (lab.tags || []).join(" ")
+    ].join(" ").toLowerCase();
+
+    return haystack.includes(kw);
+  });
+
+  const grid = $("#labGrid");
+  const empty = $("#emptyState");
+  grid.innerHTML = "";
+
+  if (list.length === 0) {
+    empty.hidden = false;
+  } else {
+    empty.hidden = true;
+    list.forEach(lab => grid.appendChild(createLabCard(lab)));
+  }
+
+  // 数量提示
+  const countEl = $("#labsCount");
+  if (countEl) {
+    if (kw || cat !== "all") {
+      countEl.textContent = `找到 ${list.length} 个实验室`;
+    } else {
+      countEl.textContent = `共 ${AppState.labs.length} 个实验室，持续扩展中`;
+    }
+  }
+}
+
+/* ---------- 分类切换 ---------- */
+function pickCategory(cat) {
+  AppState.category = cat;
+  renderCategoryNav(AppState.labs, AppState.category, pickCategory);
+  applyFilters();
+}
+
+/* ---------- 搜索 ---------- */
+function bindSearch() {
+  const input = $("#searchInput");
+  const clear = $("#searchClear");
+  if (!input) return;
+
+  input.addEventListener("input", () => {
+    AppState.keyword = input.value;
+    clear.hidden = input.value.length === 0;
+    applyFilters();
+  });
+
+  clear.addEventListener("click", () => {
+    input.value = "";
+    AppState.keyword = "";
+    clear.hidden = true;
+    applyFilters();
+    input.focus();
+  });
+
+  // ESC 快速清空
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      input.value = "";
+      AppState.keyword = "";
+      clear.hidden = true;
+      applyFilters();
+    }
+  });
+}
+
+/* ---------- 重置筛选 ---------- */
+function bindReset() {
+  const btn = $("#resetFilters");
+  if (!btn) return;
+  btn.addEventListener("click", () => {
+    const input = $("#searchInput");
+    if (input) { input.value = ""; }
+    const clear = $("#searchClear");
+    if (clear) clear.hidden = true;
+    AppState.keyword = "";
+    AppState.category = "all";
+    renderCategoryNav(AppState.labs, AppState.category, pickCategory);
+    applyFilters();
+  });
+}
+
+/* ---------- 全屏 ---------- */
+function bindFullscreen() {
+  const btn = $("#fullscreenBtn");
+  if (!btn) return;
+
+  const isFs = () => Boolean(document.fullscreenElement || document.webkitFullscreenElement);
+
+  btn.addEventListener("click", async () => {
+    try {
+      if (!isFs()) {
+        const el = document.documentElement;
+        if (el.requestFullscreen) await el.requestFullscreen();
+        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      } else {
+        if (document.exitFullscreen) await document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      }
+    } catch (err) {
+      showToast("当前浏览器不支持全屏，或操作被拒绝");
+    }
+  });
+
+  const onChange = () => {
+    const on = isFs();
+    document.body.classList.toggle("is-fullscreen", on);
+    btn.setAttribute("aria-pressed", on ? "true" : "false");
+    btn.setAttribute("title", on ? "退出全屏" : "全屏模式");
+  };
+
+  document.addEventListener("fullscreenchange", onChange);
+  document.addEventListener("webkitfullscreenchange", onChange);
+}
+
+/* ---------- 移动端菜单 ---------- */
+function bindMenu() {
+  const btn = $("#menuBtn");
+  const nav = $("#mobileMenu");
+  if (!btn || !nav) return;
+
+  // 导航按钮点击 → 平滑滚动
+  $$("button[data-jump]", nav).forEach(b => {
+    b.addEventListener("click", () => {
+      const target = document.querySelector(b.dataset.jump);
+      if (target) {
+        target.hidden = false;
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      // 小屏点击后自动收起
+      if (window.innerWidth <= 820) {
+        nav.classList.remove("is-open");
+        btn.setAttribute("aria-expanded", "false");
+      }
+    });
+  });
+
+  // 小屏汉堡按钮
+  btn.addEventListener("click", () => {
+    const open = nav.classList.toggle("is-open");
+    btn.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+
+  // 点击外部关闭（仅小屏生效）
+  document.addEventListener("click", (e) => {
+    if (window.innerWidth > 820) return;
+    if (!nav.classList.contains("is-open")) return;
+    if (!nav.contains(e.target) && !btn.contains(e.target)) {
+      nav.classList.remove("is-open");
+      btn.setAttribute("aria-expanded", "false");
+    }
+  });
+}
+/* ---------- Header 滚动阴影 ---------- */
+function bindHeaderScroll() {
+  const header = $("#siteHeader");
+  if (!header) return;
+  const onScroll = () => {
+    header.classList.toggle("is-scrolled", window.scrollY > 12);
+  };
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+}
+
+/* ---------- Hero 粒子背景（轻量） ---------- */
+function initHeroCanvas() {
+  const canvas = $("#heroCanvas");
+  if (!canvas) return;
+
+  // 尊重 prefers-reduced-motion
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  const ctx = canvas.getContext("2d");
+  let W = 0, H = 0, dpr = 1;
+  let particles = [];
+  let rafId = null;
+
+  function resize() {
+    const rect = canvas.getBoundingClientRect();
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = rect.width;
+    H = rect.height;
+    canvas.width = Math.floor(W * dpr);
+    canvas.height = Math.floor(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    buildParticles();
+  }
+
+  function buildParticles() {
+    const density = Math.max(24, Math.min(70, Math.floor((W * H) / 26000)));
+    particles = Array.from({ length: density }, () => ({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.28,
+      vy: (Math.random() - 0.5) * 0.28,
+      r: Math.random() * 1.6 + 0.6,
+      hue: Math.random() < 0.5 ? 210 : 172
+    }));
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // 粒子
+    for (const p of particles) {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < -20) p.x = W + 20;
+      if (p.x > W + 20) p.x = -20;
+      if (p.y < -20) p.y = H + 20;
+      if (p.y > H + 20) p.y = -20;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `hsla(${p.hue}, 100%, 72%, 0.55)`;
+      ctx.fill();
+    }
+
+    // 连线
+    const maxDist = 130;
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const a = particles[i], b = particles[j];
+        const dx = a.x - b.x, dy = a.y - b.y;
+        const d2 = dx * dx + dy * dy;
+        if (d2 < maxDist * maxDist) {
+          const alpha = (1 - Math.sqrt(d2) / maxDist) * 0.20;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.strokeStyle = `rgba(77, 157, 255, ${alpha})`;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+        }
+      }
+    }
+
+    rafId = requestAnimationFrame(draw);
+  }
+
+  function start() {
+    resize();
+    if (rafId) cancelAnimationFrame(rafId);
+    draw();
+  }
+
+  function stop() {
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+  }
+
+  start();
+
+  // 尺寸变化（节流）
+  let rTimer = null;
+  window.addEventListener("resize", () => {
+    clearTimeout(rTimer);
+    rTimer = setTimeout(resize, 180);
+  });
+
+  // 页面不可见时暂停，省电
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) stop();
+    else if (!rafId) draw();
+  });
+}
+
+/* ---------- 启动 ---------- */
+function init() {
+  // 渲染推荐区
+  renderFeatured(AppState.labs);
+
+  // 渲染分类导航
+  renderCategoryNav(AppState.labs, AppState.category, pickCategory);
+
+  // 渲染实验室网格
+  applyFilters();
+
+  // 渲染统计（自动计算）
+  renderHeroStats(AppState.labs);
+  renderFooterStats(AppState.labs);
+
+  // 绑定交互
+  bindSearch();
+  bindReset();
+  bindFullscreen();
+  bindMenu();
+  bindHeaderScroll();
+
+  // Hero 背景动画
+  initHeroCanvas();
+
+  // 控制台友好提示
+  console.log(
+    `%c🔬 科学互动实验室%c 已加载 ${AppState.labs.length} 个实验室\n` +
+    `新增实验室：只需修改 <script> 里的 LABS 数组（对应 lab-config.js）`,
+    "font-size:14px;font-weight:bold;color:#4d9dff",
+    "color:#a6b6d4"
+  );
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}
+</script>
+
+</body>
+</html>
