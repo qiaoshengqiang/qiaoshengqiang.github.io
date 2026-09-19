@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🔦 几何光学光路实验室</title>
+  <script type="module" crossorigin src="/assets/index-IO_OamI8.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-B_A4BBLN.css">
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div class="brand">🔦 几何光学光路实验室</div>
+      <div class="top-actions">
+        <button id="classroomBtn">课堂模式</button>
+        <button id="fullscreenBtn">⛶ 全屏</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="left-panel" id="palettePanel"></aside>
+
+      <section class="lab-area">
+        <canvas id="labCanvas"></canvas>
+      </section>
+
+      <aside class="right-panel">
+        <div id="propertyPanel"></div>
+        <div id="dataPanel"></div>
+      </aside>
+    </main>
+
+    <footer class="bottombar">
+      <button id="clearBtn">清空</button>
+      <span class="hint">左键拖动：移动 ｜ 右键拖动：旋转 ｜ 滚轮：缩放</span>
+    </footer>
+  </div>
+</body>
+</html>
