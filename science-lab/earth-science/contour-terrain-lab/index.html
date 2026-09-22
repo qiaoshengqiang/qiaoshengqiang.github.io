@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="面向初中地理的等高线与地形互动实验室：同一地形模型同时生成三维地形、二维等高线地形图与地形剖面图。" />
+<title>等高线与地形实验室 · Contour &amp; Terrain Lab</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%230b1220'/%3E%3Cpath d='M16 8c4 0 7 3 7 7s-3 7-7 7-7-3-7-7 3-7 7-7z' fill='none' stroke='%2338bdf8' stroke-width='1.6'/%3E%3Cpath d='M16 12c1.8 0 3 1.2 3 3s-1.2 3-3 3-3-1.2-3-3 1.2-3 3-3z' fill='none' stroke='%2338bdf8' stroke-width='1.4'/%3E%3C/svg%3E" />
+  <script type="module" crossorigin src="./assets/index-BY84fyJ0.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-B67sSHFx.css">
+</head>
+<body>
+
+<div class="app" id="app" data-mode="dual">
+
+  <!-- ============================= 顶栏 ============================= -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <span class="brand-ring"></span>
+        <span class="brand-ring brand-ring-2"></span>
+        <span class="brand-ring brand-ring-3"></span>
+      </div>
+      <div class="brand-text">
+        <h1>等高线与地形实验室</h1>
+        <p>Contour &amp; Terrain Lab <span class="brand-sep">·</span> 科学互动实验室</p>
+      </div>
+    </div>
+
+    <nav class="mode-tabs" id="mode-tabs" aria-label="显示模式"></nav>
+
+    <div class="topbar-actions">
+      <button class="btn btn-ghost" id="btn-knowledge" type="button">知识学习</button>
+      <button class="btn btn-ghost" id="btn-challenge" type="button">探索挑战</button>
+      <button class="btn btn-ghost" id="btn-classroom" type="button">课堂模式</button>
+      <button class="btn btn-ghost" id="btn-help" type="button">如何使用</button>
+      <button class="btn btn-ghost btn-icon" id="btn-fullscreen" type="button" title="全屏显示 (F11 / ⌃⌘F)">⛶</button>
+    </div>
+  </header>
+
+  <!-- ============================= 主舞台 ============================= -->
+  <main class="stage" id="stage">
+
+    <!-- ---------- 3D 地形 ---------- -->
+    <section class="panel panel-3d" id="panel-3d">
+      <div class="panel-head">
+        <h2><span class="dot dot-3d"></span>三维地形</h2>
+        <div class="panel-tools">
+          <div class="tool-block">
+            <span class="tool-label">垂直夸张</span>
+            <div class="segmented" id="vex-group"></div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="tog-3d-contours" checked /><span>叠加等高线</span></label>
+          <button class="btn btn-soft" id="btn-reset-view" type="button">重置视角</button>
+        </div>
+      </div>
+      <div class="panel-body canvas-host" id="terrain3d-host">
+        <canvas id="terrain3d-canvas"></canvas>
+        <div class="overlay-hint" id="terrain3d-hint">拖动旋转 · 滚轮缩放 · 右键平移 · 单击取点</div>
+        <div class="overlay-badge" id="vex-badge">垂直夸张 1.0×</div>
+        <div class="overlay-note">垂直夸张仅用于视觉展示，等高线海拔数据不改变</div>
+      </div>
+    </section>
+
+    <!-- ---------- 2D 等高线地图 ---------- -->
+    <section class="panel panel-2d" id="panel-2d">
+      <div class="panel-head">
+        <h2><span class="dot dot-2d"></span>等高线地形图</h2>
+        <div class="panel-tools">
+          <div class="tool-block">
+            <span class="tool-label">等高距</span>
+            <div class="segmented" id="interval-group"></div>
+          </div>
+          <div class="tool-block">
+            <span class="tool-label">工具</span>
+            <div class="segmented" id="tool-group"></div>
+          </div>
+          <div class="tool-block">
+            <span class="tool-label">显示</span>
+            <div class="toggle-row">
+              <label class="toggle"><input type="checkbox" id="tog-grid" /><span>坐标网格</span></label>
+              <label class="toggle"><input type="checkbox" id="tog-labels" checked /><span>等高线标高</span></label>
+              <label class="toggle"><input type="checkbox" id="tog-fill" checked /><span>高程填色</span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel-body canvas-host" id="contour2d-host">
+        <canvas id="contour2d-canvas"></canvas>
+        <div class="overlay-hint" id="contour2d-hint">在地图上移动鼠标可探测海拔 · 单击取点</div>
+        <div class="overlay-badge" id="interval-badge">等高距：50m</div>
+        <div class="hover-readout" id="hover-readout">
+          <span class="ro-item"><i>X</i><b id="ro-x">—</b></span>
+          <span class="ro-item"><i>Y</i><b id="ro-y">—</b></span>
+          <span class="ro-item"><i>海拔</i><b id="ro-z">—</b></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- 剖面图 ---------- -->
+    <section class="panel panel-profile" id="panel-profile">
+      <div class="panel-head">
+        <h2><span class="dot dot-pf"></span>地形剖面图 <em id="profile-title">A — B</em></h2>
+        <div class="panel-tools">
+          <span class="chip chip-a" id="chip-a">A：—</span>
+          <span class="chip chip-b" id="chip-b">B：—</span>
+          <span class="chip chip-dh" id="chip-dh">相对高度：—</span>
+          <button class="btn btn-soft" id="btn-profile-preset" type="button">示例剖面</button>
+          <button class="btn btn-soft" id="btn-profile-clear" type="button">清除 A/B</button>
+        </div>
+      </div>
+      <div class="panel-body canvas-host" id="profile-host">
+        <canvas id="profile-canvas"></canvas>
+        <div class="overlay-hint" id="profile-hint">单击剖面曲线可反向定位到地图与三维地形 · 拖动剖面两端微调剖切范围</div>
+      </div>
+    </section>
+
+    <!-- ---------- 侧栏 ---------- -->
+    <aside class="panel panel-side" id="panel-side">
+
+      <div class="side-block" id="side-readout">
+        <h3>光标探测</h3>
+        <div class="readout-row">
+          <div class="readout-cell"><i>X 坐标</i><b id="sr-x">—</b></div>
+          <div class="readout-cell"><i>Y 坐标</i><b id="sr-y">—</b></div>
+          <div class="readout-cell accent"><i>海拔</i><b id="sr-z">—</b></div>
+        </div>
+      </div>
+
+      <div class="side-block" id="side-measure">
+        <h3>地形测量 <button class="mini-link" id="btn-measure-reset" type="button">重置</button></h3>
+        <div class="measure-points">
+          <div class="measure-point point-a"><span>A</span><b id="m-a">未选择</b></div>
+          <div class="measure-point point-b"><span>B</span><b id="m-b">未选择</b></div>
+        </div>
+        <dl class="measure-list">
+          <div><dt>相对高度（高差）</dt><dd id="m-dh">—</dd></div>
+          <div><dt>水平距离</dt><dd id="m-dist">—</dd></div>
+          <div><dt>坡度（高差 / 水平距离）</dt><dd id="m-percent">—</dd></div>
+          <div><dt>坡度角</dt><dd id="m-angle">—</dd></div>
+          <div><dt>坡面类型</dt><dd id="m-type">—</dd></div>
+        </dl>
+        <p class="hint-text" id="m-hint">选择「测量」工具后，在等高线地图上依次点击 A 点与 B 点。</p>
+      </div>
+
+      <div class="side-block" id="side-profile">
+        <h3>地形剖面 A—B <button class="mini-link" id="btn-clear-profile" type="button">清除 A/B</button></h3>
+        <div class="profile-actions">
+          <button class="btn btn-soft btn-sm" id="btn-sample-profile" type="button">生成示例剖面 A—B</button>
+        </div>
+        <dl class="measure-list">
+          <div><dt>剖面长度</dt><dd id="pf-length">—</dd></div>
+          <div><dt>最低 / 最高海拔</dt><dd id="pf-range">—</dd></div>
+          <div><dt>相对起伏</dt><dd id="pf-relief">—</dd></div>
+          <div><dt>经过的地形部位</dt><dd id="pf-features">—</dd></div>
+        </dl>
+        <p class="hint-text" id="pf-summary">选择「剖面」工具后，在地图上拖动 A、B 两端，剖面图会实时生成。</p>
+      </div>
+
+      <div class="side-block" id="side-learning">
+        <h3>地形识别 <button class="mini-link" id="btn-feature-clear" type="button">清除高亮</button></h3>
+        <div class="feature-chips" id="feature-chips"></div>
+        <div class="feature-note" id="feature-note">
+          <p>点击任意地形类型，可以看到它在三维地形与等高线图上的位置与形态。</p>
+        </div>
+      </div>
+
+      <div class="side-block" id="side-legend">
+        <h3>图例</h3>
+        <div class="legend" id="legend-list"></div>
+      </div>
+
+    </aside>
+  </main>
+
+  <!-- ============================= 知识抽屉 ============================= -->
+  <section class="drawer drawer-right" id="knowledge-drawer" hidden>
+    <header class="drawer-head">
+      <div>
+        <h2>知识学习</h2>
+        <p>初中地理 · 等高线地形图基础</p>
+      </div>
+      <button class="drawer-close" type="button" data-close="knowledge-drawer" aria-label="关闭">×</button>
+    </header>
+    <div class="drawer-body knowledge-body">
+      <nav class="knowledge-toc" id="knowledge-toc" aria-label="知识目录"></nav>
+      <div class="knowledge-articles" id="knowledge-articles"></div>
+    </div>
+  </section>
+
+  <!-- ============================= 挑战抽屉 ============================= -->
+  <section class="drawer drawer-right" id="challenge-drawer" hidden>
+    <header class="drawer-head">
+      <div>
+        <h2>探索挑战</h2>
+        <p>在真实地形数据上检验你的理解</p>
+      </div>
+      <button class="drawer-close" type="button" data-close="challenge-drawer" aria-label="关闭">×</button>
+    </header>
+    <div class="drawer-body challenge-body">
+      <div class="challenge-progress">
+        <span id="challenge-progress-text">已通过 0 / 0</span>
+        <div class="progress-track"><i id="challenge-progress-bar"></i></div>
+        <button class="mini-link" id="btn-challenge-reset" type="button">重新开始</button>
+      </div>
+      <div id="challenge-list" class="challenge-list"></div>
+    </div>
+  </section>
+
+  <!-- ============================= 帮助弹窗 ============================= -->
+  <div class="modal" id="help-modal" hidden>
+    <div class="modal-card">
+      <header class="modal-head">
+        <h2>如何使用这个实验室</h2>
+        <button class="drawer-close" type="button" data-close="help-modal" aria-label="关闭">×</button>
+      </header>
+      <div class="modal-body">
+        <ol class="help-steps">
+          <li><b>旋转三维地形</b>：按住鼠标左键拖动可以旋转，滚轮缩放，右键拖动平移；点击右上角「重置视角」回到默认俯视角度。</li>
+          <li><b>查看等高线</b>：右边是同一块地形的二维等高线地形图，和左边的三维地形来自同一份高度数据。</li>
+          <li><b>调整等高距</b>：在等高线图上把等高距切换为 20m / 50m / 100m，观察同一地形在不同等高距下的表现。</li>
+          <li><b>点击地图查看海拔</b>：选择「选点」工具后在图上单击，A 点会同时出现在三维地形和等高线图上。</li>
+          <li><b>拖动 A / B 生成剖面</b>：选择「剖面」工具，拖动图中的 A、B 两个端点，底部剖面图会实时更新。</li>
+          <li><b>对比三个视图</b>：三维地形、等高线地图、剖面图是同一块地形的三种表达方式，请互相对照着看。</li>
+          <li><b>测量与挑战</b>：用「测量」工具比较两点的高差与坡度；打开「探索挑战」检验自己的理解。</li>
+        </ol>
+        <div class="help-tips">
+          <h3>小提示</h3>
+          <ul>
+            <li>垂直夸张只改变三维显示的高度比例，不影响海拔与等高线数据。</li>
+            <li>等高线越密，表示在相同等高距下坡越陡，而不是海拔越高。</li>
+            <li>课堂模式下字体与按钮会自动放大，适合投影仪与电子白板。</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================= 提示条 ============================= -->
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <!-- ============================= 启动遮罩 ============================= -->
+  <div class="boot" id="boot">
+    <div class="boot-inner">
+      <div class="boot-spinner"></div>
+      <p>正在生成综合地形实验场…</p>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
