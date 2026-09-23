@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>心脏与血液循环实验室</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app" id="app">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-icon">🫀</span>
+      <div>
+        <h1>心脏与血液循环实验室</h1>
+        <p>Heart &amp; Circulatory System Lab</p>
+      </div>
+    </div>
+    <p class="tagline">观察心脏搏动，追踪血液循环，理解肺循环与体循环。</p>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost" id="btn-classroom">课堂模式</button>
+      <button class="btn btn-ghost" id="btn-fullscreen">全屏</button>
+      <button class="btn btn-ghost" id="btn-reset">重置</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <aside class="panel panel-left">
+      <h2 class="panel-title">实验模式</h2>
+      <nav class="mode-list" id="mode-list">
+        <button class="mode-btn is-active" data-mode="overview"><span class="mode-icon">🔁</span><span class="mode-body"><span class="mode-name">循环总览</span><span class="mode-desc">看完整循环路径</span></span></button>
+        <button class="mode-btn" data-mode="beat"><span class="mode-icon">💓</span><span class="mode-body"><span class="mode-name">心脏搏动</span><span class="mode-desc">心房先收缩，心室后收缩</span></span></button>
+        <button class="mode-btn" data-mode="track"><span class="mode-icon">🔬</span><span class="mode-body"><span class="mode-name">血液追踪</span><span class="mode-desc">追踪一颗红细胞</span></span></button>
+        <button class="mode-btn" data-mode="exercise"><span class="mode-icon">🏃</span><span class="mode-body"><span class="mode-name">运动状态</span><span class="mode-desc">运动如何影响循环</span></span></button>
+        <button class="mode-btn" data-mode="challenge"><span class="mode-icon">🎯</span><span class="mode-body"><span class="mode-name">探索挑战</span><span class="mode-desc">5 道循环判断题</span></span></button>
+      </nav>
+
+      <h2 class="panel-title">视图选项</h2>
+      <div class="switch-list">
+        <label class="switch"><input type="checkbox" id="opt-labels" checked><span class="switch-track"><span class="switch-thumb"></span></span><span class="switch-text">显示名称</span></label>
+        <label class="switch"><input type="checkbox" id="opt-arrows"><span class="switch-track"><span class="switch-thumb"></span></span><span class="switch-text">显示血流方向</span></label>
+      </div>
+
+      <h2 class="panel-title">循环路径</h2>
+      <div class="seg seg-vertical" id="path-focus">
+        <button class="seg-btn is-active" data-focus="full">完整循环</button>
+        <button class="seg-btn" data-focus="pulmonary">肺循环</button>
+        <button class="seg-btn" data-focus="systemic">体循环</button>
+      </div>
+
+      <button class="btn btn-primary btn-block" id="btn-auto-tour">▶ 看一次完整循环</button>
+
+      <div class="legend">
+        <p class="legend-title">颜色说明</p>
+        <div class="legend-row"><span class="legend-dot is-oxy"></span><span>富氧血</span></div>
+        <div class="legend-row"><span class="legend-dot is-deoxy"></span><span>低氧血</span></div>
+        <p class="legend-note">颜色表示血液的<b>氧合状态</b>，不是根据血管名称决定。肺动脉里流的是低氧血，肺静脉里流的是富氧血。</p>
+      </div>
+    </aside>
+
+    <section class="stage-wrap">
+      <div class="stage" id="stage">
+        <svg id="scene" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet"></svg>
+        <canvas id="particle-layer"></canvas>
+        <div class="tour-tracker" id="tour-tracker" hidden><div class="tour-steps" id="tour-steps"></div></div>
+        <div class="challenge-overlay" id="challenge-overlay" hidden></div>
+        <div class="mode-hud" id="mode-hud"></div>
+      </div>
+      <p class="stage-caption" id="stage-caption">提示：点击心脏腔室、血管或肺，查看它的作用。</p>
+    </section>
+
+    <aside class="panel panel-right">
+      <h2 class="panel-title">实时数据</h2>
+      <div class="readout">
+        <div class="readout-row"><span>心率</span><b id="ro-hr">72 bpm</b></div>
+        <div class="readout-row"><span>心动周期</span><b id="ro-phase">全心舒张</b></div>
+        <div class="readout-row"><span>当前循环</span><b id="ro-circuit">完整循环</b></div>
+        <div class="readout-row"><span>血流状态</span><b id="ro-blood">—</b></div>
+        <div class="readout-row"><span>追踪位置</span><b id="ro-track">未开始</b></div>
+        <div class="readout-row"><span>模拟时间</span><b id="ro-time">0.0 s</b></div>
+      </div>
+
+      <h2 class="panel-title">结构说明</h2>
+      <div class="info-card" id="info-card"><p class="info-empty">点击画面中的结构，查看详细说明。</p></div>
+
+      <h2 class="panel-title">追踪一颗红细胞</h2>
+      <button class="btn btn-primary btn-block" id="btn-track">开始追踪</button>
+      <dl class="tracking-info" id="tracking-info" hidden>
+        <div><dt>当前位置</dt><dd id="tk-location">—</dd></div>
+        <div><dt>当前阶段</dt><dd id="tk-stage">—</dd></div>
+        <div><dt>血液状态</dt><dd id="tk-blood">—</dd></div>
+        <div><dt>下一站</dt><dd id="tk-next">—</dd></div>
+      </dl>
+      <div class="tracking-history" id="tracking-history" hidden>
+        <p class="tracking-history-title">已经经过</p>
+        <ol class="tracking-history-list" id="tracking-history-list"></ol>
+      </div>
+
+      <h2 class="panel-title">实验记录</h2>
+      <div class="records-actions">
+        <button class="btn btn-ghost btn-sm" id="btn-clear-records">清空记录</button>
+        <button class="btn btn-ghost btn-sm" id="btn-export-csv">导出 CSV</button>
+      </div>
+      <div class="records-table-wrap">
+        <table class="records-table">
+          <thead><tr><th>时间</th><th>心率</th><th>状态</th></tr></thead>
+          <tbody id="records-body"><tr class="records-empty"><td colspan="3">暂无记录</td></tr></tbody>
+        </table>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="controlbar">
+    <div class="ctrl-group">
+      <button class="btn-icon" id="btn-play">⏸</button>
+      <button class="btn-icon" id="btn-rewind">⏮</button>
+    </div>
+    <div class="ctrl-group">
+      <span class="ctrl-label">速度</span>
+      <div class="seg" id="speed-seg">
+        <button class="seg-btn" data-speed="0.5">0.5×</button>
+        <button class="seg-btn is-active" data-speed="1">1×</button>
+        <button class="seg-btn" data-speed="2">2×</button>
+        <button class="seg-btn" data-speed="4">4×</button>
+      </div>
+    </div>
+    <div class="ctrl-group ctrl-hr">
+      <span class="ctrl-label">心率</span>
+      <input type="range" id="hr-slider" min="60" max="120" value="72">
+      <span class="ctrl-value" id="hr-value">72 bpm</span>
+    </div>
+    <div class="ctrl-group">
+      <span class="ctrl-label">运动状态</span>
+      <div class="seg" id="exercise-seg">
+        <button class="seg-btn is-active" data-ex="rest">静息</button>
+        <button class="seg-btn" data-ex="light">轻度</button>
+        <button class="seg-btn" data-ex="moderate">中度</button>
+        <button class="seg-btn" data-ex="intense">剧烈</button>
+      </div>
+    </div>
+    <p class="disclaimer">以上参数用于教学模拟，不代表个体真实生理数据。</p>
+  </footer>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

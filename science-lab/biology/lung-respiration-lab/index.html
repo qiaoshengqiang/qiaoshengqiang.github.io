@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="肺与呼吸互动实验室 —— 观察呼吸运动，追踪空气进入肺部，探索肺泡气体交换" />
+  <title>🫁 肺与呼吸实验室 | Lung &amp; Respiration Lab</title>
+
+  <script type="module" crossorigin src="./assets/index-btxaFTZJ.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-CRfEudyW.css">
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <!-- ================= 顶栏 ================= -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand__icon" aria-hidden="true">🫁</span>
+      <div class="brand__text">
+        <h1 class="brand__title">肺与呼吸实验室</h1>
+        <p class="brand__sub">Lung &amp; Respiration Lab · 观察呼吸运动，追踪空气进入肺部，探索肺泡气体交换</p>
+      </div>
+    </div>
+
+    <div class="topbar__actions">
+      <button class="btn btn--ghost" id="btn-classroom" type="button">课堂模式</button>
+      <button class="btn btn--ghost" id="btn-help" type="button">帮助</button>
+      <button class="btn btn--ghost" id="btn-fullscreen" type="button">全屏</button>
+      <button class="btn btn--ghost" id="btn-reset" type="button">重置</button>
+    </div>
+  </header>
+
+  <!-- ================= 导航 ================= -->
+  <nav class="nav" id="main-nav" role="tablist" aria-label="实验模块">
+    <button class="nav__item is-active" data-view="breathing" role="tab" type="button">呼吸运动</button>
+    <button class="nav__item" data-view="airway" role="tab" type="button">呼吸道</button>
+    <button class="nav__item" data-view="alveolus" role="tab" type="button">肺泡与气体交换</button>
+    <button class="nav__item" data-view="knowledge" role="tab" type="button">知识学习</button>
+    <button class="nav__item" data-view="challenge" role="tab" type="button">挑战</button>
+  </nav>
+
+  <!-- ================= 工作区 ================= -->
+  <main class="workspace">
+
+    <!-- 左侧：控制面板 -->
+    <aside class="panel panel--left" id="left-panel">
+      <div class="panel__section" id="left-panel-dynamic">
+        <!-- 由 UIManager 注入 -->
+      </div>
+    </aside>
+
+    <!-- 中间：舞台 -->
+    <section class="stage-wrap">
+
+      <!-- 呼吸运动 -->
+      <div class="stage is-active" data-stage="breathing">
+        <div class="stage__layer">
+          <svg id="svg-thorax" viewBox="0 0 1000 720" aria-label="胸腔呼吸运动模型"></svg>
+          <canvas id="canvas-thorax"></canvas>
+        </div>
+        <div class="stage__hud">
+          <span class="hud__pill" id="hud-phase">待机</span>
+          <span class="hud__pill hud__pill--dim" id="hud-speed">速度 ×1</span>
+        </div>
+      </div>
+
+      <!-- 呼吸道 -->
+      <div class="stage" data-stage="airway">
+        <div class="stage__layer">
+          <svg id="svg-airway" viewBox="0 0 1000 720" aria-label="呼吸道模型"></svg>
+          <canvas id="canvas-airway"></canvas>
+        </div>
+        <div class="stage__hud">
+          <span class="hud__pill" id="hud-airway">空气路径</span>
+        </div>
+      </div>
+
+      <!-- 肺泡 -->
+      <div class="stage" data-stage="alveolus">
+        <div class="stage__layer">
+          <svg id="svg-alveolus" viewBox="0 0 1000 720" aria-label="肺泡与气体交换模型"></svg>
+          <canvas id="canvas-alveolus"></canvas>
+        </div>
+        <div class="stage__hud">
+          <span class="hud__pill" id="hud-alveolus">肺泡观察</span>
+        </div>
+      </div>
+
+      <!-- 知识学习 -->
+      <div class="stage stage--doc" data-stage="knowledge">
+        <div class="doc" id="knowledge-root"></div>
+      </div>
+
+      <!-- 挑战 -->
+      <div class="stage stage--doc" data-stage="challenge">
+        <div class="doc" id="challenge-root"></div>
+      </div>
+
+    </section>
+
+    <!-- 右侧：信息面板 -->
+    <aside class="panel panel--right" id="right-panel">
+      <div class="panel__section" id="right-panel-dynamic">
+        <!-- 由 InfoPanel 注入 -->
+      </div>
+    </aside>
+  </main>
+
+  <!-- ================= 状态栏 ================= -->
+  <footer class="statusbar">
+    <span class="statusbar__item" id="status-phase">阶段：待机</span>
+    <span class="statusbar__item" id="status-hint">点击左侧「吸气」开始观察</span>
+    <span class="statusbar__spacer"></span>
+    <button class="btn btn--link" id="btn-heart-lab" type="button">🫀 心脏与血液循环实验室</button>
+  </footer>
+
+</div>
+
+<!-- ================= 帮助弹窗 ================= -->
+<div class="modal" id="help-modal" hidden>
+  <div class="modal__backdrop" data-close></div>
+  <div class="modal__box">
+    <h2 class="modal__title">使用帮助</h2>
+    <ul class="modal__list">
+      <li><b>呼吸运动</b>：点击「吸气 / 呼气」观察膈肌、胸廓、肺与空气流动的变化；「自动呼吸」循环演示；「单步播放」适合课堂逐步讲解。</li>
+      <li><b>呼吸道</b>：点击「开始吸气」，空气粒子会沿鼻腔 → 咽 → 喉 → 气管 → 支气管 → 细支气管 → 肺泡运动；点击任意结构查看作用。</li>
+      <li><b>肺泡与气体交换</b>：点击「开始气体交换」，观察 O₂ 由肺泡进入血液、CO₂ 由血液进入肺泡。</li>
+      <li><b>知识学习</b>：系统阅读与本实验相关的科学知识。</li>
+      <li><b>挑战</b>：完成 7 道核心互动题。</li>
+      <li>右上角「课堂模式」会放大模型与字号，适合投影；「全屏」使用浏览器原生全屏。</li>
+    </ul>
+    <button class="btn btn--primary" data-close type="button">知道了</button>
+  </div>
+</div>
+
+</body>
+</html>
