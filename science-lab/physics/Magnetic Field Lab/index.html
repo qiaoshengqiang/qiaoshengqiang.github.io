@@ -1,0 +1,3892 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>🧲 磁场实验室 | Magnetic Field Lab</title>
+<meta name="description" content="面向中学物理教学的二维磁场可视化互动实验室" />
+<style>
+/* ============================================================
+   style.css — 磁场实验室
+   ============================================================ */
+
+:root {
+  --bg:          #eef3f9;
+  --panel-bg:    #ffffff;
+  --stage-bg:    #fbfdff;
+  --text:        #16324f;
+  --text-dim:    #5d7691;
+  --accent:      #1f78c8;
+  --accent-2:    #0aa2b8;
+  --border:      #d9e4f0;
+  --border-soft: #e8f0f8;
+  --n-red:       #e2453f;
+  --s-blue:      #2f6fd0;
+  --danger:      #d9453f;
+  --shadow:      0 2px 10px rgba(23, 60, 105, 0.07);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+               "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------------- 布局 ---------------- */
+
+#app {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100vh;
+  height: 100dvh;
+}
+
+/* ---------------- 顶栏 ---------------- */
+
+#topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  background: var(--panel-bg);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  z-index: 20;
+}
+
+.brand { display: flex; align-items: center; gap: 12px; }
+
+.brand-logo { font-size: 26px; line-height: 1; }
+
+.brand-text h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--text);
+}
+
+.brand-text p {
+  margin: 2px 0 0;
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.4px;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.select-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.select-wrap select {
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--text);
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: #fff;
+  cursor: pointer;
+  outline: none;
+  max-width: 230px;
+}
+
+.select-wrap select:focus { border-color: var(--accent); }
+
+.btn {
+  font-family: inherit;
+  font-size: 13px;
+  padding: 7px 14px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn:active { transform: translateY(1px); }
+
+.btn.ghost { background: #f6faff; }
+
+.btn.danger { border-color: #f0c4c1; color: var(--danger); }
+.btn.danger:hover { background: #fdf3f2; border-color: var(--danger); }
+
+/* ---------------- 工作区 ---------------- */
+
+#workspace {
+  display: grid;
+  grid-template-columns: 186px 1fr 250px;
+  gap: 10px;
+  padding: 10px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  overflow-y: auto;
+  box-shadow: var(--shadow);
+  min-height: 0;
+}
+
+.panel-section { margin-bottom: 16px; }
+.panel-section:last-child { margin-bottom: 0; }
+
+.panel h2, .panel-title {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  text-transform: none;
+}
+
+.tool-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  font-family: inherit;
+  font-size: 13px;
+  text-align: left;
+  padding: 9px 10px;
+  margin-bottom: 6px;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  background: #fafcff;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tool-btn:hover {
+  background: #eef6ff;
+  border-color: #b8d8f2;
+  color: var(--accent);
+}
+
+.tool-btn:active { transform: translateY(1px); }
+
+.tool-btn.small { font-size: 12px; padding: 7px 10px; }
+
+.tool-btn:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.tool-btn .ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: #e7f1fb;
+  color: var(--accent);
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+/* ---------------- 实验台 ---------------- */
+
+#stage {
+  position: relative;
+  background: var(--stage-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  min-height: 0;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+#fieldCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+#sceneSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.stage-hint {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: #a8bed6;
+  font-size: 15px;
+  letter-spacing: 1px;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.stage-hint.hidden { opacity: 0; }
+
+/* 探针信息 */
+
+.probe-info {
+  position: absolute;
+  padding: 8px 11px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #b8d8f2;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.65;
+  color: var(--text);
+  pointer-events: none;
+  box-shadow: 0 4px 14px rgba(23, 60, 105, 0.14);
+  white-space: nowrap;
+  z-index: 10;
+  transform: translate(12px, -50%);
+}
+
+.probe-info.hidden { display: none; }
+
+.probe-info .k { color: var(--text-dim); }
+.probe-info .v { font-variant-numeric: tabular-nums; font-weight: 600; }
+.probe-info .title {
+  font-weight: 700;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 3px;
+}
+
+/* ---------------- 属性面板 ---------------- */
+
+.property-empty {
+  color: #a8bed6;
+  font-size: 13px;
+  padding: 18px 6px;
+  text-align: center;
+  line-height: 1.7;
+}
+
+.prop-group { margin-bottom: 14px; }
+
+.prop-type {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  padding: 5px 0 9px;
+  border-bottom: 1px dashed var(--border);
+  margin-bottom: 10px;
+}
+
+.prop-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 9px;
+}
+
+.prop-row label {
+  font-size: 12px;
+  color: var(--text-dim);
+  flex: 1;
+  min-width: 0;
+}
+
+.prop-row input[type="number"],
+.prop-row select {
+  font-family: inherit;
+  font-size: 12.5px;
+  width: 88px;
+  padding: 5px 7px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--text);
+  outline: none;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.prop-row select { width: 100%; text-align: left; }
+
+.prop-row input[type="number"]:focus,
+.prop-row select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(31, 120, 200, 0.12);
+}
+
+.prop-row.full { flex-direction: column; align-items: stretch; }
+
+.rot-buttons {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.rot-buttons .btn { flex: 1; padding: 6px 4px; font-size: 12px; }
+
+/* ---------------- 底栏 ---------------- */
+
+#bottombar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 18px;
+  background: var(--panel-bg);
+  border-top: 1px solid var(--border);
+  font-size: 12.5px;
+  z-index: 20;
+}
+
+.bottom-left,
+.bottom-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.bottom-center {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+}
+
+#obsHint {
+  color: var(--accent-2);
+  font-size: 12.5px;
+  transition: opacity 0.4s ease;
+}
+
+#unitNote { color: #a3b8ce; font-size: 11.5px; }
+
+.chk {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  color: var(--text-dim);
+  user-select: none;
+  transition: color 0.15s;
+}
+
+.chk:hover { color: var(--accent); }
+
+.chk input {
+  accent-color: var(--accent);
+  cursor: pointer;
+  margin: 0;
+}
+
+/* ---------------- 弹窗 ---------------- */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(16, 40, 68, 0.42);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 24px;
+  backdrop-filter: blur(2px);
+}
+
+.modal.hidden { display: none; }
+
+.modal-box {
+  position: relative;
+  background: #fff;
+  border-radius: 14px;
+  padding: 26px 30px 22px;
+  max-width: 720px;
+  width: 100%;
+  max-height: 86vh;
+  overflow-y: auto;
+  box-shadow: 0 18px 50px rgba(16, 40, 68, 0.26);
+}
+
+.modal-box h2 {
+  margin: 0 0 14px;
+  font-size: 19px;
+  color: var(--text);
+}
+
+.modal-box h3 {
+  margin: 20px 0 10px;
+  font-size: 14px;
+  color: var(--accent);
+  letter-spacing: 0.5px;
+}
+
+.modal-close {
+  position: absolute;
+  right: 14px;
+  top: 12px;
+  border: none;
+  background: transparent;
+  font-size: 24px;
+  line-height: 1;
+  color: #b0c4d8;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+
+.modal-close:hover { color: var(--danger); background: #fdf3f2; }
+
+.help-steps {
+  margin: 0;
+  padding-left: 20px;
+  line-height: 2;
+  font-size: 13.5px;
+  color: var(--text);
+}
+
+.knowledge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 10px;
+}
+
+.k-card {
+  background: #f7fbff;
+  border: 1px solid var(--border-soft);
+  border-radius: 9px;
+  padding: 11px 13px;
+}
+
+.k-card h4 {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  color: var(--accent);
+}
+
+.k-card p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.72;
+  color: #4a6482;
+}
+
+.help-footnote {
+  margin: 20px 0 0;
+  padding-top: 14px;
+  border-top: 1px dashed var(--border);
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--text-dim);
+}
+
+/* ---------------- 场景元素（SVG） ---------------- */
+
+[data-object-id] { pointer-events: none; }
+
+.hit-area {
+  fill: transparent;
+  pointer-events: all;
+}
+
+.source { cursor: move; }
+
+.source .mag-body,
+.source .u-body,
+.source .wire-ring,
+.source .solenoid-body {
+  stroke: rgba(22, 50, 79, 0.45);
+  stroke-width: 1.5;
+}
+
+.source .mag-body { fill: #f0f4f9; }
+.source .u-body   { fill: #eef2f7; }
+
+.source .mag-north { fill: var(--n-red); }
+.source .mag-south { fill: var(--s-blue); }
+
+.source .mag-divider {
+  stroke: rgba(255, 255, 255, 0.85);
+  stroke-width: 2;
+}
+
+.source .mag-label {
+  font-size: 15px;
+  font-weight: 800;
+  fill: #ffffff;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  user-select: none;
+  paint-order: stroke;
+}
+
+.source .mag-label.n { fill: #ffffff; }
+.source .mag-label.s { fill: #ffffff; }
+
+.source .wire-ring {
+  fill: #ffffff;
+  stroke: #2f6fd0;
+  stroke-width: 2;
+}
+
+.source .wire-core {
+  fill: #2f6fd0;
+  stroke: #2f6fd0;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+}
+
+.source .wire-label {
+  font-size: 13px;
+  font-weight: 700;
+  fill: #2f6fd0;
+  text-anchor: middle;
+  user-select: none;
+}
+
+.source .solenoid-body {
+  fill: #eef4fb;
+  stroke: #7aa6d4;
+}
+
+.source .solenoid-coil {
+  stroke: #8db4dc;
+  stroke-width: 1.4;
+}
+
+.source.selected .mag-body,
+.source.selected .u-body,
+.source.selected .wire-ring,
+.source.selected .solenoid-body {
+  stroke: #ff9b23;
+  stroke-width: 2.6;
+}
+
+.source.selected {
+  filter: drop-shadow(0 0 7px rgba(255, 155, 35, 0.55));
+}
+
+/* 小磁针 */
+
+.needle { cursor: move; }
+
+.needle .needle-hub {
+  fill: #ffffff;
+  stroke: rgba(22, 50, 79, 0.4);
+  stroke-width: 1.2;
+  pointer-events: none;
+}
+
+.needle .needle-north { fill: var(--n-red); pointer-events: none; }
+.needle .needle-south { fill: #47607a; pointer-events: none; }
+
+.needle .needle-label {
+  font-size: 12px;
+  font-weight: 800;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  user-select: none;
+  pointer-events: none;
+}
+
+.needle .needle-label.n { fill: var(--n-red); }
+.needle .needle-label.s { fill: #47607a; }
+
+.needle.selected .needle-hub {
+  stroke: #ff9b23;
+  stroke-width: 2;
+}
+
+/* ---------------- 课堂模式 ---------------- */
+
+body.classroom #leftPanel,
+body.classroom #rightPanel {
+  display: none;
+}
+
+body.classroom #workspace {
+  grid-template-columns: 1fr;
+}
+
+body.classroom #topbar { padding: 8px 14px; }
+body.classroom .brand-text p { display: none; }
+
+body.classroom #bottombar { padding: 7px 14px; }
+body.classroom #obsHint { display: none; }
+
+/* ---------------- 滚动条 ---------------- */
+
+.panel::-webkit-scrollbar,
+.modal-box::-webkit-scrollbar { width: 7px; }
+
+.panel::-webkit-scrollbar-thumb,
+.modal-box::-webkit-scrollbar-thumb {
+  background: #cddced;
+  border-radius: 4px;
+}
+
+.panel::-webkit-scrollbar-track,
+.modal-box::-webkit-scrollbar-track { background: transparent; }
+
+/* ---------------- 小屏适配 ---------------- */
+
+@media (max-width: 900px) {
+  #workspace {
+    grid-template-columns: 150px 1fr;
+    grid-template-rows: 1fr auto;
+  }
+  #rightPanel {
+    grid-column: 1 / -1;
+    max-height: 180px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <header id="topbar">
+    <div class="brand">
+      <span class="brand-logo">🧲</span>
+      <div class="brand-text">
+        <h1>磁场实验室</h1>
+        <p>Magnetic Field Lab · 科学互动实验室</p>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <label class="select-wrap">
+        <span>预设场景</span>
+        <select id="presetSelect">
+          <option value="">— 选择 —</option>
+        </select>
+      </label>
+      <button id="btnClassroom" class="btn ghost" type="button">课堂模式</button>
+      <button id="btnHelp" class="btn ghost" type="button">怎么玩？</button>
+    </div>
+  </header>
+
+  <main id="workspace">
+
+    <aside id="leftPanel" class="panel">
+      <section class="panel-section">
+        <h2>磁场源</h2>
+        <button class="tool-btn" data-add="bar-magnet" type="button"><span class="ico">▭</span>条形磁铁</button>
+        <button class="tool-btn" data-add="u-magnet" type="button"><span class="ico">⊔</span>U 形磁铁</button>
+        <button class="tool-btn" data-add="straight-wire" type="button"><span class="ico">⊙</span>通电直导线</button>
+        <button class="tool-btn" data-add="solenoid" type="button"><span class="ico">☰</span>通电螺线管</button>
+      </section>
+
+      <section class="panel-section">
+        <h2>实验工具</h2>
+        <button class="tool-btn" data-add="needle" type="button"><span class="ico">↔</span>小磁针</button>
+      </section>
+
+      <section class="panel-section">
+        <h2>操作</h2>
+        <button class="tool-btn small" id="btnDuplicate" type="button" disabled>复制选中</button>
+        <button class="tool-btn small" id="btnDelete" type="button" disabled>删除选中</button>
+      </section>
+    </aside>
+
+    <div id="stage">
+      <canvas id="fieldCanvas"></canvas>
+      <svg id="sceneSvg" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div id="probeInfo" class="probe-info hidden"></div>
+      <div id="stageHint" class="stage-hint">从左侧添加磁场源，开始实验</div>
+    </div>
+
+    <aside id="rightPanel" class="panel">
+      <h2 class="panel-title">对象属性</h2>
+      <div id="propertyPanel" class="property-empty">未选中对象<br />点击实验台上的磁场源或小磁针</div>
+    </aside>
+
+  </main>
+
+  <footer id="bottombar">
+    <div class="bottom-left">
+      <label class="chk"><input type="checkbox" id="chkFieldLines" checked /> 磁感线</label>
+      <label class="chk"><input type="checkbox" id="chkVectors" /> 磁场方向</label>
+      <label class="chk"><input type="checkbox" id="chkStrength" /> 磁场强弱</label>
+    </div>
+    <div class="bottom-center">
+      <span id="obsHint">观察提示：移动第二个磁场源，看看磁感线发生了什么变化。</span>
+    </div>
+    <div class="bottom-right">
+      <span id="unitNote">强度为教学模型相对值</span>
+      <button id="btnClear" class="btn danger" type="button">清空实验台</button>
+    </div>
+  </footer>
+
+</div>
+
+<div id="helpModal" class="modal hidden">
+  <div class="modal-box">
+    <button class="modal-close" id="btnHelpClose" type="button">×</button>
+    <h2>怎么玩？</h2>
+    <ol class="help-steps">
+      <li>从左侧「磁场源」添加条形磁铁、U 形磁铁、通电直导线或通电螺线管。</li>
+      <li>用鼠标拖动磁体或导线，改变它们在实验台上的位置。</li>
+      <li>在右侧属性面板输入角度，或点击 ↺ / ↻ 按钮旋转磁场源。</li>
+      <li>添加多个磁场源，观察总磁场如何重新分布。</li>
+      <li>点击「＋ 小磁针」放置小磁针，它会自动指向当地总磁场方向。</li>
+      <li>打开「磁感线」观察整个实验台的磁场分布。</li>
+      <li>点击实验台任意空白位置，查看该点的磁场方向和大小。</li>
+    </ol>
+
+    <h3>知识小结</h3>
+    <div class="knowledge-grid" id="knowledgeGrid"></div>
+
+    <p class="help-footnote">
+      <b>说明：</b>本页面使用的是<b>教学型二维磁场模型</b>（等效磁荷近似），
+      磁场强度为相对值，用于比较不同位置、不同磁场源的相对大小，
+      并不对应真实世界中某个具体磁铁的特斯拉数值。
+      磁感线是为了形象描述磁场而引入的<b>假想曲线</b>，并非空间中真实存在的线；
+      磁场箭头同样是可视化工具。小磁针则是真实的实验模型，
+      其 N 极会趋向当地磁场方向。
+    </p>
+  </div>
+</div>
+
+<!-- ============================================================
+     脚本按依赖顺序加载（普通 script，file:// 与 GitHub Pages 均可运行）
+     ============================================================ -->
+<script>
+/* ============================================================
+ * core/Constants.js
+ * 全局常量（教学型二维磁场模型，使用相对单位）
+ * ============================================================ */
+window.MFL = window.MFL || {};
+
+(function (MFL) {
+  'use strict';
+
+  MFL.Constants = {
+    /* ---------- 磁场模型常数（相对单位，非真实 SI 数值） ---------- */
+
+    // 等效磁荷常数：B = POLE_K * q / r^2
+    POLE_K: 4000,
+
+    // 通电直导线常数：B = WIRE_K * I / r
+    WIRE_K: 20,
+
+    // 螺线管等效磁荷因子：q = FACTOR * 匝数 * 电流
+    SOLENOID_POLE_FACTOR: 0.05,
+
+    // U 形磁铁单个极面的总等效磁荷因子
+    UMAGNET_POLE_FACTOR: 1.5,
+
+    // U 形磁铁每个极面离散成几个等效磁荷
+    UMAGNET_POLE_SUBDIV: 3,
+
+    /* ---------- 数值稳定性 ---------- */
+    SOFTENING: 5,        // 奇异点软化半径（像素）
+    FIELD_EPS: 1e-9,     // 小于此值视为零场
+
+    /* ---------- 磁感线追踪 ---------- */
+    LINE_STEP: 3.0,
+    LINE_MAX_STEPS: 900,
+    LINE_MIN_FIELD: 2e-4,
+    LINE_MAX_LENGTH: 3200,
+    LINE_MIN_POINTS: 8,
+    LINE_MAX_COUNT: 200,
+    LINE_BOUNDS_MARGIN: 60,
+
+    /* ---------- 磁感线去重网格 ---------- */
+    DEDUP_CELL: 12,
+
+    /* ---------- 磁场箭头 ---------- */
+    VECTOR_SPACING: 58,
+    VECTOR_MIN_LEN: 7,
+    VECTOR_MAX_LEN: 26,
+    VECTOR_LOG_REF: 1.5,
+
+    /* ---------- 热力图 ---------- */
+    HEATMAP_CELL: 14,
+    HEATMAP_LOG_REF: 1.7,
+
+    /* ---------- 数量上限 ---------- */
+    MAX_SOURCES: 20,
+    MAX_NEEDLES: 50,
+
+    /* ---------- 小磁针 ---------- */
+    NEEDLE_LENGTH: 40,
+
+    /* ---------- 颜色 ---------- */
+    COLORS: {
+      fieldLine: 'rgba(32, 96, 168, 0.52)',
+      fieldLineArrow: 'rgba(32, 96, 168, 0.88)',
+      vector: 'rgba(0, 132, 152, 0.85)',
+      grid: 'rgba(120, 155, 195, 0.16)'
+    }
+  };
+})(window.MFL);
+</script>
+
+<script>
+/* ============================================================
+ * core/Vector2.js
+ * 二维向量工具
+ * ============================================================ */
+(function (MFL) {
+  'use strict';
+
+  class Vector2 {
+    constructor(x, y) {
+      this.x = x || 0;
+      this.y = y || 0;
+    }
+
+    set(x, y) { this.x = x; this.y = y; return this; }
+    copy(v) { this.x = v.x; this.y = v.y; return this; }
+    clone() { return new Vector2(this.x, this.y); }
+
+    add(v) { this.x += v.x; this.y += v.y; return this; }
+    sub(v) { this.x -= v.x; this.y -= v.y; return this; }
+    scale(s) { this.x *= s; this.y *= s; return this; }
+
+    lengthSq() { return this.x * this.x + this.y * this.y; }
+    length() { return Math.sqrt(this.x * this.x + this.y * this.y); }
+
+    normalize() {
+      const l = this.length();
+      if (l > 1e-12) { this.x /= l; this.y /= l; }
+      else { this.x = 0; this.y = 0; }
+      return this;
+    }
+
+    angle() { return Math.atan2(this.y, this.x); }
+
+    static add(a, b) { return new Vector2(a.x + b.x, a.y + b.y); }
+    static sub(a, b) { return new Vector2(a.x - b.x, a.y - b.y); }
+    static scale(v, s) { return new Vector2(v.x * s, v.y * s); }
+    static dot(a, b) { return a.x * b.x + a.y * b.y; }
+    static cross(a, b) { return a.x * b.y - a.y * b.x; }
+    static dist(a, b) { return Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y)); }
+
+    static fromAngle(angle, len) {
+      const l = (len === undefined) ? 1 : len;
+      return new Vector2(Math.cos(angle) * l, Math.sin(angle) * l);
+    }
+
+    /** 向量旋转（屏幕坐标系下，正角度视觉上为顺时针） */
+    static rotate(v, angle) {
+      const c = Math.cos(angle), s = Math.sin(angle);
+      return new Vector2(v.x * c - v.y * s, v.x * s + v.y * c);
+    }
+
+    /** 向量反向旋转 */
+    static rotateInverse(v, angle) {
+      const c = Math.cos(angle), s = Math.sin(angle);
+      return new Vector2(v.x * c + v.y * s, -v.x * s + v.y * c);
+    }
+  }
+
+  MFL.Vector2 = Vector2;
+})(window.MFL);
+</script>
+
+<script>
+/* ============================================================
+ * core/SceneState.js
+ * 场景状态容器
+ * ============================================================ */
+(function (MFL) {
+  'use strict';
+
+  let _needleCounter = 0;
+
+  /** 小磁针：一个纯数据对象，方向由当地总磁场决定 */
+  class Needle {
+    constructor(x, y) {
+      this.id = 'needle-' + (++_needleCounter);
+      this.type = 'needle';
+      this.x = x;
+      this.y = y;
+      this.angle = 0;   // 由磁场计算填充，弧度
+    }
+  }
+
+  class SceneState {
+    constructor() {
+      this.sources = [];
+      this.needles = [];
+
+      this.showFieldLines = true;
+      this.showVectors = false;
+      this.showStrength = false;
+
+      this.selectedObjectId = null;
+      this.probePoint = null;
+
+      this._subs = [];
+    }
+
+    subscribe(fn) { this._subs.push(fn); }
+
+    notify(reason) {
+      const r = reason || 'change';
+      for (let i = 0; i < this._subs.length; i++) {
+        this._subs[i](r, this);
+      }
+    }
+
+    /* ---------------- 磁场源 ---------------- */
+
+    addSource(source) {
+      if (this.sources.length >= MFL.Constants.MAX_SOURCES) return false;
+      this.sources.push(source);
+      this.notify('sources');
+      return true;
+    }
+
+    removeSource(id) {
+      const i = this.sources.findIndex(function (s) { return s.id === id; });
+      if (i === -1) return false;
+      this.sources.splice(i, 1);
+      if (this.selectedObjectId === id) this.selectedObjectId = null;
+      this.notify('sources');
+      return true;
+    }
+
+    getSource(id) {
+      for (let i = 0; i < this.sources.length; i++) {
+        if (this.sources[i].id === id) return this.sources[i];
+      }
+      return null;
+    }
+
+    /* ---------------- 小磁针 ---------------- */
+
+    addNeedle(needle) {
+      if (this.needles.length >= MFL.Constants.MAX_NEEDLES) return false;
+      this.needles.push(needle);
+      this.notify('needles');
+      return true;
+    }
+
+    removeNeedle(id) {
+      const i = this.needles.findIndex(function (n) { return n.id === id; });
+      if (i === -1) return false;
+      this.needles.splice(i, 1);
+      if (this.selectedObjectId === id) this.selectedObjectId = null;
+      this.notify('needles');
+      return true;
+    }
+
+    getNeedle(id) {
+      for (let i = 0; i < this.needles.length; i++) {
+        if (this.needles[i].id === id) return this.needles[i];
+      }
+      return null;
+    }
+
+    /* ---------------- 通用 ---------------- */
+
+    getObject(id) {
+      return this.getSource(id) || this.getNeedle(id);
+    }
+
+    select(id) {
+      if (this.selectedObjectId === id) return;
+      this.selectedObjectId = id;
+      this.notify('selection');
+    }
+
+    clear() {
+      this.sources.length = 0;
+      this.needles.length = 0;
+      this.selectedObjectId = null;
+      this.probePoint = null;
+      this.notify('clear');
+    }
+
+    get isEmpty() {
+      return this.sources.length === 0 && this.needles.length === 0;
+    }
+  }
+
+  MFL.Needle = Needle;
+  MFL.SceneState = SceneState;
+})(window.MFL);
+</script>
+
+<script>
+/* ============================================================
+ * sources/MagneticSource.js
+ * 磁场源基类
+ * ============================================================ */
+(function (MFL) {
+  'use strict';
+
+  let _idCounter = 0;
+
+  /**
+   * 所有磁场源的公共基类。
+   *
+   * 坐标约定：
+   *   - 世界坐标使用屏幕像素坐标，x 向右、y 向下。
+   *   - 每个磁场源有局部坐标系（原点在其中心，+x 为其主轴方向）。
+   *   - rotation 为弧度，世界坐标下正角度视觉上为顺时针。
+   */
+  class MagneticSource {
+    constructor(opts) {
+      opts = opts || {};
+      this.id = opts.id || ('src-' + (++_idCounter));
+      this.type = 'source';
+      this.x = (opts.x !== undefined) ? opts.x : 0;
+      this.y = (opts.y !== undefined) ? opts.y : 0;
+      this.rotation = (opts.rotation !== undefined) ? opts.rotation : 0;
+      this.strength = (opts.strength !== undefined) ? opts.strength : 1;
+      this.visible = (opts.visible !== undefined) ? opts.visible : true;
+    }
+
+    /* ---------------- 坐标变换 ---------------- */
+
+    /** 局部坐标 → 世界坐标 */
+    localToWorld(lx, ly) {
+      const c = Math.cos(this.rotation);
+      const s = Math.sin(this.rotation);
+      return {
+        x: this.x + lx * c - ly * s,
+        y: this.y + lx * s + ly * c
+      };
+    }
+
+    /** 世界坐标 → 局部坐标 */
+    worldToLocal(wx, wy) {
+      const c = Math.cos(this.rotation);
+      const s = Math.sin(this.rotation);
+      const dx = wx - this.x;
+      const dy = wy - this.y;
+      return {
+        x: dx * c + dy * s,
+        y: -dx * s + dy * c
+      };
+    }
+
+    /** 局部向量 → 世界向量 */
+    localVectorToWorld(bx, by) {
+      const c = Math.cos(this.rotation);
+      const s = Math.sin(this.rotation);
+      return {
+        bx: bx * c - by * s,
+        by: bx * s + by * c
+      };
+    }
+
+    /* ---------------- 子类接口 ---------------- */
+
+    /**
+     * 计算本磁场源在 (x, y) 处产生的磁场（世界坐标系）。
+     * @returns {{bx:number, by:number}}
+     */
+    getFieldAt(x, y) {
+      return { bx: 0, by: 0 };
+    }
+
+    /**
+     * 生成磁感线种子点（世界坐标）。
+     * 注意：这些只是"追踪起点"，最终绘制的是总磁场的磁感线。
+     */
+    getSeedPoints() {
+      return [];
+    }
+
+    /** 命中测试，用于鼠标选择 */
+    hitTest(x, y) {
+      return false;
+    }
+
+    /* ---------------- 辅助 ---------------- */
+
+    getDisplayName() { return '磁场源'; }
+
+    getRotationDegrees() {
+      return (this.rotation * 180) / Math.PI;
+    }
+
+    setRotationDegrees(deg) {
+      this.rotation = (deg * Math.PI) / 180;
+    }
+
+    static peekIdCounter() { return _idCounter; }
+  }
+
+  MFL.MagneticSource = MagneticSource;
+})(window.MFL);
+</script>
+
+<script>
+/* ============================================================
+ * sources/BarMagnet.js
+ * 条形磁铁 —— 两个等效磁荷（N 极 +q，S 极 -q）的二维近似
+ *
+ * 【科学说明】
+ * 本项目使用"等效磁极模型"生成教学可视化：
+ * 用一对等量异号的等效磁荷模拟条形磁铁外部的磁场分布。
+ * 磁单极子只是数学上的等效计算方法，并不表示真实存在孤立磁单极子。
+ * ============================================================ */
+(function (MFL) {
+  'use strict';
+
+  class BarMagnet extends MFL.MagneticSource {
+    constructor(opts) {
+      super(opts);
+      opts = opts || {};
+      this.type = 'bar-magnet';
+      this.length = (opts.length !== undefined) ? opts.length : 160;
+      this.width = (opts.width !== undefined) ? opts.width : 36;
+    }
+
+    /** 等效磁荷距中心的距离（略小于半长，使外部磁感线形状更自然） */
+    getPoleOffset() {
+      return this.length * 0.42;
+    }
+
+    /** 返回世界坐标下的等效磁荷列表 */
+    getPoles() {
+      const d = this.getPoleOffset();
+      const n = this.localToWorld(d, 0);
+      const s = this.localToWorld(-d, 0);
+      return [
+        { x: n.x, y: n.y, q: this.strength },
+        { x: s.x, y: s.y, q: -this.strength }
+      ];
+    }
+
+    getFieldAt(x, y) {
+      const K = MFL.Constants.POLE_K;
+      const soft = MFL.Constants.SOFTENING;
+      const soft2 = soft * soft;
+
+      const local = this.worldToLocal(x, y);
+      const d = this.getPoleOffset();
+      const q = this.strength;
+
+      let bx = 0, by = 0;
+
+      // N 极（+q），局部坐标 (+d, 0)
+      let dx = local.x - d;
+      let dy = local.y;
+      let r2 = dx * dx + dy * dy + soft2;
+      let inv = (K * q) / (r2 * Math.sqrt(r2));
+      bx += dx * inv;
+      by += dy * inv;
+
+      // S 极（-q），局部坐标 (-d, 0)
+      dx = local.x + d;
+      dy = local.y;
+      r2 = dx * dx + dy * dy + soft2;
+      inv = (-K * q) / (r2 * Math.sqrt(r2));
+      bx += dx * inv;
+      by += dy * inv;
+
+      return this.localVectorToWorld(bx, by);
+    }
+
+    getSeedPoints() {
+      const poles = this.getPoles();
+      const nPole = poles[0];
+      const halfL = this.length / 2;
+      const halfW = this.width / 2;
+      const pts = [];
+
+      const rings = [
+        { r: Math.max(14, this.length * 0.11), count: 18 },
+        { r: Math.max(26, this.length * 0.22), count: 18 },
+        { r: Math.max(44, this.length * 0.36), count: 14 }
+      ];
+
+      for (let ri = 0; ri < rings.length; ri++) {
+        const ring = rings[ri];
+        for (let i = 0; i < ring.count; i++) {
+          const a = (i / ring.count) * Math.PI * 2;
+          const wx = nPole.x + Math.cos(a) * ring.r;
+          const wy = nPole.y + Math.sin(a) * ring.r;
+          const l = this.worldToLocal(wx, wy);
+          if (Math.abs(l.x) < halfL && Math.abs(l.y) < halfW) continue;
+          pts.push({ x: wx, y: wy });
+        }
+      }
+      return pts;
+    }
+
+    hitTest(x, y) {
+      const l = this.worldToLocal(x, y);
+      return Math.abs(l.x) <= this.length / 2 + 4 &&
+             Math.abs(l.y) <= this.width / 2 + 4;
+    }
+
+    getDisplayName() { return '条形磁铁'; }
+
+    serialize() {
+      return {
+        type: this.type,
+        x: this.x, y: this.y,
+        rotation: this.rotation,
+        strength: this.strength,
+        length: this.length,
+        width: this.width
+      };
+    }
+  }
+
+  MFL.BarMagnet = BarMagnet;
+})(window.MFL);
+</script>
+
+<script>
+/* ============================================================
+ * sources/UMagnet.js
+ * U 形磁铁 —— 两个极面，每个极面用若干等效磁荷离散表示
+ *
+ * 局部坐标：开口朝 -y 方向（屏幕上方），两个极面位于 y = -height/2
+ * 左臂顶端为 N 极，右臂顶端为 S 极。
+ * ============================================================ */
+(function (MFL) {
+  'use strict';
+
+  class UMagnet extends MFL.MagneticSource {
+    constructor(opts) {
+      super(opts);
+      opts = opts || {};
+      this.type = 'u-magnet';
+      this.width = (opts.width !== undefined) ? opts.width : 150;
+      this.height = (opts.height !== undefined) ? opts.height : 120;
+      this.poleDistance = (opts.poleDistance !== undefined) ? opts.poleDistance : 80;
+      this.armWidth = (opts.armWidth !== undefined) ? opts.armWidth : 0; // 0 = 自动
+    }
+
+    getArmWidth() {
+      if (this.armWidth > 0) return this.armWidth;
+      const w = (this.width - this.poleDistance) / 2;
+      return Math.max(12, Math.min(40, w));
+    }
+
+    getFieldAt(x, y) {
+      const K = MFL.Constants.POLE_K;
+      const soft = MFL.Constants.SOFTENING;
+      const soft2 = soft * soft;
+      const n = MFL.Constants.UMAGNET_POLE_SUBDIV;
+
+      const pd = this.poleDistance;
+      const aw = this.getArmWidth();
+      const h = this.height;
+      const halfH = h / 2;
+
+      const subQ = (this.strength * MFL.Constants.UMAGNET_POLE_FACTOR) / n;
+      const halfSpan = aw * 0.5 * 0.85;
+
+      const c = Math.cos(this.rotation);
+      const s = Math.sin(this.rotation);
+      const ox = this.x;
+      const oy = this.y;
+
+      let bx = 0, by = 0;
+
+      for (let i = 0; i < n; i++) {
+        const t = (n === 1) ? 0.5 : i / (n - 1);
+        const off = (t - 0.5) * 2 * halfSpan;
+
+        /* --- N 极（左臂顶端） --- */
+        const lxN = -pd / 2 + off;
+        const lyN = -halfH;
+        const wxN = ox + lxN * c - lyN * s;
+        const wyN = oy + lxN * s + lyN * c;
+
+        let dx = x - wxN;
+        let dy = y - wyN;
+        let r2 = dx * dx + dy * dy + soft2;
+        let inv = (K * subQ) / (r2 * Math.sqrt(r2));
+        bx += dx * inv;
+        by += dy * inv;
+
+        /* --- S 极（右臂顶端） --- */
+        const lxS = pd / 2 + off;
+        const lyS = -halfH;
+        const wxS = ox + lxS * c - lyS * s;
+        const wyS = oy + lxS * s + lyS * c;
+
+        dx = x - wxS;
+        dy = y - wyS;
+        r2 = dx * dx + dy * dy + soft2;
+        inv = (-K * subQ) / (r2 * Math.sqrt(r2));
+        bx += dx * inv;
+        by += dy * inv;
+      }
+
+      return { bx: bx, by: by };
+    }
+
+    getSeedPoints() {
+      const pd = this.poleDistance;
+      const h = this.height;
+      const pts = [];
+
+      const centers = [
+        this.localToWorld(-pd / 2, -h / 2),
+        this.localToWorld(pd / 2, -h / 2)
+      ];
+
+      const radii  = [18, 36, 62];
+      const counts = [14, 14, 12];
+
+      for (let c = 0; c < centers.length; c++) {
+        const center = centers[c];
+        for (let ri = 0; ri < radii.length; ri++) {
+          const r = radii[ri];
+          for (let i = 0; i < counts[ri]; i++) {
+            const a = (i / counts[ri]) * Math.PI * 2;
+            pts.push({
+              x: center.x + Math.cos(a) * r,
+              y: center.y + Math.sin(a) * r
+            });
+          }
+        }
+      }
+      return pts;
+    }
+
+    hitTest(x, y) {
+      const l = this.worldToLocal(x, y);
+      const pd = this.poleDistance;
+      const aw = this.getArmWidth();
+      const halfH = this.height / 2;
+      const outerHalf = pd / 2 + aw / 2;
+      return Math.abs(l.x) <= outerHalf + 6 && Math.abs(l.y) <= halfH + 6;
+    }
+
+    getDisplayName() { return 'U 形磁铁'; }
+
+    serialize() {
+      return {
+        type: this.type,
+        x: this.x, y: this.y,
+        rotation: this.rotation,
+        strength: this.strength,
+        width: this.width,
+        height: this.height,
+        poleDistance: this.poleDistance
+      };
+    }
+  }
+
+  MFL.UMagnet = UMagnet;
+})(window.MFL);
+</script>
+
+<script>
+/* ============================================================
+ * sources/StraightWire.js
+ * 通电直导线 —— 垂直于屏幕的无限长直导线
+ *
+ * 物理模型：
+ *   |B| = k·I / r
+ *   方向由右手螺旋定则决定：
+ *     电流垂直屏幕向外（⊙）→ 屏幕上磁场沿逆时针环绕导线
+ *     电流垂直屏幕向里（⊗）→ 方向反转
+ *
+ * 屏幕坐标推导：
+ *   设导线在 (x0, y0)，电流 I > 0 表示垂直屏幕向外，
+ *   则 B = k·I·(dy, -dx) / (dx² + dy²)，其中 dx = x - x0, dy = y - y0。
+ *   验证：导线右侧的点 (dx>0, dy=0)，B 指向 -y 方向（屏幕上方），
+ *   与右手螺旋定则一致。
+ * ============================================================ */
+(function (MFL) {
+  'use strict';
+
+  class StraightWire extends MFL.MagneticSource {
+    constructor(opts) {
+      super(opts);
+      opts = opts || {};
+      this.type = 'straight-wire';
+      this.current = (opts.current !== undefined) ? opts.current : 5;
+      this.currentOut = (opts.currentOut !== undefined) ? opts.currentOut : true;
+      this.radius = 17;
+    }
+
+    getFieldAt(x, y) {
+      const K = MFL.Constants.WIRE_K;
+      const soft = MFL.Constants.SOFTENING;
+      const soft2 = soft * soft;
+
+      const dx = x - this.x;
+      const dy = y - this.y;
+      const r2 = dx * dx + dy * dy + soft2;
+
+      const sign = this.currentOut ? 1 : -1;
+      const k = (K * this.current * sign) / r2;
+
+      return { bx: k * dy, by: -k * dx };
+    }
+
+    getSeedPoints() {
+      const radii = [26, 48, 80, 120, 170, 230, 300, 380];
+      const pts = [];
+      for (let ri = 0; ri < radii.length; ri++) {
+        const r = radii[ri];
+        for (let i = 0; i < 6; i++) {
+          const a = (i / 6) * Math.PI * 2 + ri * 0.18;
+          pts.push({
+            x: this.x + Math.cos(a) * r,
+            y: this.y + Math.sin(a) * r
+          });
+        }
+      }
+      return pts;
+    }
+
+    hitTest(x, y) {
+      const dx = x - this.x;
+      const dy = y - this.y;
+      const rr = this.radius + 9;
+      return dx * dx + dy * dy <= rr * rr;
+    }
+
+    getDisplayName() { return '通电直导线'; }
+
+    serialize() {
+      return {
+        type: this.type,
+        x: this.x, y: this.y,
+        current: this.current,
+        currentOut: this.currentOut
+      };
+    }
+  }
+
+  MFL.StraightWire = StraightWire;
+})(window.MFL);
+</script>
+
+<script>
+/* ============================================================
+ * sources/Solenoid.js
+ * 通电螺线管 —— 二维等效磁荷（两极）近似模型
+ *
+ * 局部坐标：轴线沿 +x 方向，N 极位于 +x 端（电流方向为正时）。
+ * 等效磁荷强度 ∝ 匝数 N × 电流 I。
+ * ============================================================ */
+(function (MFL) {
+  'use strict';
+
+  class Solenoid extends MFL.MagneticSource {
+    constructor(opts) {
+      super(opts);
+      opts = opts || {};
+      this.type = 'solenoid';
+      this.current = (opts.current !== undefined) ? opts.current : 2;
+      this.currentOut = (opts.currentOut !== undefined) ? opts.currentOut : true;
+      this.turns = (opts.turns !== undefined) ? opts.turns : 20;
+      this.length = (opts.length !== undefined) ? opts.length : 170;
+      this.radius = (opts.radius !== undefined) ? opts.radius : 26;
+    }
+
+    /** 等效磁荷强度（带符号） */
+    getPoleStrength() {
+      const sign = this.currentOut ? 1 : -1;
+      return MFL.Constants.SOLENOID_POLE_FACTOR * this.turns * this.current * sign;
+    }
+
+    getFieldAt(x, y) {
+      const K = MFL.Constants.POLE_K;
+      const soft = MFL.Constants.SOFTENING;
+      const soft2 = soft * soft;
+
+      const local = this.worldToLocal(x, y);
+      const d = this.length * 0.45;
+      const q = this.getPoleStrength();
+
+      let bx = 0, by = 0;
+
+      // N 极（局部 +d 处）
+      let dx = local.x - d;
+      let dy = local.y;
+      let r2 = dx * dx + dy * dy + soft2;
+      let inv = (K * q) / (r2 * Math.sqrt(r2));
+      bx += dx * inv;
+      by += dy * inv;
+
+      // S 极（局部 -d 处）
+      dx = local.x + d;
+      dy = local.y;
+      r2 = dx * dx + dy * dy + soft2;
+      inv = (-K * q) / (r2 * Math.sqrt(r2));
+      bx += dx * inv;
+      by += dy * inv;
+
+      return this.localVectorToWorld(bx, by);
+    }
+
+    getSeedPoints() {
+      const d = this.length * 0.45;
+      const nW = this.localToWorld(d, 0);
+      const sW = this.localToWorld(-d, 0);
+      const halfL = this.length / 2;
+      const rad = this.radius;
+      const pts = [];
+
+      const rings = [
+        { r: Math.max(18, rad * 1.15), count: 16 },
+        { r: Math.max(34, rad * 1.9),  count: 16 },
+        { r: Math.max(58, rad * 3.2),  count: 12 }
+      ];
+
+      const centers = [nW, sW];
+
+      for (let c = 0; c < centers.length; c++) {
+        const center = centers[c];
+        for (let ri = 0; ri < rings.length; ri++) {
+          const r = rings[ri].r;
+          const count = rings[ri].count;
+          for (let i = 0; i < count; i++) {
+            const a = (i / count) * Math.PI * 2;
+            const wx = center.x + Math.cos(a) * r;
+            const wy = center.y + Math.sin(a) * r;
+            const l = this.worldToLocal(wx, wy);
+            if (Math.abs(l.x) < halfL && Math.abs(l.y) < rad) continue;
+            pts.push({ x: wx, y: wy });
+          }
+        }
+      }
+      return pts;
+    }
+
+    hitTest(x, y) {
+      const l = this.worldToLocal(x, y);
+      return Math.abs(l.x) <= this.length / 2 + 8 &&
+             Math.abs(l.y) <= this.radius + 10;
+    }
+
+    getDisplayName() { return '通电螺线管'; }
+
+    serialize() {
+      return {
+        type: this.type,
+        x: this.x, y: this.y,
+        rotation: this.rotation,
+        current: this.current,
+        currentOut: this.currentOut,
+        turns: this.turns,
+        length: this.length
+      };
+    }
+  }
+
+  MFL.Solenoid = Solenoid;
+})(window.MFL);
+</script>
+
+<script>
+/* ============================================================
+ * core/MagneticFieldModel.js
+ * 统一磁场计算系统
+ *
+ * 这是整个项目最核心的底层逻辑：
+ *   B_total(x, y) = Σ B_i(x, y)
+ * 多个磁场源必须做二维矢量叠加，而不是各自画各自的磁感线。
+ * ============================================================ */
+(function (MFL) {
+  'use strict';
+
+  class MagneticFieldModel {
+    constructor(sceneState) {
+      this.scene = sceneState;
+    }
+
+    /**
+     * 计算 (x, y) 处的总磁场。
+     * @returns {{bx:number, by:number, magnitude:number, direction:number}}
+     */
+    getFieldAt(x, y) {
+      let bx = 0;
+      let by = 0;
+
+      const sources = this.scene.sources;
+      for (let i = 0; i < sources.length; i++) {
+        const s = sources[i];
+        if (!s.visible) continue;
+        const f = s.getFieldAt(x, y);
+        bx += f.bx;
+        by += f.by;
+      }
+
+      const magnitude = Math.sqrt(bx * bx + by * by);
+      const direction = Math.atan2(by, bx);
+
+      return {
+        bx: bx,
+        by: by,
+        magnitude: magnitude,
+        direction: direction
+      };
+    }
+
+    /** 只计算某一个磁场源的贡献（用于调试/教学对照） */
+    getFieldOfSource(source, x, y) {
+      return source.getFieldAt(x, y);
+    }
+  }
+
+  MFL.MagneticFieldModel = MagneticFieldModel;
+})(window.MFL);
+</script>
+
+<script>
+/* ============================================================
+ * field/FieldLineTracer.js
+ * 磁感线追踪器 + 磁感线集合构建器
+ *
+ * 磁感线由总磁场 B_total(x,y) 积分得到：
+ *   dp/ds = B / |B|
+ * 使用四阶龙格-库塔（RK4）积分。
+ *
+ * 严格禁止使用任何预先画好的固定路径。
+ * ============================================================ */
+(function (MFL) {
+  'use strict';
+
+  class FieldLineTracer {
+    constructor(model, bounds) {
+      this.model = model;
+      this.bounds = bounds || { minX: 0, minY: 0, maxX: 1000, maxY: 700 };
+      this.stepSize = MFL.Constants.LINE_STEP;
+      this.maxSteps = MFL.Constants.LINE_MAX_STEPS;
+      this.minField = MFL.Constants.LINE_MIN_FIELD;
+      this.maxLength = MFL.Constants.LINE_MAX_LENGTH;
+    }
+
+    setQuality(quality) {
+      if (quality === 'low') {
+        this.stepSize = MFL.Constants.LINE_STEP * 2.2;
+      } else {
+        this.stepSize = MFL.Constants.LINE_STEP;
+      }
+      this.maxSteps = MFL.Constants.LINE_MAX_STEPS;
+    }
+    /**
+     * 从 (x0, y0) 出发，向前、向后各积分一段，拼成完整曲线。
+     * @returns {Array<{x:number, y:number}>}
+     */
+    trace(x0, y0) {
+      const forward = this._integrate(x0, y0, 1);
+      const backward = this._integrate(x0, y0, -1);
+
+      backward.reverse();
+      backward.pop(); // 去掉与 forward 重复的起点
+
+      return backward.concat(forward);
+    }
+
+    _integrate(x0, y0, dir) {
+      const h = this.stepSize * dir;
+      const pts = [{ x: x0, y: y0 }];
+
+      let x = x0;
+      let y = y0;
+      let total = 0;
+
+      const loopThreshold = (this.stepSize * 2) * (this.stepSize * 2);
+
+      for (let step = 0; step < this.maxSteps; step++) {
+        const k1 = this._unit(x, y);
+        if (!k1) break;
+
+        const k2 = this._unit(x + h * 0.5 * k1.x, y + h * 0.5 * k1.y);
+        if (!k2) break;
+
+        const k3 = this._unit(x + h * 0.5 * k2.x, y + h * 0.5 * k2.y);
+        if (!k3) break;
+
+        const k4 = this._unit(x + h * k3.x, y + h * k3.y);
+        if (!k4) break;
+
+        const dx = (h / 6) * (k1.x + 2 * k2.x + 2 * k3.x + k4.x);
+        const dy = (h / 6) * (k1.y + 2 * k2.y + 2 * k3.y + k4.y);
+
+        x += dx;
+        y += dy;
+        total += Math.sqrt(dx * dx + dy * dy);
+
+        pts.push({ x: x, y: y });
+
+        if (!this._inBounds(x, y)) break;
+        if (total > this.maxLength) break;
+
+        // 闭合回路检测（例如单根直导线周围的环形磁场）
+        if (step > 30) {
+          const lx = x - x0;
+          const ly = y - y0;
+          if (lx * lx + ly * ly < loopThreshold) break;
+        }
+      }
+
+      return pts;
+    }
+
+    _unit(x, y) {
+      const f = this.model.getFieldAt(x, y);
+      const m = f.magnitude;
+
+      // 零场区域：停止积分，避免 NaN / Infinity
+      if (!isFinite(m) || m < this.minField) return null;
+
+      return { x: f.bx / m, y: f.by / m };
+    }
+
+    _inBounds(x, y) {
+      const b = this.bounds;
+      return x >= b.minX && x <= b.maxX && y >= b.minY && y <= b.maxY;
+    }
+  }
+
+  /* ============================================================
+   * FieldLineBuilder —— 收集种子点、去重、生成整组磁感线
+   * ============================================================ */
+  class FieldLineBuilder {
+    constructor(model, scene) {
+      this.model = model;
+      this.scene = scene;
+      this.tracer = new FieldLineTracer(model);
+      this.cellSize = MFL.Constants.DEDUP_CELL;
+    }
+
+    /**
+     * @param {object} bounds  实验台边界
+     * @param {string} quality 'high' | 'low'
+     * @returns {Array<Array<{x:number,y:number}>>}
+     */
+    build(bounds, quality) {
+      this.tracer.bounds = bounds;
+      this.tracer.setQuality(quality || 'high');
+
+      const maxLines = MFL.Constants.LINE_MAX_COUNT;
+
+      const seeds = this._collectSeeds();
+      const occupied = Object.create(null);
+      const lines = [];
+
+      for (let i = 0; i < seeds.length; i++) {
+        if (lines.length >= maxLines) break;
+
+        const s = seeds[i];
+        if (!this._inBounds(s, bounds)) continue;
+        if (this._isOccupied(occupied, s)) continue;
+
+        const pts = this.tracer.trace(s.x, s.y);
+        if (pts.length < MFL.Constants.LINE_MIN_POINTS) continue;
+
+        this._markOccupied(occupied, pts);
+        lines.push(pts);
+      }
+
+      return lines;
+    }
+
+    /** 交错收集各磁场源的种子点，避免某一个源占满全部线条 */
+    _collectSeeds() {
+      const lists = [];
+      const sources = this.scene.sources;
+
+      for (let i = 0; i < sources.length; i++) {
+        const src = sources[i];
+        if (!src.visible) continue;
+        const pts = src.getSeedPoints();
+        if (pts && pts.length) lists.push(pts);
+      }
+
+      let maxLen = 0;
+      for (let i = 0; i < lists.length; i++) {
+        if (lists[i].length > maxLen) maxLen = lists[i].length;
+      }
+
+      const out = [];
+      for (let i = 0; i < maxLen; i++) {
+        for (let j = 0; j < lists.length; j++) {
+          if (i < lists[j].length) out.push(lists[j][i]);
+        }
+      }
+      return out;
+    }
+
+    _key(x, y) {
+      const cx = Math.floor(x / this.cellSize);
+      const cy = Math.floor(y / this.cellSize);
+      return cx + ':' + cy;
+    }
+
+    _isOccupied(occupied, p) {
+      return occupied[this._key(p.x, p.y)] === true;
+    }
+
+    _markOccupied(occupied, pts) {
+      const n = Math.min(pts.length, 6);
+      for (let i = 0; i < n; i++) {
+        occupied[this._key(pts[i].x, pts[i].y)] = true;
+      }
+    }
+
+    _inBounds(p, b) {
+      return p.x >= b.minX && p.x <= b.maxX && p.y >= b.minY && p.y <= b.maxY;
+    }
+  }
+
+  MFL.FieldLineTracer = FieldLineTracer;
+  MFL.FieldLineBuilder = FieldLineBuilder;
+})(window.MFL);
+</script>
+
+<script>
+/* ============================================================
+ * field/FieldGrid.js
+ * 网格采样：为磁场箭头与强弱热力图提供数据
+ * ============================================================ */
+(function (MFL) {
+  'use strict';
+
+  class FieldGrid {
+    constructor(model) {
+      this.model = model;
+    }
+
+    /**
+     * 在实验台上按固定间距采样磁场向量。
+     * @returns {Array<{x,y,bx,by,magnitude}>}
+     */
+    sampleVectors(bounds, spacing) {
+      const out = [];
+      const startX = Math.floor(bounds.minX / spacing) * spacing + spacing * 0.5;
+      const startY = Math.floor(bounds.minY / spacing) * spacing + spacing * 0.5;
+
+      for (let y = startY; y < bounds.maxY; y += spacing) {
+        for (let x = startX; x < bounds.maxX; x += spacing) {
+          const f = this.model.getFieldAt(x, y);
+          if (!isFinite(f.magnitude) || f.magnitude < 1e-7) continue;
+          out.push({
+            x: x,
+            y: y,
+            bx: f.bx,
+            by: f.by,
+            magnitude: f.magnitude
+          });
+        }
+      }
+      return out;
+    }
+  }
+
+  MFL.FieldGrid = FieldGrid;
+})(window.MFL);
+</script>
+
+<script>
+/* ============================================================
+ * rendering/FieldLineRenderer.js
+ * 磁感线渲染（Canvas 层）
+ * ============================================================ */
+(function (MFL) {
+  'use strict';
+
+  class FieldLineRenderer {
+    constructor(ctx) {
+      this.ctx = ctx;
+      this.arrowSpacing = 95;
+    }
+
+    render(lines) {
+      const ctx = this.ctx;
+      if (!lines || !lines.length) return;
+
+      ctx.save();
+      ctx.lineWidth = 1.35;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.strokeStyle = MFL.Constants.COLORS.fieldLine;
+
+      for (let i = 0; i < lines.length; i++) {
+        const pts = lines[i];
+        if (pts.length < 2) continue;
+
+        ctx.beginPath();
+        ctx.moveTo(pts[0].x, pts[0].y);
+        for (let j = 1; j < pts.length; j++) {
+          ctx.lineTo(pts[j].x, pts[j].y);
+        }
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      this._drawArrows(lines);
+    }
+
+    _drawArrows(lines) {
+      const ctx = this.ctx;
+      const spacing = this.arrowSpacing;
+
+      ctx.save();
+      ctx.fillStyle = MFL.Constants.COLORS.fieldLineArrow;
+
+      for (let i = 0; i < lines.length; i++) {
+        const pts = lines[i];
+        let acc = 0;
+        let nextAt = spacing * 0.45;
+
+        for (let j = 1; j < pts.length; j++) {
+          const dx = pts[j].x - pts[j - 1].x;
+          const dy = pts[j].y - pts[j - 1].y;
+          acc += Math.sqrt(dx * dx + dy * dy);
+
+          if (acc >= nextAt) {
+            nextAt += spacing;
+            this._arrow(ctx, pts[j].x, pts[j].y, Math.atan2(dy, dx), 5.2);
+          }
+        }
+      }
+      ctx.restore();
+    }
+
+    /** 手动绘制箭头，避免大量 save/restore 影响性能 */
+    _arrow(ctx, x, y, angle, size) {
+      const c = Math.cos(angle);
+      const s = Math.sin(angle);
+
+      const px = function (lx, ly) { return x + lx * c - ly * s; };
+      const py = function (lx, ly) { return y + lx * s + ly * c; };
+
+      ctx.beginPath();
+      ctx.moveTo(px(size, 0), py(size, 0));
+      ctx.lineTo(px(-size * 0.72, size * 0.62), py(-size * 0.72, size * 0.62));
+      ctx.lineTo(px(-size * 0.34, 0), py(-size * 0.34, 0));
+      ctx.lineTo(px(-size * 0.72, -size * 0.62), py(-size * 0.72, -size * 0.62));
+      ctx.closePath();
+      ctx.fill();
+    }
+  }
+
+  MFL.FieldLineRenderer = FieldLineRenderer;
+})(window.MFL);
+</script>
+
+<script>
+/* ============================================================
+ * rendering/VectorRenderer.js
+ * 磁场方向箭头渲染（Canvas 层）
+ *
+ * 箭头方向 = 当地总磁场方向
+ * 箭头长度 = 由 |B| 经过对数缩放得到（避免强场把箭头拉满屏幕）
+ * ============================================================ */
+(function (MFL) {
+  'use strict';
+
+  class VectorRenderer {
+    constructor(ctx) {
+      this.ctx = ctx;
+    }
+
+    render(samples) {
+      if (!samples || !samples.length) return;
+
+      const ctx = this.ctx;
+      const C = MFL.Constants;
+
+      ctx.save();
+      ctx.lineWidth = 1.6;
+      ctx.lineCap = 'round';
+
+      for (let i = 0; i < samples.length; i++) {
+        const s = samples[i];
+        const m = s.magnitude;
+        if (!isFinite(m) || m <= 0) continue;
+
+        const t = this._norm(m);
+        const len = C.VECTOR_MIN_LEN + (C.VECTOR_MAX_LEN - C.VECTOR_MIN_LEN) * t;
+
+        const ux = s.bx / m;
+        const uy = s.by / m;
+
+        const x0 = s.x - ux * len * 0.5;
+        const y0 = s.y - uy * len * 0.5;
+        const x1 = s.x + ux * len * 0.5;
+        const y1 = s.y + uy * len * 0.5;
+
+        const color = 'rgba(0, 132, 152, ' + (0.32 + 0.55 * t).toFixed(3) + ')';
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+
+        ctx.beginPath();
+        ctx.moveTo(x0, y0);
+        ctx.lineTo(x1, y1);
+        ctx.stroke();
+
+        const angle = Math.atan2(uy, ux);
+        const c = Math.cos(angle);
+        const sn = Math.sin(angle);
+        const hs = 4.4;
+
+        const px = function (lx, ly) { return x1 + lx * c - ly * sn; };
+        const py = function (lx, ly) { return y1 + lx * sn + ly * c; };
+
+        ctx.beginPath();
+        ctx.moveTo(px(0, 0), py(0, 0));
+        ctx.lineTo(px(-hs * 1.5, hs * 0.85), py(-hs * 1.5, hs * 0.85));
+        ctx.lineTo(px(-hs * 1.5, -hs * 0.85), py(-hs * 1.5, -hs * 0.85));
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+
+    _norm(m) {
+      const v = Math.log10(1 + m) / MFL.Constants.VECTOR_LOG_REF;
+      return Math.max(0, Math.min(1, v));
+    }
+  }
+
+  MFL.VectorRenderer = VectorRenderer;
+})(window.MFL);
+</script>
+
+<script>
+/* ============================================================
+ * rendering/NeedleRenderer.js
+ * 小磁针渲染（SVG 层）
+ *
+ * 物理原则：小磁针 N 极指向当地【总】磁场方向。
+ * 因此这里读取的是 MagneticFieldModel.getFieldAt(x, y)，
+ * 而不是某个特定磁场源。
+ * ============================================================ */
+(function (MFL) {
+  'use strict';
+
+  class NeedleRenderer {
+    constructor(layer, model) {
+      this.layer = layer;
+      this.model = model;
+      this.cache = Object.create(null);
+    }
+
+    render(needles, selectedId) {
+      const alive = Object.create(null);
+      const len = MFL.Constants.NEEDLE_LENGTH;
+      const half = len / 2;
+
+      for (let i = 0; i < needles.length; i++) {
+        const n = needles[i];
+        alive[n.id] = true;
+
+        let entry = this.cache[n.id];
+
+        if (!entry) {
+          entry = this._create(n.id, half);
+          this.cache[n.id] = entry;
+        }
+
+        // 计算当地总磁场方向
+        const f = this.model.getFieldAt(n.x, n.y);
+        let deg = 0;
+        if (isFinite(f.magnitude) && f.magnitude > 1e-9) {
+          deg = Math.atan2(f.by, f.bx) * 180 / Math.PI;
+        }
+        n.angle = deg * Math.PI / 180;
+
+        entry.g.setAttribute(
+          'transform',
+          'translate(' + n.x.toFixed(2) + ',' + n.y.toFixed(2) + ') rotate(' + deg.toFixed(2) + ')'
+        );
+
+        // 标签反向旋转，保持文字正立
+        entry.nText.setAttribute('transform', 'rotate(' + (-deg).toFixed(2) + ',' + (half + 6) + ',5)');
+        entry.sText.setAttribute('transform', 'rotate(' + (-deg).toFixed(2) + ',' + (-half - 6) + ',5)');
+
+        const isSel = (n.id === selectedId);
+        if (isSel !== entry.selected) {
+          entry.g.setAttribute('class', 'needle' + (isSel ? ' selected' : ''));
+          entry.selected = isSel;
+        }
+      }
+
+      // 移除已经不存在的
+      for (const id in this.cache) {
+        if (!alive[id]) {
+          const e = this.cache[id];
+          if (e.g.parentNode) e.g.parentNode.removeChild(e.g);
+          delete this.cache[id];
+        }
+      }
+    }
+
+    _create(id, half) {
+      const NS = 'http://www.w3.org/2000/svg';
+      const g = document.createElementNS(NS, 'g');
+      g.setAttribute('class', 'needle');
+      g.setAttribute('data-object-id', id);
+      g.setAttribute('data-object-type', 'needle');
+
+      // 点击热区
+      const hit = document.createElementNS(NS, 'rect');
+      hit.setAttribute('class', 'hit-area');
+      hit.setAttribute('x', -half - 14);
+      hit.setAttribute('y', -10);
+      hit.setAttribute('width', half * 2 + 28);
+      hit.setAttribute('height', 20);
+      hit.setAttribute('rx', 8);
+      g.appendChild(hit);
+
+      // N 端（局部 +x 方向）
+      const north = document.createElementNS(NS, 'polygon');
+      north.setAttribute('class', 'needle-north');
+      north.setAttribute('points',
+        half + ',0 ' + (half * 0.22) + ',-5.5 ' + (half * 0.22) + ',5.5');
+      g.appendChild(north);
+
+      // S 端（局部 -x 方向）
+      const south = document.createElementNS(NS, 'polygon');
+      south.setAttribute('class', 'needle-south');
+      south.setAttribute('points',
+        (-half) + ',0 ' + (-half * 0.22) + ',-5.5 ' + (-half * 0.22) + ',5.5');
+      g.appendChild(south);
+
+      // 中心轴
+      const hub = document.createElementNS(NS, 'circle');
+      hub.setAttribute('class', 'needle-hub');
+      hub.setAttribute('r', '3.2');
+      g.appendChild(hub);
+
+      // 标签
+      const nText = document.createElementNS(NS, 'text');
+      nText.setAttribute('class', 'needle-label n');
+      nText.setAttribute('x', half + 6);
+      nText.setAttribute('y', '5');
+      nText.textContent = 'N';
+      g.appendChild(nText);
+
+      const sText = document.createElementNS(NS, 'text');
+      sText.setAttribute('class', 'needle-label s');
+      sText.setAttribute('x', -half - 6);
+      sText.setAttribute('y', '5');
+      sText.textContent = 'S';
+      g.appendChild(sText);
+
+      this.layer.appendChild(g);
+
+      return { g: g, nText: nText, sText: sText, selected: false };
+    }
+  }
+
+  MFL.NeedleRenderer = NeedleRenderer;
+})(window.MFL);
+</script>
+
+<script>
+/* ============================================================
+ * rendering/SourceRenderer.js
+ * 磁场源渲染（SVG 层）
+ * ============================================================ */
+(function (MFL) {
+  'use strict';
+
+  class SourceRenderer {
+    constructor(layer) {
+      this.layer = layer;
+    }
+
+    render(sources, selectedId) {
+      let html = '';
+
+      for (let i = 0; i < sources.length; i++) {
+        const s = sources[i];
+        if (!s.visible) continue;
+        html += this._build(s, s.id === selectedId);
+      }
+
+      this.layer.innerHTML = html;
+    }
+
+    _build(s, selected) {
+      const cls = 'source' + (selected ? ' selected' : '');
+      const deg = (s.rotation * 180 / Math.PI).toFixed(3);
+
+      let head;
+      if (s.type === 'straight-wire') {
+        // 直导线不需要旋转视觉
+        head = '<g class="' + cls + '" data-object-id="' + s.id +
+               '" data-object-type="' + s.type + '" ' +
+               'transform="translate(' + s.x.toFixed(2) + ',' + s.y.toFixed(2) + ')">';
+      } else {
+        head = '<g class="' + cls + '" data-object-id="' + s.id +
+               '" data-object-type="' + s.type + '" ' +
+               'transform="translate(' + s.x.toFixed(2) + ',' + s.y.toFixed(2) +
+               ') rotate(' + deg + ')">';
+      }
+
+      let body = '';
+      switch (s.type) {
+        case 'bar-magnet':    body = this._barMagnet(s); break;
+        case 'u-magnet':      body = this._uMagnet(s); break;
+        case 'straight-wire': body = this._straightWire(s); break;
+        case 'solenoid':      body = this._solenoid(s); break;
+        default: body = '';
+      }
+
+      return head + body + '</g>';
+    }
+
+    /* ---------------- 条形磁铁 ---------------- */
+
+    _barMagnet(s) {
+      const L = s.length;
+      const W = s.width;
+      const hl = L / 2;
+      const hw = W / 2;
+
+      return '' +
+        '<rect class="hit-area" x="' + (-hl) + '" y="' + (-hw) + '" width="' + L + '" height="' + W + '"/>' +
+        '<rect class="mag-north" x="0" y="' + (-hw) + '" width="' + hl + '" height="' + W + '"/>' +
+        '<rect class="mag-south" x="' + (-hl) + '" y="' + (-hw) + '" width="' + hl + '" height="' + W + '"/>' +
+        '<rect class="mag-body" x="' + (-hl) + '" y="' + (-hw) + '" width="' + L + '" height="' + W + '" fill="none"/>' +
+        '<line class="mag-divider" x1="0" y1="' + (-hw) + '" x2="0" y2="' + hw + '"/>' +
+        '<text class="mag-label n" x="' + (hl * 0.5) + '" y="1">N</text>' +
+        '<text class="mag-label s" x="' + (-hl * 0.5) + '" y="1">S</text>';
+    }
+
+    /* ---------------- U 形磁铁 ---------------- */
+
+    _uMagnet(s) {
+      const pd = s.poleDistance;
+      const aw = s.getArmWidth();
+      const h = s.height;
+      const halfH = h / 2;
+
+      const outerL = -pd / 2 - aw / 2;
+      const outerR = pd / 2 + aw / 2;
+      const innerL = -pd / 2 + aw / 2;
+      const innerR = pd / 2 - aw / 2;
+      const beamH = Math.max(16, h * 0.2);
+      const capH = Math.min(30, h * 0.26);
+
+      const d = [
+        'M ' + outerL + ' ' + (-halfH),
+        'L ' + outerL + ' ' + halfH,
+        'L ' + outerR + ' ' + halfH,
+        'L ' + outerR + ' ' + (-halfH),
+        'L ' + innerR + ' ' + (-halfH),
+        'L ' + innerR + ' ' + (halfH - beamH),
+        'L ' + innerL + ' ' + (halfH - beamH),
+        'L ' + innerL + ' ' + (-halfH),
+        'Z'
+      ].join(' ');
+
+      return '' +
+        '<path class="u-body" d="' + d + '"/>' +
+        '<rect class="mag-north" x="' + (-pd / 2 - aw / 2) + '" y="' + (-halfH) +
+          '" width="' + aw + '" height="' + capH + '"/>' +
+        '<rect class="mag-south" x="' + (pd / 2 - aw / 2) + '" y="' + (-halfH) +
+          '" width="' + aw + '" height="' + capH + '"/>' +
+        '<text class="mag-label n" x="' + (-pd / 2) + '" y="' + (-halfH + capH * 0.5 + 1) + '">N</text>' +
+        '<text class="mag-label s" x="' + (pd / 2) + '" y="' + (-halfH + capH * 0.5 + 1) + '">S</text>' +
+        '<rect class="hit-area" x="' + (outerL - 6) + '" y="' + (-halfH - 6) +
+          '" width="' + (outerR - outerL + 12) + '" height="' + (h + 12) + '"/>';
+    }
+
+    /* ---------------- 通电直导线 ---------------- */
+
+    _straightWire(s) {
+      const r = s.radius;
+      let core;
+
+      if (s.currentOut) {
+        // ⊙ 电流垂直屏幕向外
+        core = '<circle class="wire-core" r="4.4"/>';
+      } else {
+        // ⊗ 电流垂直屏幕向里
+        core = '<path class="wire-core" d="M -6.5 -6.5 L 6.5 6.5 M 6.5 -6.5 L -6.5 6.5"/>';
+      }
+
+      return '' +
+        '<circle class="hit-area" r="' + (r + 10) + '"/>' +
+        '<circle class="wire-ring" r="' + r + '"/>' +
+        core +
+        '<text class="wire-label" x="0" y="' + (-r - 8) + '">I</text>';
+    }
+
+    /* ---------------- 通电螺线管 ---------------- */
+
+    _solenoid(s) {
+      const L = s.length;
+      const R = s.radius;
+      const hl = L / 2;
+
+      let coils = '';
+      const coilCount = Math.max(6, Math.min(26, Math.round(s.turns * 0.6)));
+      const step = (L - 10) / coilCount;
+
+      for (let i = 1; i <= coilCount; i++) {
+        const x = -hl + 5 + (i - 1) * step;
+        coils += '<line class="solenoid-coil" x1="' + x.toFixed(1) + '" y1="' + (-R) +
+                 '" x2="' + x.toFixed(1) + '" y2="' + R + '"/>';
+      }
+
+      const nSide = s.currentOut ? 1 : -1;
+      const nX = nSide * (hl + 13);
+      const sX = -nSide * (hl + 13);
+
+      return '' +
+        '<rect class="hit-area" x="' + (-hl - 6) + '" y="' + (-R - 16) +
+          '" width="' + (L + 12) + '" height="' + (2 * R + 32) + '"/>' +
+        '<rect class="solenoid-body" x="' + (-hl) + '" y="' + (-R) +
+          '" width="' + L + '" height="' + (2 * R) + '" rx="5"/>' +
+        coils +
+        '<text class="mag-label n" x="' + nX + '" y="1" fill="#e2453f">N</text>' +
+        '<text class="mag-label s" x="' + sX + '" y="1" fill="#2f6fd0">S</text>';
+    }
+  }
+
+  MFL.SourceRenderer = SourceRenderer;
+})(window.MFL);
+</script>
+
+<script>
+/* ============================================================
+ * rendering/SceneRenderer.js
+ * Canvas 层总渲染器：网格 + 热力图 + 磁感线 + 磁场箭头
+ * ============================================================ */
+(function (MFL) {
+  'use strict';
+
+  class SceneRenderer {
+    constructor(canvas, model, scene) {
+      this.canvas = canvas;
+      this.ctx = canvas.getContext('2d');
+      this.model = model;
+      this.scene = scene;
+
+      this.width = 0;
+      this.height = 0;
+
+      this.fieldLines = [];
+      this.vectorSamples = [];
+
+      this.fieldLineRenderer = new MFL.FieldLineRenderer(this.ctx);
+      this.vectorRenderer = new MFL.VectorRenderer(this.ctx);
+      this.grid = new MFL.FieldGrid(model);
+      this.builder = new MFL.FieldLineBuilder(model, scene);
+
+      this._heatCanvas = null;
+      this._heatCtx = null;
+      this._heatImage = null;
+      this._heatCols = 0;
+      this._heatRows = 0;
+    }
+
+    resize() {
+      const parent = this.canvas.parentElement;
+      const rect = parent.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+
+      this.width = Math.max(1, Math.floor(rect.width));
+      this.height = Math.max(1, Math.floor(rect.height));
+
+      this.canvas.width = Math.floor(this.width * dpr);
+      this.canvas.height = Math.floor(this.height * dpr);
+      this.canvas.style.width = this.width + 'px';
+      this.canvas.style.height = this.height + 'px';
+
+      this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    getBounds() {
+      const m = MFL.Constants.LINE_BOUNDS_MARGIN;
+      return {
+        minX: -m,
+        minY: -m,
+        maxX: this.width + m,
+        maxY: this.height + m
+      };
+    }
+
+    /**
+     * 重新计算磁场相关的数据（磁感线 + 箭头采样）。
+     * 只有在磁场源发生变化时才需要调用。
+     * @param {string} quality 'high' | 'low'
+     */
+    recomputeField(quality) {
+      const bounds = this.getBounds();
+
+      if (this.scene.showFieldLines) {
+        this.fieldLines = this.builder.build(bounds, quality || 'high');
+      } else {
+        this.fieldLines = [];
+      }
+
+      if (this.scene.showVectors) {
+        this.vectorSamples = this.grid.sampleVectors(
+          bounds, MFL.Constants.VECTOR_SPACING
+        );
+      } else {
+        this.vectorSamples = [];
+      }
+    }
+
+    draw() {
+      const ctx = this.ctx;
+      ctx.clearRect(0, 0, this.width, this.height);
+
+      this._drawGrid();
+
+      if (this.scene.showStrength) this._drawHeatmap();
+      if (this.scene.showFieldLines) this.fieldLineRenderer.render(this.fieldLines);
+      if (this.scene.showVectors) this.vectorRenderer.render(this.vectorSamples);
+
+      this._drawProbe();
+    }
+
+    /* ---------------- 网格 ---------------- */
+
+    _drawGrid() {
+      const ctx = this.ctx;
+      const spacing = 40;
+
+      ctx.save();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = MFL.Constants.COLORS.grid;
+      ctx.beginPath();
+
+      for (let x = spacing; x < this.width; x += spacing) {
+        ctx.moveTo(x + 0.5, 0);
+        ctx.lineTo(x + 0.5, this.height);
+      }
+      for (let y = spacing; y < this.height; y += spacing) {
+        ctx.moveTo(0, y + 0.5);
+        ctx.lineTo(this.width, y + 0.5);
+      }
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    /* ---------------- 热力图 ---------------- */
+
+    _drawHeatmap() {
+      const cell = MFL.Constants.HEATMAP_CELL;
+      const cols = Math.ceil(this.width / cell);
+      const rows = Math.ceil(this.height / cell);
+      if (cols <= 0 || rows <= 0) return;
+
+      if (this._heatCols !== cols || this._heatRows !== rows || !this._heatCanvas) {
+        this._heatCanvas = document.createElement('canvas');
+        this._heatCanvas.width = cols;
+        this._heatCanvas.height = rows;
+        this._heatCtx = this._heatCanvas.getContext('2d');
+        this._heatImage = this._heatCtx.createImageData(cols, rows);
+        this._heatCols = cols;
+        this._heatRows = rows;
+      }
+
+      const img = this._heatImage;
+      const data = img.data;
+      const ref = MFL.Constants.HEATMAP_LOG_REF;
+
+      for (let j = 0; j < rows; j++) {
+        for (let i = 0; i < cols; i++) {
+          const x = (i + 0.5) * cell;
+          const y = (j + 0.5) * cell;
+
+          const f = this.model.getFieldAt(x, y);
+          let t = Math.log10(1 + f.magnitude) / ref;
+          if (!isFinite(t)) t = 0;
+          t = Math.max(0, Math.min(1, t));
+
+          const idx = (j * cols + i) * 4;
+          data[idx]     = Math.round(20 + t * 215);   // R
+          data[idx + 1] = Math.round(140 - t * 110);  // G
+          data[idx + 2] = Math.round(200 - t * 160);  // B
+          data[idx + 3] = Math.round(t * 120);        // A
+        }
+      }
+
+      this._heatCtx.putImageData(img, 0, 0);
+
+      const ctx = this.ctx;
+      ctx.save();
+      ctx.imageSmoothingEnabled = true;
+      ctx.globalAlpha = 0.9;
+      ctx.drawImage(this._heatCanvas, 0, 0, this.width, this.height);
+      ctx.restore();
+    }
+
+    /* ---------------- 探针标记 ---------------- */
+
+    _drawProbe() {
+      const p = this.scene.probePoint;
+      if (!p) return;
+
+      const ctx = this.ctx;
+      const f = this.model.getFieldAt(p.x, p.y);
+
+      ctx.save();
+
+      // 圆点
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+      ctx.fillStyle = '#ff9b23';
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.6;
+      ctx.stroke();
+
+      // 方向箭头
+      if (isFinite(f.magnitude) && f.magnitude > 1e-9) {
+        const ux = f.bx / f.magnitude;
+        const uy = f.by / f.magnitude;
+        const len = 42;
+        const x1 = p.x + ux * len;
+        const y1 = p.y + uy * len;
+
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(x1, y1);
+        ctx.strokeStyle = '#ff9b23';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        const angle = Math.atan2(uy, ux);
+        const c = Math.cos(angle);
+        const s = Math.sin(angle);
+        const hs = 7;
+        const px = function (lx, ly) { return x1 + lx * c - ly * s; };
+        const py = function (lx, ly) { return y1 + lx * s + ly * c; };
+
+        ctx.beginPath();
+        ctx.moveTo(px(0, 0), py(0, 0));
+        ctx.lineTo(px(-hs * 1.6, hs * 0.9), py(-hs * 1.6, hs * 0.9));
+        ctx.lineTo(px(-hs * 1.6, -hs * 0.9), py(-hs * 1.6, -hs * 0.9));
+        ctx.closePath();
+        ctx.fillStyle = '#ff9b23';
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+  }
+
+  MFL.SceneRenderer = SceneRenderer;
+})(window.MFL);
+</script>
+
+<script>
+/* ============================================================
+ * interaction/SelectionManager.js
+ * 选择管理
+ * ============================================================ */
+(function (MFL) {
+  'use strict';
+
+  class SelectionManager {
+    constructor(scene) {
+      this.scene = scene;
+    }
+
+    select(id) {
+      this.scene.select(id);
+    }
+
+    clear() {
+      this.scene.select(null);
+    }
+
+    get selectedId() {
+      return this.scene.selectedObjectId;
+    }
+
+    get selectedObject() {
+      const id = this.scene.selectedObjectId;
+      return id ? this.scene.getObject(id) : null;
+    }
+
+    /** 命中测试：返回世界坐标下最上层的对象 */
+    pick(x, y) {
+      // 小磁针优先（体积小）
+      for (let i = this.scene.needles.length - 1; i >= 0; i--) {
+        const n = this.scene.needles[i];
+        const dx = x - n.x;
+        const dy = y - n.y;
+        if (dx * dx + dy * dy <= 26 * 26) return n;
+      }
+      for (let i = this.scene.sources.length - 1; i >= 0; i--) {
+        const s = this.scene.sources[i];
+        if (s.visible && s.hitTest(x, y)) return s;
+      }
+      return null;
+    }
+  }
+
+  MFL.SelectionManager = SelectionManager;
+})(window.MFL);
+</script>
+
+<script>
+/* ============================================================
+ * interaction/DragController.js
+ * 拖动控制器
+ *
+ * 拖动过程中实时（低画质）重算总磁场，松手后恢复高画质。
+ * ============================================================ */
+(function (MFL) {
+  'use strict';
+
+  class DragController {
+    constructor(scene, stage, selection, onUpdate) {
+      this.scene = scene;
+      this.stage = stage;
+      this.selection = selection;
+      this.onUpdate = onUpdate;
+      this.onEmptyClick = null;
+
+      this.dragging = false;
+      this.target = null;
+      this.offsetX = 0;
+      this.offsetY = 0;
+      this.moved = false;
+
+      this._bind();
+    }
+
+    _bind() {
+      const self = this;
+
+      this.stage.addEventListener('pointerdown', function (e) {
+        self._onDown(e);
+      });
+
+      window.addEventListener('pointermove', function (e) {
+        self._onMove(e);
+      });
+
+      window.addEventListener('pointerup', function (e) {
+        self._onUp(e);
+      });
+
+      window.addEventListener('pointercancel', function (e) {
+        self._onUp(e);
+      });
+    }
+
+    _localPoint(e) {
+      const rect = this.stage.getBoundingClientRect();
+      return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      };
+    }
+
+    _onDown(e) {
+      if (e.button !== undefined && e.button !== 0) return;
+
+      const p = this._localPoint(e);
+
+      let el = null;
+      if (e.target && e.target.closest) {
+        el = e.target.closest('[data-object-id]');
+      }
+
+      if (el) {
+        const id = el.getAttribute('data-object-id');
+        const obj = this.scene.getObject(id);
+        if (!obj) return;
+
+        this.scene.select(id);
+
+        this.dragging = true;
+        this.moved = false;
+        this.target = obj;
+        this.offsetX = obj.x - p.x;
+        this.offsetY = obj.y - p.y;
+
+        e.preventDefault();
+      } else {
+        this.scene.select(null);
+        if (this.onEmptyClick) this.onEmptyClick(p);
+      }
+    }
+
+    _onMove(e) {
+      if (!this.dragging || !this.target) return;
+
+      const p = this._localPoint(e);
+      const nx = p.x + this.offsetX;
+      const ny = p.y + this.offsetY;
+
+      if (Math.abs(nx - this.target.x) > 0.01 ||
+          Math.abs(ny - this.target.y) > 0.01) {
+        this.moved = true;
+      }
+
+      this.target.x = nx;
+      this.target.y = ny;
+
+      this.onUpdate('drag');
+      e.preventDefault();
+    }
+
+    _onUp() {
+      if (!this.dragging) return;
+
+      this.dragging = false;
+
+      if (this.moved) {
+        this.onUpdate('dragend');
+      }
+
+      this.target = null;
+    }
+  }
+
+  MFL.DragController = DragController;
+})(window.MFL);
+</script>
+
+<script>
+/* ============================================================
+ * interaction/RotationController.js
+ * 旋转控制器（通过属性面板输入角度 / 按钮旋转）
+ * ============================================================ */
+(function (MFL) {
+  'use strict';
+
+  class RotationController {
+    constructor(scene, onUpdate) {
+      this.scene = scene;
+      this.onUpdate = onUpdate;
+    }
+
+    setDegrees(obj, deg) {
+      if (!obj || typeof obj.setRotationDegrees !== 'function') return;
+      obj.setRotationDegrees(deg);
+      this.onUpdate('rotation');
+    }
+
+    rotateBy(obj, deltaDeg) {
+      if (!obj || typeof obj.setRotationDegrees !== 'function') return;
+      const cur = obj.getRotationDegrees();
+      obj.setRotationDegrees(cur + deltaDeg);
+      this.onUpdate('rotation');
+    }
+  }
+
+  MFL.RotationController = RotationController;
+})(window.MFL);
+</script>
+
+<script>
+/* ============================================================
+ * presets/PresetScenes.js
+ * 经典场景预设
+ * ============================================================ */
+(function (MFL) {
+  'use strict';
+
+  /**
+   * 每个预设返回 { sources: [...配置], needles: [...配置] }
+   * 配置对象直接传给对应的磁场源构造函数。
+   */
+  const PRESETS = [
+    {
+      id: 'single-bar',
+      name: '① 单个条形磁铁',
+      create: function (w, h) {
+        return {
+          sources: [
+            { type: 'bar-magnet', x: w * 0.5, y: h * 0.5, rotation: 0, strength: 1 }
+          ],
+          needles: []
+        };
+      }
+    },
+    {
+      id: 'two-opposite',
+      name: '② 两个异名磁极相对',
+      create: function (w, h) {
+        return {
+          sources: [
+            { type: 'bar-magnet', x: w * 0.30, y: h * 0.5, rotation: 0, strength: 1 },
+            { type: 'bar-magnet', x: w * 0.70, y: h * 0.5, rotation: 0, strength: 1 }
+          ],
+          needles: []
+        };
+      }
+    },
+    {
+      id: 'two-same',
+      name: '③ 两个同名磁极相对',
+      create: function (w, h) {
+        return {
+          sources: [
+            { type: 'bar-magnet', x: w * 0.30, y: h * 0.5, rotation: 0, strength: 1 },
+            { type: 'bar-magnet', x: w * 0.70, y: h * 0.5, rotation: Math.PI, strength: 1 }
+          ],
+          needles: []
+        };
+      }
+    },
+    {
+      id: 'u-magnet',
+      name: '④ U 形磁铁',
+      create: function (w, h) {
+        return {
+          sources: [
+            { type: 'u-magnet', x: w * 0.5, y: h * 0.5, rotation: 0, strength: 1 }
+          ],
+          needles: []
+        };
+      }
+    },
+    {
+      id: 'straight-wire',
+      name: '⑤ 通电直导线',
+      create: function (w, h) {
+        return {
+          sources: [
+            { type: 'straight-wire', x: w * 0.5, y: h * 0.5, current: 5, currentOut: true }
+          ],
+          needles: [
+            { x: w * 0.5 + 110, y: h * 0.5, },
+            { x: w * 0.5 - 110, y: h * 0.5 },
+            { x: w * 0.5, y: h * 0.5 + 110 },
+            { x: w * 0.5, y: h * 0.5 - 110 }
+          ]
+        };
+      }
+    },
+    {
+      id: 'solenoid',
+      name: '⑥ 通电螺线管',
+      create: function (w, h) {
+        return {
+          sources: [
+            { type: 'solenoid', x: w * 0.5, y: h * 0.5, rotation: 0, current: 2, turns: 20, currentOut: true }
+          ],
+          needles: []
+        };
+      }
+    },
+    {
+      id: 'magnet-needles',
+      name: '⑦ 磁铁 + 小磁针',
+      create: function (w, h) {
+        const srcs = [
+          { type: 'bar-magnet', x: w * 0.5, y: h * 0.5, rotation: 0, strength: 1 }
+        ];
+        const nds = [];
+        for (let i = 0; i < 6; i++) {
+          const a = (i / 6) * Math.PI * 2;
+          nds.push({
+            x: w * 0.5 + Math.cos(a) * 190,
+            y: h * 0.5 + Math.sin(a) * 160
+          });
+        }
+        return { sources: srcs, needles: nds };
+      }
+    },
+    {
+      id: 'multi',
+      name: '⑧ 多磁场源叠加',
+      create: function (w, h) {
+        return {
+          sources: [
+            { type: 'bar-magnet', x: w * 0.26, y: h * 0.34, rotation: 0, strength: 1 },
+            { type: 'u-magnet', x: w * 0.72, y: h * 0.34, rotation: Math.PI * 0.5, strength: 0.9 },
+            { type: 'straight-wire', x: w * 0.30, y: h * 0.76, current: 4, currentOut: true },
+            { type: 'solenoid', x: w * 0.72, y: h * 0.76, rotation: 0, current: 2, turns: 18, currentOut: false }
+          ],
+          needles: [
+            { x: w * 0.5, y: h * 0.5 },
+            { x: w * 0.5, y: h * 0.2 },
+            { x: w * 0.5, y: h * 0.8 },
+            { x: w * 0.15, y: h * 0.5 },
+            { x: w * 0.85, y: h * 0.5 }
+          ]
+        };
+      }
+    }
+  ];
+
+  /** 根据配置创建磁场源实例 */
+  function createSource(cfg) {
+    switch (cfg.type) {
+      case 'bar-magnet':    return new MFL.BarMagnet(cfg);
+      case 'u-magnet':      return new MFL.UMagnet(cfg);
+      case 'straight-wire': return new MFL.StraightWire(cfg);
+      case 'solenoid':      return new MFL.Solenoid(cfg);
+      default:              return null;
+    }
+  }
+
+  /** 把一个预设加载到场景中 */
+  function applyPreset(preset, scene, width, height) {
+    if (!preset) return;
+
+    scene.sources.length = 0;
+    scene.needles.length = 0;
+    scene.selectedObjectId = null;
+    scene.probePoint = null;
+
+    const data = preset.create(width, height);
+
+    for (let i = 0; i < data.sources.length; i++) {
+      const s = createSource(data.sources[i]);
+      if (s) scene.sources.push(s);
+    }
+
+    for (let i = 0; i < data.needles.length; i++) {
+      const cfg = data.needles[i];
+      scene.needles.push(new MFL.Needle(cfg.x, cfg.y));
+    }
+
+    scene.notify('preset');
+  }
+
+  MFL.PresetScenes = {
+    list: PRESETS,
+    createSource: createSource,
+    applyPreset: applyPreset
+  };
+})(window.MFL);
+</script>
+
+<script>
+/* ============================================================
+ * ui/Toolbar.js
+ * 左侧工具栏
+ * ============================================================ */
+(function (MFL) {
+  'use strict';
+
+  class Toolbar {
+    constructor(scene, opts) {
+      this.scene = scene;
+      this.onAdd = opts.onAdd;
+      this.onDuplicate = opts.onDuplicate;
+      this.onDelete = opts.onDelete;
+      this.stageRect = opts.stageRect;
+
+      this.btnDuplicate = document.getElementById('btnDuplicate');
+      this.btnDelete = document.getElementById('btnDelete');
+
+      this._bind();
+    }
+
+    _bind() {
+      const self = this;
+
+      // 添加按钮
+      const addBtns = document.querySelectorAll('[data-add]');
+      for (let i = 0; i < addBtns.length; i++) {
+        addBtns[i].addEventListener('click', function () {
+          const kind = this.getAttribute('data-add');
+          self.onAdd(kind);
+        });
+      }
+
+      this.btnDuplicate.addEventListener('click', function () {
+        self.onDuplicate();
+      });
+
+      this.btnDelete.addEventListener('click', function () {
+        self.onDelete();
+      });
+    }
+
+    /** 根据当前选中状态刷新按钮可用性 */
+    sync() {
+      const hasSel = !!this.scene.selectedObjectId;
+      this.btnDuplicate.disabled = !hasSel;
+      this.btnDelete.disabled = !hasSel;
+    }
+  }
+
+  MFL.Toolbar = Toolbar;
+})(window.MFL);
+</script>
+
+<script>
+/* ============================================================
+ * ui/PropertyPanel.js
+ * 右侧对象属性面板
+ * ============================================================ */
+(function (MFL) {
+  'use strict';
+
+  /* 各磁场源的属性定义 */
+  const SCHEMAS = {
+    'bar-magnet': [
+      { key: 'rotationDeg', label: '旋转角度 (°)', type: 'angle' },
+      { key: 'strength', label: '磁场强度', type: 'number', min: 0.1, max: 5, step: 0.1 },
+      { key: 'length', label: '长度', type: 'number', min: 50, max: 420, step: 5, unit: 'px' },
+      { key: 'width', label: '宽度', type: 'number', min: 12, max: 120, step: 2, unit: 'px' }
+    ],
+    'u-magnet': [
+      { key: 'rotationDeg', label: '旋转角度 (°)', type: 'angle' },
+      { key: 'strength', label: '磁场强度', type: 'number', min: 0.1, max: 5, step: 0.1 },
+      { key: 'poleDistance', label: '极距', type: 'number', min: 30, max: 300, step: 5, unit: 'px' },
+      { key: 'height', label: '高度', type: 'number', min: 50, max: 320, step: 5, unit: 'px' },
+      { key: 'width', label: '总宽度', type: 'number', min: 60, max: 400, step: 5, unit: 'px' }
+    ],
+    'straight-wire': [
+      { key: 'current', label: '电流 I', type: 'number', min: 0.1, max: 20, step: 0.1, unit: 'A' },
+      {
+        key: 'currentOut', label: '电流方向', type: 'select',
+        options: [
+          { value: 'true', label: '⊙ 垂直屏幕向外' },
+          { value: 'false', label: '⊗ 垂直屏幕向里' }
+        ]
+      }
+    ],
+    'solenoid': [
+      { key: 'rotationDeg', label: '旋转角度 (°)', type: 'angle' },
+      { key: 'current', label: '电流 I', type: 'number', min: 0.1, max: 20, step: 0.1, unit: 'A' },
+      {
+        key: 'currentOut', label: '电流方向', type: 'select',
+        options: [
+          { value: 'true', label: '正向（N 极在 +x 端）' },
+          { value: 'false', label: '反向（N 极在 -x 端）' }
+        ]
+      },
+      { key: 'turns', label: '匝数 N', type: 'number', min: 1, max: 200, step: 1 },
+      { key: 'length', label: '长度', type: 'number', min: 60, max: 400, step: 5, unit: 'px' }
+    ],
+    'needle': [
+      { key: 'x', label: '位置 X', type: 'number', step: 1, unit: 'px' },
+      { key: 'y', label: '位置 Y', type: 'number', step: 1, unit: 'px' }
+    ]
+  };
+
+  const TYPE_NAMES = {
+    'bar-magnet': '条形磁铁',
+    'u-magnet': 'U 形磁铁',
+    'straight-wire': '通电直导线',
+    'solenoid': '通电螺线管',
+    'needle': '小磁针'
+  };
+
+  function getValue(obj, key) {
+    if (key === 'rotationDeg') {
+      return (obj.rotation * 180 / Math.PI);
+    }
+    return obj[key];
+  }
+
+  function setValue(obj, key, raw) {
+    if (key === 'rotationDeg') {
+      obj.rotation = (parseFloat(raw) || 0) * Math.PI / 180;
+      return;
+    }
+    if (key === 'currentOut') {
+      obj.currentOut = (raw === 'true' || raw === true);
+      return;
+    }
+    const num = parseFloat(raw);
+    if (isFinite(num)) {
+      obj[key] = num;
+    }
+  }
+
+  class PropertyPanel {
+    constructor(scene, opts) {
+      this.scene = scene;
+      this.onChange = opts.onChange;
+      this.onRotate = opts.onRotate;
+      this.el = document.getElementById('propertyPanel');
+      this.currentId = null;
+      this.inputs = [];
+    }
+
+    /** 选择变化时重建面板 */
+    rebuild() {
+      const id = this.scene.selectedObjectId;
+      const obj = id ? this.scene.getObject(id) : null;
+
+      this.currentId = id;
+      this.inputs = [];
+
+      if (!obj) {
+        this.el.className = 'property-empty';
+        this.el.innerHTML = '未选中对象<br />点击实验台上的磁场源或小磁针';
+        return;
+      }
+
+      this.el.className = '';
+      this.el.innerHTML = this._buildHTML(obj);
+      this._bindInputs(obj);
+    }
+
+    _buildHTML(obj) {
+      const schema = SCHEMAS[obj.type] || [];
+      const title = TYPE_NAMES[obj.type] || '对象';
+
+      let html = '<div class="prop-group">';
+      html += '<div class="prop-type">' + title + '</div>';
+
+      for (let i = 0; i < schema.length; i++) {
+        const f = schema[i];
+        html += this._fieldHTML(obj, f, i);
+      }
+
+      html += '</div>';
+
+      if (schema.some(function (f) { return f.type === 'angle'; })) {
+        html += '<div class="rot-buttons">' +
+                '<button class="btn" data-rot="-90" type="button">↺ -90°</button>' +
+                '<button class="btn" data-rot="90" type="button">↻ +90°</button>' +
+                '</div>';
+      }
+
+      if (obj.type === 'needle') {
+        html += '<p style="font-size:11.5px;color:#93aac2;line-height:1.7;margin-top:10px;">' +
+                '小磁针的方向由当地总磁场决定，拖动它即可观察不同位置的磁场方向。</p>';
+      }
+
+      return html;
+    }
+
+    _fieldHTML(obj, f, index) {
+      const id = 'prop-' + index;
+      const val = getValue(obj, f.key);
+
+      if (f.type === 'select') {
+        let opts = '';
+        for (let i = 0; i < f.options.length; i++) {
+          const o = f.options[i];
+          const sel = (String(val) === String(o.value)) ? ' selected' : '';
+          opts += '<option value="' + o.value + '"' + sel + '>' + o.label + '</option>';
+        }
+        return '<div class="prop-row full">' +
+               '<label for="' + id + '">' + f.label + '</label>' +
+               '<select id="' + id + '" data-key="' + f.key + '">' + opts + '</select>' +
+               '</div>';
+      }
+
+      let attrs = 'type="number" step="' + (f.step || 1) + '"';
+      if (f.min !== undefined) attrs += ' min="' + f.min + '"';
+      if (f.max !== undefined) attrs += ' max="' + f.max + '"';
+
+      const display = (Math.abs(val) < 1e-9) ? 0 : Math.round(val * 100) / 100;
+
+      return '<div class="prop-row">' +
+             '<label for="' + id + '">' + f.label +
+             (f.unit ? ' <span style="color:#b6c8da">(' + f.unit + ')</span>' : '') +
+             '</label>' +
+             '<input id="' + id + '" ' + attrs + ' value="' + display + '" data-key="' + f.key + '"/>' +
+             '</div>';
+    }
+
+    _bindInputs(obj) {
+      const self = this;
+
+      const inputs = this.el.querySelectorAll('[data-key]');
+      for (let i = 0; i < inputs.length; i++) {
+        const input = inputs[i];
+        this.inputs.push(input);
+
+        input.addEventListener('input', function () {
+          setValue(obj, this.getAttribute('data-key'), this.value);
+          self.onChange('property');
+        });
+
+        input.addEventListener('change', function () {
+          setValue(obj, this.getAttribute('data-key'), this.value);
+          self.onChange('property');
+        });
+      }
+
+      const rotBtns = this.el.querySelectorAll('[data-rot]');
+      for (let i = 0; i < rotBtns.length; i++) {
+        rotBtns[i].addEventListener('click', function () {
+          const delta = parseFloat(this.getAttribute('data-rot'));
+          self.onRotate(obj, delta);
+          self.rebuild();
+        });
+      }
+    }
+
+    /** 外部（拖动等）改变对象后，刷新输入框的值 */
+    refreshValues() {
+      if (!this.currentId) return;
+      const obj = this.scene.getObject(this.currentId);
+      if (!obj) return;
+
+      for (let i = 0; i < this.inputs.length; i++) {
+        const input = this.inputs[i];
+        if (document.activeElement === input) continue;
+
+        const key = input.getAttribute('data-key');
+        const val = getValue(obj, key);
+
+        if (input.tagName === 'SELECT') {
+          input.value = String(val);
+        } else {
+          input.value = (Math.abs(val) < 1e-9) ? 0 : Math.round(val * 100) / 100;
+        }
+      }
+    }
+
+    /** 拖动时位置在变，但面板里一般没有位置字段，简单跳过即可 */
+    sync() {
+      this.rebuild();
+    }
+  }
+
+  MFL.PropertyPanel = PropertyPanel;
+})(window.MFL);
+</script>
+
+<script>
+/* ============================================================
+ * ui/ControlPanel.js
+ * 底部显示控制栏
+ * ============================================================ */
+(function (MFL) {
+  'use strict';
+
+  class ControlPanel {
+    constructor(scene, opts) {
+      this.scene = scene;
+      this.onChange = opts.onChange;
+      this.onClear = opts.onClear;
+
+      this.chkFieldLines = document.getElementById('chkFieldLines');
+      this.chkVectors = document.getElementById('chkVectors');
+      this.chkStrength = document.getElementById('chkStrength');
+      this.btnClear = document.getElementById('btnClear');
+
+      this._bind();
+    }
+
+    _bind() {
+      const self = this;
+
+      this.chkFieldLines.addEventListener('change', function () {
+        self.scene.showFieldLines = this.checked;
+        self.onChange('toggle');
+      });
+
+      this.chkVectors.addEventListener('change', function () {
+        self.scene.showVectors = this.checked;
+        self.onChange('toggle');
+      });
+
+      this.chkStrength.addEventListener('change', function () {
+        self.scene.showStrength = this.checked;
+        self.onChange('toggle');
+      });
+
+      this.btnClear.addEventListener('click', function () {
+        if (self.scene.isEmpty) return;
+        if (window.confirm('确定清空当前实验台吗？')) {
+          self.onClear();
+        }
+      });
+    }
+
+    sync() {
+      this.chkFieldLines.checked = this.scene.showFieldLines;
+      this.chkVectors.checked = this.scene.showVectors;
+      this.chkStrength.checked = this.scene.showStrength;
+    }
+  }
+
+  MFL.ControlPanel = ControlPanel;
+})(window.MFL);
+</script>
+
+<script>
+/* ============================================================
+ * ui/HelpPanel.js
+ * 帮助弹窗 + 知识卡片
+ * ============================================================ */
+(function (MFL) {
+  'use strict';
+
+  const KNOWLEDGE = [
+    {
+      title: '什么是磁场？',
+      text: '磁体或电流周围存在磁场，它表现为对放入其中的磁体或电流产生力的作用。'
+          + '磁场有方向，也有强弱。描述某点磁场方向时，我们规定：该点小磁针静止时 N 极所指的方向，'
+          + '就是该点磁场的方向。'
+    },
+    {
+      title: '什么是磁感线？',
+      text: '磁感线是为了形象地描述磁场而引入的假想曲线，并不是空间中真实存在的线。'
+          + '磁感线上任意一点的切线方向，表示该点的磁场方向。'
+    },
+    {
+      title: '磁感线方向代表什么？',
+      text: '在磁体外部，磁感线从 N 极出发，回到 S 极。'
+          + '磁感线的疏密可以粗略反映磁场的强弱：越密的地方磁场越强。'
+          + '但磁感线的疏密只是定性的表示，不是精确的定量测量。'
+    },
+    {
+      title: '小磁针为什么会转动？',
+      text: '小磁针本身是一个小磁体，放在磁场中会受到磁力的作用而转动。'
+          + '当它稳定下来时，N 极指向该处磁场的方向。'
+          + '所以我们可以用小磁针来判断某一点的磁场方向。'
+    },
+    {
+      title: '电流为什么会产生磁场？',
+      text: '通电导线周围存在磁场，这是电流的磁效应。'
+          + '对于垂直于屏幕放置的直导线，磁场方向与电流方向有关，'
+          + '可以用右手螺旋定则来判断：用右手握住导线，拇指指向电流方向，'
+          + '四指弯曲的方向就是磁感线的环绕方向。'
+    },
+    {
+      title: '螺线管为什么有 N、S 极？',
+      text: '通电螺线管周围也存在磁场，其外部的磁场分布与条形磁铁具有相似的特征，'
+          + '因此可以认为它有两个磁极。改变电流方向，N、S 极的位置会互换。'
+          + '注意：二者只是磁场分布相似，并不是完全相同。'
+    },
+    {
+      title: '多个磁场为什么可以叠加？',
+      text: '当空间中同时存在多个磁场源时，某一点的总磁场等于各个磁场源单独在该点产生的磁场的矢量叠加，'
+          + '即 B = B₁ + B₂ + B₃ + …。因此移动、旋转或增删任意一个磁场源，'
+          + '整个实验台中的总磁场分布都会随之改变。'
+    }
+  ];
+
+  class HelpPanel {
+    constructor() {
+      this.modal = document.getElementById('helpModal');
+      this.btnOpen = document.getElementById('btnHelp');
+      this.btnClose = document.getElementById('btnHelpClose');
+      this.grid = document.getElementById('knowledgeGrid');
+      this._renderKnowledge();
+      this._bind();
+    }
+
+    _renderKnowledge() {
+      let html = '';
+      for (let i = 0; i < KNOWLEDGE.length; i++) {
+        const k = KNOWLEDGE[i];
+        html += '<div class="k-card">' +
+                '<h4>' + k.title + '</h4>' +
+                '<p>' + k.text + '</p>' +
+                '</div>';
+      }
+      this.grid.innerHTML = html;
+    }
+
+    _bind() {
+      const self = this;
+
+      this.btnOpen.addEventListener('click', function () {
+        self.open();
+      });
+
+      this.btnClose.addEventListener('click', function () {
+        self.close();
+      });
+
+      this.modal.addEventListener('click', function (e) {
+        if (e.target === self.modal) self.close();
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') self.close();
+      });
+    }
+
+    open() { this.modal.classList.remove('hidden'); }
+    close() { this.modal.classList.add('hidden'); }
+  }
+
+  MFL.HelpPanel = HelpPanel;
+})(window.MFL);
+</script>
+
+<script>
+/* ============================================================
+ * main.js
+ * 应用入口：组装所有模块，驱动更新循环
+ * ============================================================ */
+(function (MFL) {
+  'use strict';
+
+  /* ---------------- DOM ---------------- */
+
+  const stage = document.getElementById('stage');
+  const canvas = document.getElementById('fieldCanvas');
+  const svg = document.getElementById('sceneSvg');
+  const probeEl = document.getElementById('probeInfo');
+  const stageHint = document.getElementById('stageHint');
+  const presetSelect = document.getElementById('presetSelect');
+  const btnClassroom = document.getElementById('btnClassroom');
+  const obsHint = document.getElementById('obsHint');
+
+  /* ---------------- SVG 图层 ---------------- */
+
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+
+  const sourceLayer = document.createElementNS(SVG_NS, 'g');
+  sourceLayer.setAttribute('id', 'sourceLayer');
+  svg.appendChild(sourceLayer);
+
+  const needleLayer = document.createElementNS(SVG_NS, 'g');
+  needleLayer.setAttribute('id', 'needleLayer');
+  svg.appendChild(needleLayer);
+
+  /* ---------------- 核心对象 ---------------- */
+
+  const scene = new MFL.SceneState();
+  const model = new MFL.MagneticFieldModel(scene);
+
+  const sceneRenderer = new MFL.SceneRenderer(canvas, model, scene);
+  const sourceRenderer = new MFL.SourceRenderer(sourceLayer);
+  const needleRenderer = new MFL.NeedleRenderer(needleLayer, model);
+
+  const selection = new MFL.SelectionManager(scene);
+  const rotation = new MFL.RotationController(scene, function () {
+    requestUpdate('high');
+  });
+
+  /* ---------------- UI ---------------- */
+
+  const propertyPanel = new MFL.PropertyPanel(scene, {
+    onChange: function () { requestUpdate('high'); },
+    onRotate: function (obj, delta) { rotation.rotateBy(obj, delta); }
+  });
+
+  const controlPanel = new MFL.ControlPanel(scene, {
+    onChange: function () { requestUpdate('high'); },
+    onClear: function () { clearScene(); }
+  });
+
+  const toolbar = new MFL.Toolbar(scene, {
+    onAdd: function (kind) { handleAdd(kind); },
+    onDuplicate: function () { duplicateSelected(); },
+    onDelete: function () { deleteSelected(); }
+  });
+
+  const helpPanel = new MFL.HelpPanel();
+
+  /* ---------------- 更新循环（rAF 节流） ---------------- */
+
+  let pending = false;
+  let nextQuality = 'high';
+
+  function requestUpdate(quality) {
+    if (quality === 'low') {
+      nextQuality = 'low';
+    }
+    if (pending) return;
+
+    pending = true;
+    window.requestAnimationFrame(function () {
+      pending = false;
+      const q = nextQuality;
+      nextQuality = 'high';
+      performUpdate(q);
+    });
+  }
+
+  function performUpdate(quality) {
+    sceneRenderer.recomputeField(quality);
+    sceneRenderer.draw();
+
+    sourceRenderer.render(scene.sources, scene.selectedObjectId);
+    needleRenderer.render(scene.needles, scene.selectedObjectId);
+
+    toolbar.sync();
+    updateStageHint();
+  }
+
+  function performFullUpdate() {
+    requestUpdate('high');
+  }
+
+  /* ---------------- 场景订阅 ---------------- */
+
+  scene.subscribe(function (reason) {
+    if (reason === 'selection') {
+      propertyPanel.rebuild();
+      requestUpdate('high');
+      return;
+    }
+    if (reason === 'drag') {
+      return; // 拖动由 DragController 直接驱动
+    }
+    propertyPanel.rebuild();
+    requestUpdate('high');
+  });
+
+  /* ---------------- 拖动控制器 ---------------- */
+
+  const dragController = new MFL.DragController(
+    scene, stage, selection,
+    function (kind) {
+      if (kind === 'drag') {
+        requestUpdate('low');
+      } else {
+        requestUpdate('high');
+        propertyPanel.refreshValues();
+      }
+    }
+  );
+
+  dragController.onEmptyClick = function (p) {
+    setProbe(p.x, p.y);
+  };
+
+  /* ---------------- 探针 ---------------- */
+
+  function setProbe(x, y) {
+    scene.probePoint = { x: x, y: y };
+
+    const f = model.getFieldAt(x, y);
+    const deg = (isFinite(f.magnitude) && f.magnitude > 1e-9)
+      ? (Math.atan2(f.by, f.bx) * 180 / Math.PI)
+      : 0;
+
+    let strengthText;
+    if (!isFinite(f.magnitude) || f.magnitude < MFL.Constants.FIELD_EPS) {
+      strengthText = '<span class="v">磁场接近零</span>';
+    } else {
+      strengthText = '<span class="v">' + f.magnitude.toFixed(4) + '</span>';
+    }
+
+    probeEl.innerHTML =
+      '<span class="title">该点磁场</span>' +
+      '<div><span class="k">Bx =</span> <span class="v">' + f.bx.toFixed(4) + '</span></div>' +
+      '<div><span class="k">By =</span> <span class="v">' + f.by.toFixed(4) + '</span></div>' +
+      '<div><span class="k">|B| =</span> ' + strengthText + '</div>' +
+      '<div><span class="k">方向 =</span> <span class="v">' + deg.toFixed(1) + '°</span>' +
+      ' <span class="k" style="font-size:10.5px">(正右为 0°，顺时针为正)</span></div>';
+
+    probeEl.classList.remove('hidden');
+
+    // 位置：让信息框出现在点的右侧
+    probeEl.style.left = x + 'px';
+    probeEl.style.top = y + 'px';
+
+    requestUpdate('high');
+  }
+
+  /* ---------------- 添加对象 ---------------- */
+
+  function randomSpawn() {
+    const w = sceneRenderer.width || stage.clientWidth || 800;
+    const h = sceneRenderer.height || stage.clientHeight || 600;
+    return { w: w, h: h };
+  }
+
+  function handleAdd(kind) {
+    const dim = randomSpawn();
+
+    if (kind === 'needle') {
+      if (scene.needles.length >= MFL.Constants.MAX_NEEDLES) {
+        window.alert('小磁针数量已达上限（' + MFL.Constants.MAX_NEEDLES + ' 个）。');
+        return;
+      }
+      const jitterX = (Math.random() - 0.5) * 90;
+      const jitterY = (Math.random() - 0.5) * 90;
+      const needle = new MFL.Needle(
+        dim.w * 0.5 + jitterX,
+        dim.h * 0.5 + jitterY
+      );
+      scene.addNeedle(needle);
+      scene.select(needle.id);
+      return;
+    }
+
+    if (scene.sources.length >= MFL.Constants.MAX_SOURCES) {
+      window.alert('磁场源数量已达上限（' + MFL.Constants.MAX_SOURCES + ' 个）。');
+      return;
+    }
+
+    const cfg = {
+      x: dim.w * 0.5,
+      y: dim.h * 0.5,
+      rotation: 0
+    };
+
+    switch (kind) {
+      case 'bar-magnet':
+        cfg.type = 'bar-magnet';
+        cfg.strength = 1;
+        break;
+      case 'u-magnet':
+        cfg.type = 'u-magnet';
+        cfg.strength = 1;
+        break;
+      case 'straight-wire':
+        cfg.type = 'straight-wire';
+        cfg.current = 5;
+        cfg.currentOut = true;
+        break;
+      case 'solenoid':
+        cfg.type = 'solenoid';
+        cfg.current = 2;
+        cfg.turns = 20;
+        cfg.currentOut = true;
+        break;
+      default:
+        return;
+    }
+
+    // 避免新对象完全叠在已有对象上
+    const offset = scene.sources.length * 24;
+    cfg.x += (offset % 160) - 80;
+    cfg.y += ((offset * 1.6) % 140) - 70;
+
+    const src = MFL.PresetScenes.createSource(cfg);
+    if (!src) return;
+
+    scene.addSource(src);
+    scene.select(src.id);
+  }
+
+  /* ---------------- 复制 / 删除 ---------------- */
+
+  function duplicateSelected() {
+    const obj = selection.selectedObject;
+    if (!obj) return;
+
+    if (obj.type === 'needle') {
+      if (scene.needles.length >= MFL.Constants.MAX_NEEDLES) return;
+      const n = new MFL.Needle(obj.x + 40, obj.y + 40);
+      scene.addNeedle(n);
+      scene.select(n.id);
+      return;
+    }
+
+    if (scene.sources.length >= MFL.Constants.MAX_SOURCES) {
+      window.alert('磁场源数量已达上限。');
+      return;
+    }
+
+    const cfg = obj.serialize();
+    cfg.x = obj.x + 40;
+    cfg.y = obj.y + 40;
+
+    const copy = MFL.PresetScenes.createSource(cfg);
+    if (!copy) return;
+
+    scene.addSource(copy);
+    scene.select(copy.id);
+  }
+
+  function deleteSelected() {
+    const id = scene.selectedObjectId;
+    if (!id) return;
+
+    const obj = scene.getObject(id);
+    if (!obj) return;
+
+    if (obj.type === 'needle') {
+      scene.removeNeedle(id);
+    } else {
+      scene.removeSource(id);
+    }
+
+    if (scene.probePoint) {
+      // 保持探针显示，但重新计算
+      setProbe(scene.probePoint.x, scene.probePoint.y);
+    }
+  }
+
+  function clearScene() {
+    scene.clear();
+    scene.probePoint = null;
+    probeEl.classList.add('hidden');
+    presetSelect.value = '';
+    performFullUpdate();
+  }
+
+  /* ---------------- 键盘快捷键 ---------------- */
+
+  document.addEventListener('keydown', function (e) {
+    const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+    if (tag === 'input' || tag === 'select' || tag === 'textarea') return;
+
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+      e.preventDefault();
+      deleteSelected();
+    }
+
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'd' || e.key === 'D')) {
+      e.preventDefault();
+      duplicateSelected();
+    }
+  });
+
+  /* ---------------- 预设场景 ---------------- */
+
+  function initPresets() {
+    const list = MFL.PresetScenes.list;
+    for (let i = 0; i < list.length; i++) {
+      const opt = document.createElement('option');
+      opt.value = list[i].id;
+      opt.textContent = list[i].name;
+      presetSelect.appendChild(opt);
+    }
+
+    presetSelect.addEventListener('change', function () {
+      const id = this.value;
+      if (!id) return;
+
+      const preset = list.filter(function (p) { return p.id === id; })[0];
+      if (!preset) return;
+
+      const w = sceneRenderer.width || stage.clientWidth || 800;
+      const h = sceneRenderer.height || stage.clientHeight || 600;
+
+      MFL.PresetScenes.applyPreset(preset, scene, w, h);
+      scene.probePoint = null;
+      probeEl.classList.add('hidden');
+      performFullUpdate();
+    });
+  }
+
+  /* ---------------- 课堂模式 ---------------- */
+
+  btnClassroom.addEventListener('click', function () {
+    document.body.classList.toggle('classroom');
+    const isClassroom = document.body.classList.contains('classroom');
+    btnClassroom.textContent = isClassroom ? '退出课堂模式' : '课堂模式';
+
+    // 尺寸变化后重新计算
+    window.setTimeout(function () {
+      handleResize();
+    }, 60);
+  });
+
+  /* ---------------- 尺寸处理 ---------------- */
+
+  let resizeTimer = null;
+
+  function handleResize() {
+    sceneRenderer.resize();
+    performFullUpdate();
+  }
+
+  window.addEventListener('resize', function () {
+    if (resizeTimer) window.clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(handleResize, 120);
+  });
+
+  if (window.ResizeObserver) {
+    const ro = new ResizeObserver(function () {
+      if (resizeTimer) window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(handleResize, 120);
+    });
+    ro.observe(stage);
+  }
+
+  /* ---------------- 舞台提示 ---------------- */
+
+  function updateStageHint() {
+    if (scene.sources.length === 0 && scene.needles.length === 0) {
+      stageHint.classList.remove('hidden');
+    } else {
+      stageHint.classList.add('hidden');
+    }
+  }
+
+  /* ---------------- 观察提示轮换 ---------------- */
+
+  const HINTS = [
+    '观察提示：移动第二个磁场源，看看磁感线发生了什么变化。',
+    '观察提示：改变电流方向，观察直导线周围的磁场方向。',
+    '观察提示：在不同位置放置小磁针，比较它们的方向。',
+    '观察提示：试试让两个同名磁极相对，中间区域会出现什么？',
+    '观察提示：点击实验台任意位置，查看该点的磁场大小与方向。',
+    '观察提示：小磁针的 N 极总是指向当地总磁场方向。'
+  ];
+
+  let hintIndex = 0;
+
+  window.setInterval(function () {
+    hintIndex = (hintIndex + 1) % HINTS.length;
+    obsHint.style.opacity = '0';
+    window.setTimeout(function () {
+      obsHint.textContent = HINTS[hintIndex];
+      obsHint.style.opacity = '1';
+    }, 400);
+  }, 9000);
+
+  /* ---------------- 启动 ---------------- */
+
+  function boot() {
+    initPresets();
+    controlPanel.sync();
+
+    // 首次渲染
+    handleResize();
+
+    // 加载一个默认场景，让学生打开页面立刻看到磁场
+    const preset = MFL.PresetScenes.list.filter(function (p) {
+      return p.id === 'single-bar';
+    })[0];
+
+    if (preset) {
+      const w = sceneRenderer.width || stage.clientWidth || 800;
+      const h = sceneRenderer.height || stage.clientHeight || 600;
+      MFL.PresetScenes.applyPreset(preset, scene, w, h);
+      presetSelect.value = preset.id;
+    }
+
+    performFullUpdate();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+
+  /* ---------------- 暴露给调试 ---------------- */
+
+  MFL.app = {
+    scene: scene,
+    model: model,
+    renderer: sceneRenderer,
+    requestUpdate: requestUpdate
+  };
+})(window.MFL);
+</script>
+
+</body>
+</html>
