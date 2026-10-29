@@ -3,23 +3,51 @@
 <head>
 <meta charset="utf-8">
 <title>ASCII 逃生 —— 极简 Roguelike 生存原型</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <style>
   html, body { height: 100%; margin: 0; }
   body {
     background: #070906;
     display: flex; align-items: center; justify-content: center;
     font-family: ui-monospace, "SF Mono", Menlo, Consolas, "Courier New", monospace;
+    overflow: hidden; overscroll-behavior: none; touch-action: none;
   }
+  /* 触屏设备：画布靠顶显示，底部留给方向盘 */
+  body.touch-ui { align-items: flex-start; padding-top: 12px; }
   canvas {
     border: 1px solid #1e2a18;
     border-radius: 6px;
     box-shadow: 0 0 48px rgba(90, 180, 70, 0.10), 0 0 2px rgba(0,0,0,.8);
+    touch-action: none;
   }
+  /* 触屏方向盘（右下角，十字排布；由 ui.js 检测到触屏后显示） */
+  #dpad { position: fixed; right: 14px; bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    display: none; grid-template-columns: repeat(3, 52px); grid-template-rows: repeat(3, 52px);
+    gap: 6px; z-index: 20; }
+  #dpad .d { border: 1px solid #39603a; border-radius: 12px; background: rgba(16,24,13,.66);
+    color: #9fe8ff; font-size: 22px; line-height: 1; padding: 0; touch-action: none;
+    user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none; }
+  #dpad .d.press { background: rgba(120,220,160,.5); border-color: #5f9c62; }
+  #dpad .up    { grid-column: 2; grid-row: 1; }
+  #dpad .left  { grid-column: 1; grid-row: 2; }
+  #dpad .right { grid-column: 3; grid-row: 2; }
+  #dpad .down  { grid-column: 2; grid-row: 3; }
+  /* 菜单条（悬在方向盘上方；仅标题/结算画面显示） */
+  #mstrip { position: fixed; right: 14px; bottom: calc(208px + env(safe-area-inset-bottom, 0px));
+    display: none; gap: 6px; z-index: 20; }
+  #mstrip .chip { border: 1px solid #39603a; border-radius: 10px; background: rgba(16,24,13,.82);
+    color: #9adf6a; font: 13px ui-monospace, Menlo, Consolas, monospace; padding: 9px 10px;
+    touch-action: none; user-select: none; -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; }
+  #mstrip .chip:active { background: rgba(120,220,160,.5); }
+  #mstrip .chip.red { color: #ff7b6b; border-color: #7b3a34; }
 </style>
 </head>
 <body>
 <canvas id="cv"></canvas>
+<div id="dpad"></div>
+<div id="mstrip"></div>
 <script src="game.js"></script>
 <script src="ui.js"></script>
 </body>

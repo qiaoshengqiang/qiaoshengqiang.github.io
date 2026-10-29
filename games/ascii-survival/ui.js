@@ -15,18 +15,24 @@ const CW = Math.max(10, Math.ceil(ctx.measureText('@').width));
 const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
 cv.style.imageRendering = 'pixelated';
 
-let sizeIdx = 0;                 // 房间大小档位（1/2/3 键切换）
+let sizeIdx = 0;                 // 房间大小档位（1~4 键 / 触屏菜单条切换）
 let cur = MAP_SIZES[sizeIdx];    // 当前尺寸预设
 let cssW = 0, cssH = 0;
 
-/* 按当前尺寸重设画布大小 */
+const hasTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints || 0) > 0;
+let dispScale = 1;               // 显示缩放：<1 表示画布被等比压进小屏（绘制坐标不变）
+
+/* 按当前尺寸重设画布大小；触屏时给底部方向盘预留空间并整体等比缩放 */
 function fitCanvas() {
   cssW = PAD * 2 + CW * cur.W;
   cssH = PAD * 2 + CH * (HUD_ROWS + cur.H + MSG_ROWS + HELP_ROWS);
-  cv.style.width = cssW + 'px';
-  cv.style.height = cssH + 'px';
-  cv.width = Math.round(cssW * dpr);
-  cv.height = Math.round(cssH * dpr);
+  const availW = Math.max(140, document.documentElement.clientWidth - 16);
+  const availH = Math.max(180, window.innerHeight - (hasTouch ? 236 : 0) - 16);
+  dispScale = Math.min(1, availW / cssW, availH / cssH);
+  cv.style.width = Math.round(cssW * dispScale) + 'px';
+  cv.style.height = Math.round(cssH * dispScale) + 'px';
+  cv.width = Math.round(cssW * dispScale * dpr);
+  cv.height = Math.round(cssH * dispScale * dpr);
 }
 
 const COL = {
@@ -90,9 +96,15 @@ window.addEventListener('keydown', e => {
   const d = KEYMAP[e.key];
   if (!d) return;
   e.preventDefault();            // 防方向键滚动页面
-  bufKey = d;
-  if (phase === 'idle') runTurn();
+  pushMove(d[0], d[1]);
 });
+
+/* 统一移动入口（键盘与触屏共用）：写单格缓冲，非动画期立刻执行 */
+function pushMove(dx, dy) {
+  if (!g || g.status === 'dead') return;
+  bufKey = [dx, dy];
+  if (phase === 'idle') runTurn();
+}
 
 function runTurn() {
   const gen0 = myGen;
@@ -192,9 +204,16 @@ function render() {
     if (g.turn > best.turns) best = { turns: g.turn, time: timeMs(), speed: maxSpeedSeen };
   }
 
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.setTransform(dpr * dispScale, 0, 0, dpr * dispScale, 0, 0);
   ctx.fillStyle = COL.bg;
   ctx.fillRect(0, 0, cssW, cssH);
+
+  // 触屏菜单条：只在标题/结算画面出现（进行中隐藏防误触）
+  const wantMenu = hasTouch && (runStart === null || g.status === 'dead');
+  if (wantMenu !== menuVisible) {
+    menuVisible = wantMenu;
+    stripEl.style.display = wantMenu ? 'flex' : 'none';
+  }
 
   // HUD（窄画布自动缩字号防截断）
   const t = timeMs();
@@ -233,7 +252,9 @@ function render() {
   const live = msgs.filter(mm => now < mm.until);
   if (live.length) drawTextFit(mapTop + cur.H, '· ' + live[live.length - 1].text, COL.warn);
 
-  drawTextFit(mapTop + cur.H + MSG_ROWS, '方向键 / WASD 移动 · R 重新开始', COL.dim);
+  drawTextFit(mapTop + cur.H + MSG_ROWS, hasTouch
+    ? '滑动 / 右下方向盘 移动 · 撞墙耗回合不回盾'
+    : '方向键 / WASD 移动 · R 重新开始', COL.dim);
 
   // 护盾触发：全屏青色描边闪光
   if (now < flashShieldUntil) {
@@ -249,8 +270,10 @@ function render() {
     drawCenter(6, 'ASCII 逃生', COL.text, 28);
     drawCenterFit(8, '躲开高速移动的怪物 g —— 它碰到你时，', COL.dim);
     drawCenterFit(9, '护盾若就绪会自动抵挡并让它掉头', COL.dim);
-    drawCenterFit(11, '按 方向键 / WASD 开始移动', COL.playerOn);
-    drawCenterFit(12, `1~4 房间大小（当前 ${cur.name} ${cur.W - 2}×${cur.H - 2}）· R 重开`, COL.dim);
+    drawCenterFit(11, hasTouch ? '按 屏幕右下方向盘 或 在图上滑动 开始' : '按 方向键 / WASD 开始移动', COL.playerOn);
+    drawCenterFit(12, hasTouch
+      ? `右下按钮 选房间大小（当前 ${cur.name} ${cur.W - 2}×${cur.H - 2}）`
+      : `1~4 房间大小（当前 ${cur.name} ${cur.W - 2}×${cur.H - 2}）· R 重开`, COL.dim);
     drawCenterFit(13, '撞墙也消耗回合，且不会回充护盾', COL.dim);
   }
 
@@ -264,9 +287,106 @@ function render() {
     drawCenterFit(9, `生存 ${g.turn} 回合 · ${g.moves} 步 · ${fmtT(timeMs())}s`, COL.text);
     drawCenterFit(10, `本局最高怪物速度 x${maxSpeedSeen}`, COL.dim);
     drawCenterFit(12, `历史最佳 ${best.turns} 回合 / ${fmtT(best.time)}s`, COL.warn);
-    drawCenterFit(14, `1~4 换房间大小（当前 ${cur.name}）· R 或 回车 重新开始`, COL.playerOn);
+    drawCenterFit(14, hasTouch
+      ? '右下按钮 换房间大小 / 重开'
+      : `1~4 换房间大小（当前 ${cur.name}）· R 或 回车 重新开始`, COL.playerOn);
   }
 }
+
+/* —— 触屏 UI：方向盘 + 菜单条 + 画布滑动（仅触屏设备显示，桌面不受影响） —— */
+const dpadEl = document.getElementById('dpad');
+const stripEl = document.getElementById('mstrip');
+let menuVisible = null;                        // 菜单条显隐（状态变化才改 DOM）
+
+function canMenu() { return !g || g.status !== 'playing' || runStart === null; }
+
+/* 方向盘：单击走一步；按住每 130ms 连走（对应键盘长按） */
+const DP_BUTTONS = [
+  { dx: 0, dy: -1, cls: 'up',    label: '▲' },
+  { dx: -1, dy: 0, cls: 'left',  label: '◀' },
+  { dx: 1, dy: 0, cls: 'right',  label: '▶' },
+  { dx: 0, dy: 1, cls: 'down',   label: '▼' },
+];
+for (const d of DP_BUTTONS) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'd ' + d.cls;
+  b.textContent = d.label;
+  let rep = null;
+  const stop = () => { if (rep !== null) { clearInterval(rep); rep = null; } b.classList.remove('press'); };
+  b.addEventListener('pointerdown', e => {
+    if (e.button && e.button > 0) return;       // 只认主键/手指
+    e.preventDefault();
+    b.classList.add('press');
+    pushMove(d.dx, d.dy);
+    clearInterval(rep);
+    rep = setInterval(() => pushMove(d.dx, d.dy), 130);
+  });
+  b.addEventListener('pointerup', stop);
+  b.addEventListener('pointercancel', stop);
+  b.addEventListener('pointerleave', stop);
+  b.addEventListener('contextmenu', e => e.preventDefault());
+  dpadEl.appendChild(b);
+}
+
+/* 菜单条：房间大小（跟随 MAP_SIZES 自动生成）+ 重开 */
+MAP_SIZES.forEach((s, i) => {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'chip';
+  b.textContent = s.name;
+  b.addEventListener('click', () => {
+    if (!canMenu()) return;
+    sizeIdx = i;
+    newGame();
+    pushMsg(`房间：${cur.name} ${cur.W - 2}×${cur.H - 2}`, 2400);
+  });
+  stripEl.appendChild(b);
+});
+{
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'chip red';
+  b.textContent = '重开';
+  b.addEventListener('click', () => { if (g) newGame(); });
+  stripEl.appendChild(b);
+}
+
+/* 画布滑动：轻甩一下 = 朝主轴走一步；按住拖动 = 每 30px 走一步（拖到哪走到哪） */
+let swipe = null;
+cv.addEventListener('pointerdown', e => {
+  if (e.button && e.button > 0) return;
+  swipe = { id: e.pointerId, x: e.clientX, y: e.clientY, t: performance.now() };
+});
+cv.addEventListener('pointermove', e => {
+  if (!swipe || e.pointerId !== swipe.id) return;
+  const dx = e.clientX - swipe.x, dy = e.clientY - swipe.y;
+  if (Math.max(Math.abs(dx), Math.abs(dy)) >= 30) {
+    if (Math.abs(dx) >= Math.abs(dy)) pushMove(Math.sign(dx), 0);
+    else pushMove(0, Math.sign(dy));
+    swipe.x = e.clientX; swipe.y = e.clientY;    // 重置累计基准
+  }
+});
+cv.addEventListener('pointerup', e => {
+  if (!swipe || e.pointerId !== swipe.id) { swipe = null; return; }
+  const dx = e.clientX - swipe.x, dy = e.clientY - swipe.y;
+  const dt = performance.now() - swipe.t;
+  swipe = null;
+  const mdist = Math.max(Math.abs(dx), Math.abs(dy));
+  // 掐点太短不动；快速轻甩（即使没到 30px）也算一次移动
+  if (mdist >= 30 || (dt < 260 && mdist >= 12)) {
+    if (Math.abs(dx) >= Math.abs(dy)) pushMove(Math.sign(dx), 0);
+    else pushMove(0, Math.sign(dy));
+  }
+});
+cv.addEventListener('pointercancel', () => { swipe = null; });
+cv.addEventListener('contextmenu', e => e.preventDefault());
+
+/* 装配 */
+dpadEl.style.display = hasTouch ? 'grid' : 'none';
+stripEl.style.display = 'none';                // render() 按状态切换
+document.body.classList.toggle('touch-ui', hasTouch);
+window.addEventListener('resize', fitCanvas);  // 转屏 / 软键盘弹出时重排
 
 newGame();
 render();
