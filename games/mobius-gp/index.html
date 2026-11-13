@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#03050d" />
+  <title>MÖBIUS GP — 无尽扭环赛车</title>
+  <meta name="description" content="Möbius GP — 在只有一面的赛道上竞速。Three.js 制作的莫比乌斯环赛车游戏。" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23040710'/%3E%3Cpath d='M12 38c0-9 9-15 20-15s20 6 20 15-9 15-20 15S12 47 12 38Z' fill='none' stroke='%2335e7ff' stroke-width='4'/%3E%3Cpath d='M18 24c8 6 20 22 28 28' fill='none' stroke='%23ff35cf' stroke-width='3'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="./css/style.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./vendor/three/three.module.js",
+        "three/addons/": "./vendor/three/addons/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="app">
+    <canvas id="game-canvas" aria-label="Möbius GP 3D 赛道"></canvas>
+    <div class="fx-vignette"></div>
+    <div id="fx-speed" class="fx-speed"></div>
+    <div id="fx-hit" class="fx-hit"></div>
+    <div class="scanlines"></div>
+
+    <!-- ================= MENU ================= -->
+    <section id="menu" class="screen menu-screen">
+      <header class="menu-top">
+        <div class="brand-small">
+          <span class="brand-mark"><i></i><i></i></span>
+          <span>MÖBIUS GP</span>
+          <em>NON-ORIENTABLE RACING DIVISION</em>
+        </div>
+        <div class="menu-top-actions">
+          <button id="btn-help" class="icon-btn" aria-label="操作说明">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.6 9a2.5 2.5 0 0 1 4.9.7c0 1.6-2.5 2-2.5 3.6"/><path d="M12 17h.01"/></svg>
+            <span>操作</span>
+          </button>
+          <button id="btn-sound" class="icon-btn" aria-label="切换声音">
+            <svg class="ico-on" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M16 8.5a5 5 0 0 1 0 7"/><path d="M18.5 6a8.5 8.5 0 0 1 0 12"/></svg>
+            <svg class="ico-off" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="m16 9 5 6M21 9l-5 6"/></svg>
+            <span>声音</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="menu-main">
+        <div class="menu-copy">
+          <div class="eyebrow"><span class="live-dot"></span> SEASON 01 // THE INFINITE TWIST</div>
+          <h1 class="logo">
+            <span class="logo-main">MÖBIUS</span>
+            <span class="logo-gp">GP<i class="logo-slash"></i></span>
+          </h1>
+          <p class="tagline">只有一面的赛道。<br /><span>踩下油门，别问哪边是上。</span></p>
+
+          <div class="selected-track" id="selected-track">
+            <div class="st-index"><span id="track-index">01</span><i id="track-total">/ 09</i></div>
+            <div class="st-copy">
+              <div class="st-kicker" id="track-kicker">CLASSIC HALF-TWIST</div>
+              <h2 id="track-name">FIRST TWIST</h2>
+              <div class="st-zh" id="track-zh">初扭</div>
+              <p id="track-desc">最纯粹的莫比乌斯环。单侧赛道在你完成一圈后会把你翻到另一面——两圈，世界才回到原样。</p>
+              <div class="st-stats">
+                <div><span>单圈</span><b id="track-length">0.62 KM</b></div>
+                <div><span>宽度</span><b id="track-width">22 M</b></div>
+                <div><span>扭数</span><b id="track-twist">×1</b></div>
+                <div><span>分叉</span><b id="track-branch">—</b></div>
+                <div><span>难度</span><b id="track-diff" class="diff-pips"></b></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="setup-row">
+            <div class="setup-group">
+              <label>车手难度</label>
+              <div class="seg" id="difficulty-seg">
+                <button data-difficulty="0">休闲</button>
+                <button data-difficulty="1" class="active">职业</button>
+                <button data-difficulty="2">极限</button>
+              </div>
+            </div>
+            <div class="setup-group">
+              <label>赛车涂装</label>
+              <div class="liveries" id="liveries"></div>
+            </div>
+          </div>
+
+          <button id="btn-start" class="start-btn">
+            <span class="start-glow"></span>
+            <span class="start-copy"><b>开始比赛</b><em>START RACE</em></span>
+            <span class="start-arrow">→</span>
+          </button>
+          <div class="best-line">BEST LAP <b id="best-lap">— — —</b><span id="best-lap-hint">完成一场比赛以记录成绩</span></div>
+        </div>
+        <div class="menu-right">
+          <div class="vertical-label">EST. 2026 · ONE-SIDED SERIES</div>
+          <div class="twist-badge">
+            <svg viewBox="0 0 100 100" aria-hidden="true">
+              <path d="M16 61C9 45 22 27 45 23s50 7 48 25-26 31-49 30S23 76 16 61Z" fill="none"/>
+              <path d="M20 36c19 5 40 28 60 32" fill="none"/>
+              <circle cx="94" cy="48" r="3"/><circle cx="18" cy="61" r="3"/>
+            </svg>
+            <span>1 SIDE<br /><b>∞</b> WAYS</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="track-dock-wrap">
+        <div class="dock-label"><span>选择赛道</span><i>SELECT CIRCUIT</i><b id="dock-count">09</b></div>
+        <div id="track-dock" class="track-dock" role="listbox" aria-label="赛道选择"></div>
+      </div>
+
+      <div class="mobile-protocol" aria-hidden="true">
+        <div class="mp-title"><span>RACE PROTOCOL</span><i>SEASON 01 · OPEN CLASS</i></div>
+        <div class="mp-stats">
+          <div><b>03</b><span>LAPS</span><em>三圈决胜</em></div>
+          <div><b>05</b><span>DRIVERS</span><em>五车同场</em></div>
+          <div><b>∞</b><span>SURFACE</span><em>单侧赛道</em></div>
+        </div>
+      </div>
+
+      <footer class="menu-footer">
+        <div class="control-legend">
+          <span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 驾驶</span>
+          <span><kbd>SHIFT</kbd> 氮气</span>
+          <span><kbd>SPACE</kbd> 漂移</span>
+          <span><kbd>C</kbd> 视角</span>
+        </div>
+        <div class="footer-note">POWERED BY THREE.JS · HEADPHONES RECOMMENDED</div>
+      </footer>
+    </section>
+
+    <!-- ================= HUD ================= -->
+    <section id="hud" class="screen hud-screen" hidden>
+      <div class="hud-top">
+        <div class="hud-brand"><span class="brand-mark mini"><i></i><i></i></span> MÖBIUS GP</div>
+        <div class="race-readout">
+          <div class="lap-readout">
+            <span>LAP</span><b id="hud-lap">1</b><em>/ 3</em>
+          </div>
+          <div class="timer-readout"><span id="hud-time">00:00.000</span><em id="hud-best">BEST —</em></div>
+        </div>
+        <div class="hud-top-actions">
+          <button id="btn-hud-sound" class="hud-icon" aria-label="声音">
+            <svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M16 8.5a5 5 0 0 1 0 7"/><path d="M18.5 6a8.5 8.5 0 0 1 0 12"/></svg>
+          </button>
+          <button id="btn-pause" class="hud-icon pause-icon" aria-label="暂停">
+            <span></span><span></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="position-wrap">
+        <div class="position-label">POSITION</div>
+        <div class="position-big"><b id="hud-pos">5</b><span>/ <i id="hud-total">5</i></span></div>
+        <div class="position-gap" id="hud-gap">+0.000</div>
+      </div>
+
+      <div class="leaderboard-panel">
+        <div class="lb-head">LIVE ORDER <span id="lb-track">FIRST TWIST</span></div>
+        <div id="leaderboard" class="leaderboard"></div>
+      </div>
+
+      <div class="orbit-map-wrap">
+        <div class="orbit-map">
+          <svg viewBox="0 0 140 140" aria-hidden="true">
+            <circle class="orbit-bg" cx="70" cy="70" r="54" />
+            <circle class="orbit-dash" cx="70" cy="70" r="54" />
+            <g id="map-markers"></g>
+            <path class="map-twist" d="M32 87c4 15 21 20 38 15s27-20 20-31-27-13-38-3" />
+            <circle class="map-start" cx="70" cy="16" r="3" />
+          </svg>
+          <div class="orbit-center"><span>M</span><i id="map-lap">L1</i></div>
+        </div>
+        <div class="orbit-label">1 LAP = 180° FLIP</div>
+      </div>
+
+      <div class="toast-stack" id="toast-stack" aria-live="polite"></div>
+
+      <div class="branch-banner" id="branch-banner" hidden>
+        <span class="bb-side" id="branch-side">L</span>
+        <span class="bb-copy"><b id="branch-name">前方分叉</b><em id="branch-detail">选择线路</em></span>
+        <i class="bb-pulse"></i>
+      </div>
+
+      <div class="speed-wrap">
+        <div class="speed-status"><span id="speed-mode">CRUISE</span><i></i></div>
+        <div class="speed-row">
+          <div id="speed-num" class="speed-num">000</div>
+          <div class="speed-meta"><span>KM/H</span><b>MÖBIUS DRIVE</b></div>
+        </div>
+        <div class="speed-bars" id="speed-bars"></div>
+        <div class="nitro-row">
+          <div class="nitro-label"><span>NITRO</span><b id="nitro-pct">60%</b></div>
+          <div class="nitro-track"><i id="nitro-fill"></i></div>
+        </div>
+      </div>
+
+      <div class="race-hint" id="race-hint">S 刹车 · SHIFT 氮气 · SPACE 漂移 · C 视角 · R 复位</div>
+
+      <div class="touch-controls" id="touch-controls">
+        <div class="touch-steer">
+          <button data-touch="left" aria-label="左转">‹</button>
+          <button data-touch="right" aria-label="右转">›</button>
+        </div>
+        <div class="touch-pedals">
+          <button data-touch="drift" class="t-small">漂移</button>
+          <button data-touch="nitro" class="t-nitro">N₂O</button>
+          <button data-touch="brake" class="t-brake">刹车</button>
+          <button data-touch="gas" class="t-gas">油门</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= COUNTDOWN ================= -->
+    <div id="countdown" class="countdown" hidden>
+      <div id="countdown-num" class="countdown-num">3</div>
+      <div class="countdown-sub" id="countdown-sub">HOLD THE LINE</div>
+    </div>
+
+    <!-- ================= HELP ================= -->
+    <div id="help-modal" class="modal" hidden>
+      <div class="modal-card help-card">
+        <button class="modal-close" data-close="help" aria-label="关闭">×</button>
+        <div class="modal-kicker">DRIVER'S BRIEFING</div>
+        <h2>驾驶简报</h2>
+        <p class="modal-lead">你正在一条没有正反面的赛道上竞速。每完成一圈，重力会把你翻到另一侧——两圈之后，世界才恢复原样。弯道会把车推向护栏，直线不会等你。</p>
+        <div class="help-grid">
+          <div class="help-item"><kbd>W</kbd><kbd>↑</kbd><span><b>油门</b>加速</span></div>
+          <div class="help-item"><kbd>S</kbd><kbd>↓</kbd><span><b>刹车</b>入弯前减速</span></div>
+          <div class="help-item"><kbd>A</kbd><kbd>D</kbd><span><b>转向</b>对抗离心力</span></div>
+          <div class="help-item"><kbd>SHIFT</kbd><span><b>氮气</b>按住加速</span></div>
+          <div class="help-item"><kbd>SPACE</kbd><span><b>漂移</b>低抓地过弯</span></div>
+          <div class="help-item"><kbd>C</kbd><span><b>切换视角</b></span></div>
+          <div class="help-item"><kbd>R</kbd><span><b>复位赛车</b></span></div>
+          <div class="help-item"><kbd>ESC</kbd><span><b>暂停</b></span></div>
+        </div>
+        <div class="help-tip"><i>!</i> 发卡弯需要提前刹车；分叉路段的中央隔离带是实体的。加速带通常藏在其中一条支线，选线前先看 HUD。三圈定胜负。</div>
+        <button class="modal-primary" data-close="help">收到，车手</button>
+      </div>
+    </div>
+
+    <!-- ================= PAUSE ================= -->
+    <div id="pause-modal" class="modal" hidden>
+      <div class="modal-card pause-card">
+        <div class="modal-kicker">RACE CONTROL</div>
+        <h2>比赛暂停</h2>
+        <div class="pause-stats">
+          <div><span>LAP</span><b id="pause-lap">1 / 3</b></div>
+          <div><span>POS</span><b id="pause-pos">5 / 5</b></div>
+          <div><span>TIME</span><b id="pause-time">00:00.000</b></div>
+        </div>
+        <button id="btn-resume" class="modal-primary">继续比赛 <em>RESUME</em></button>
+        <button id="btn-restart" class="modal-secondary">重新开始</button>
+        <button id="btn-to-menu" class="modal-ghost">退出至主菜单</button>
+        <div class="pause-note">C 切换视角 · R 复位赛车</div>
+      </div>
+    </div>
+
+    <!-- ================= RESULTS ================= -->
+    <div id="results" class="results-screen" hidden>
+      <div class="results-bg"></div>
+      <div class="results-panel">
+        <div class="results-kicker" id="results-kicker">RACE COMPLETE</div>
+        <div class="results-place"><span>P</span><b id="results-pos">1</b><em>/ 5</em></div>
+        <h2 id="results-title">冠军</h2>
+        <p class="results-sub" id="results-sub">你征服了只有一面的赛道。</p>
+        <div class="results-times">
+          <div><span>总用时</span><b id="results-total">00:00.000</b></div>
+          <div><span>最快单圈</span><b id="results-best-lap">00:00.000</b></div>
+          <div><span>赛道</span><b id="results-track">FIRST TWIST</b></div>
+        </div>
+        <div class="results-table-wrap">
+          <div class="results-table-head"><span>POS</span><span>DRIVER</span><span>RESULT</span></div>
+          <div id="results-table" class="results-table"></div>
+        </div>
+        <div class="results-actions">
+          <button id="btn-race-again" class="modal-primary">再跑一场 <em>AGAIN</em></button>
+          <button id="btn-results-menu" class="modal-secondary">返回主菜单</button>
+        </div>
+        <div class="results-foot">NEW PERSONAL BEST? <b id="results-record">—</b></div>
+      </div>
+      <div class="confetti" id="confetti"></div>
+    </div>
+
+    <!-- ================= TRANSITION / LOADING ================= -->
+    <div id="wipe" class="wipe"></div>
+    <div id="loading" class="loading-screen">
+      <div class="loading-inner">
+        <div class="loading-mark"><span></span><span></span></div>
+        <div class="loading-logo">MÖBIUS <b>GP</b></div>
+        <div class="loading-copy" id="loading-copy">正在生成非定向赛道…</div>
+        <div class="loading-track"><i id="loading-bar"></i></div>
+        <div class="loading-foot">THREE.JS / WEBGL 2</div>
+      </div>
+    </div>
+  </div>
+
+  <noscript><div class="noscript">请启用 JavaScript 以运行 MÖBIUS GP。</div></noscript>
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>

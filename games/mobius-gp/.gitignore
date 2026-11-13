@@ -1,0 +1,34 @@
+# macOS / 编辑器
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# 依赖与虚拟环境
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# 构建产物
+build/
+dist/
+release/
+out/
+output/
+
+# 大体积媒体与压缩包
+*.dmg
+*.mp4
+*.mov
+*.zip
+
+# 密钥与环境变量
+.env
+.env.*
+!.env.example
+
+# 日志
+*.log
+npm-debug.log*
