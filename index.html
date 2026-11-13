@@ -53,6 +53,8 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 0.9rem 1.25rem;
       margin-bottom: 1.75rem;
       font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
       font-size: 0.72rem;
@@ -60,6 +62,26 @@
       text-transform: uppercase;
       color: var(--text-muted);
       text-align: center;
+    }
+
+    .top-bar .nav-games {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.34rem 0.82rem;
+      border: 1px solid rgba(0, 229, 255, 0.28);
+      border-radius: 50px;
+      background: rgba(0, 229, 255, 0.06);
+      color: var(--neon-cyan);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .top-bar .nav-games:hover {
+      background: rgba(0, 229, 255, 0.14);
+      border-color: rgba(0, 229, 255, 0.55);
+      box-shadow: 0 0 20px rgba(0, 229, 255, 0.22);
     }
 
     .top-bar .tagline {
@@ -366,6 +388,7 @@
       <span class="tagline">
         EXPLORING AI <span class="sep">·</span> VIRTUAL WORLDS <span class="sep">·</span> DIGITAL OWNERSHIP
       </span>
+      <a class="nav-games" href="./games/">Games <span aria-hidden="true">→</span></a>
     </div>
 
     <div class="card">
@@ -579,7 +602,7 @@
     </div>
 
     <footer class="footer">
-      <p>© 2026 · <a href="https://github.com/qiaoshengqiang" target="_blank" rel="noopener">GitHub</a> · <a href="https://x.com/qiao381268" target="_blank" rel="noopener">X</a></p>
+      <p>© 2026 · <a href="./games/">Games</a> · <a href="https://github.com/qiaoshengqiang" target="_blank" rel="noopener">GitHub</a> · <a href="https://x.com/qiao381268" target="_blank" rel="noopener">X</a></p>
     </footer>
   </div>
 </body>
