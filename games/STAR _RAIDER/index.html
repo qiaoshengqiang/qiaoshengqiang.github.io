@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#04050c">
+  <meta name="description" content="星际突击 STAR RAIDER —— 一个离线可玩的纵版射击小游戏。">
+  <title>星际突击 STAR RAIDER</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main class="frame">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name">STAR RAIDER</span>
+        <span class="brand-zh">星际突击</span>
+      </div>
+      <div class="tools">
+        <button id="soundBtn" class="icon-btn" type="button" aria-label="切换音效" aria-pressed="true" title="音效 (M)">
+          <svg class="icon-on" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 9h3l4-4v14l-4-4H4z" fill="currentColor" stroke="none"/>
+            <path d="M15.5 8.5a5 5 0 010 7M18.5 6a8.5 8.5 0 010 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <svg class="icon-off" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 9h3l4-4v14l-4-4H4z" fill="currentColor" stroke="none"/>
+            <path d="M16 9l5 6M21 9l-5 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <button id="pauseBtn" class="icon-btn" type="button" aria-label="暂停" title="暂停 (P)" disabled>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="6.5" y="5" width="4" height="14" rx="1.5" fill="currentColor"/>
+            <rect x="13.5" y="5" width="4" height="14" rx="1.5" fill="currentColor"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="stage" id="stage">
+      <canvas id="game" width="480" height="720" tabindex="0" aria-label="星际突击纵版射击游戏画面"></canvas>
+      <div class="scanlines" aria-hidden="true"></div>
+
+      <div class="overlay" id="startOverlay">
+        <div class="menu">
+          <div class="eyebrow">VERTICAL SHOOTER · 纵版射击</div>
+          <h1 class="title">星际突击</h1>
+          <p class="title-en">STAR RAIDER</p>
+          <div class="best">历史最高 <b id="menuBest">000000</b></div>
+          <button class="btn btn-primary" id="startBtn" type="button">
+            <span>开始游戏</span><kbd>Enter</kbd>
+          </button>
+          <div class="controls">
+            <div><span class="key">移动</span><em>鼠标 / 触屏 / WASD</em></div>
+            <div><span class="key">开火</span><em>自动连射</em></div>
+            <div><span class="key">炸弹</span><em>空格 / 炸弹键</em></div>
+            <div><span class="key">暂停</span><em>P / Esc</em></div>
+          </div>
+          <p class="note">击落敌机拾取 <b class="c-cyan">P</b> 强化武器 · 每 5 波遭遇 BOSS</p>
+        </div>
+      </div>
+
+      <div class="overlay" id="pauseOverlay" hidden>
+        <div class="menu menu-compact">
+          <div class="eyebrow">PAUSED</div>
+          <h2 class="overlay-title">暂停</h2>
+          <p class="muted">战场已冻结，喘口气吧</p>
+          <button class="btn btn-primary" id="resumeBtn" type="button">
+            <span>继续游戏</span><kbd>P</kbd>
+          </button>
+          <button class="btn btn-ghost" id="restartBtn" type="button">重新开始</button>
+        </div>
+      </div>
+
+      <div class="overlay" id="gameOverOverlay" hidden>
+        <div class="menu">
+          <div class="eyebrow eyebrow-danger">MISSION FAILED</div>
+          <h2 class="overlay-title overlay-title-danger">任务失败</h2>
+          <div class="stats">
+            <div><span>得分</span><b id="finalScore">000000</b></div>
+            <div><span>最高分</span><b id="finalBest">000000</b></div>
+            <div><span>抵达</span><b id="finalWave">WAVE 01</b></div>
+          </div>
+          <button class="btn btn-primary" id="retryBtn" type="button">
+            <span>再来一次</span><kbd>Enter</kbd>
+          </button>
+          <p class="note">调整航线，再次出击</p>
+        </div>
+      </div>
+    </div>
+
+    <footer class="bottombar">
+      <p class="hint"><span class="hint-dot" aria-hidden="true"></span>自动开火 · 拾取强化 · 生存到底</p>
+      <button id="bombBtn" class="bomb-btn" type="button" disabled title="发射炸弹 (空格)">
+        <span class="bomb-ring" aria-hidden="true">B</span>
+        <span class="bomb-label">炸弹</span>
+        <span class="bomb-count" id="bombCount">2</span>
+      </button>
+    </footer>
+  </main>
+
+  <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/input.js"></script>
+  <script src="js/entities.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

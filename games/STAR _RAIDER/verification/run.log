@@ -1,0 +1,68 @@
+PASS  页面通过 file:// 直接打开并完成加载
+PASS  游戏对象初始化成功
+PASS  所有关键类均已加载
+PASS  多文件资源全部由本地加载（无外部网络依赖）  {"count":10,"scripts":["js/config.js","js/utils.js","js/audio.js","js/input.js","js/entities.js","js/player.js","js/game.js","js/main.js"],"external":[],"styleSheets":1}
+PASS  初始状态为主菜单  {"state":"menu","overlay":"start"}
+PASS  舞台保持 2:3 纵向比例  {"width":446,"height":669}
+PASS  页面无横向/纵向溢出  {"overflowX":0,"overflowY":0}
+PASS  主菜单完整位于舞台内
+PASS  主标题有实际字号且文字正确  {"fontSize":51.5058,"text":"星际突击"}
+PASS  初始只显示开始界面
+PASS  暂停按钮在未开始时禁用
+PASS  Canvas 已渲染非空画面  {"mean":18.956450956450933,"std":7.478200768869824,"brightRatio":0,"width":480,"height":720}
+SHOT  01-start-desktop.png (337 KB)
+PASS  点击开始后进入游戏  {"state":"playing","overlay":null}
+PASS  开始后 Canvas 获得焦点（键盘可用）
+PASS  暂停按钮变为可用
+PASS  WebAudio 音效上下文已创建（点击手势后）  {"hasContext":true,"state":"running","muted":false}
+SHOT  02-gameplay.png (440 KB)
+PASS  真实鼠标移动可精确操控战机位置  {"expected":150,"actual":150,"playerY":596}
+PASS  游戏过程中有敌机生成  {"maxEnemies":6}
+PASS  自动开火正常产生子弹  {"maxPlayerBullets":6}
+PASS  真实操作下击落敌机并获得分数  {"maxScore":1300,"maxEnemies":6}
+PASS  游戏过程中出现敌方弹幕  {"maxEnemyBullets":3,"wave":2}
+PASS  实时帧率可玩（>= 30fps）  {"fps":60.2,"gameFps":60}
+PASS  键盘（方向键）可操控战机  {"before":52,"after":20}
+PASS  P 键暂停生效  {"state":"paused","overlay":"pause"}
+PASS  暂停面板可见
+SHOT  03-pause.png (338 KB)
+PASS  点击继续后恢复游戏
+PASS  空格键可释放炸弹且数量减少  {"before":2,"after":1}
+SHOT  04-bomb.png (487 KB)
+PASS  可拾取火力强化补给
+PASS  可拾取护盾补给  {"shield":6.98}
+PASS  护盾能吸收真实碰撞且不扣命  {"shield":0,"livesBefore":3,"livesAfter":3}
+PASS  敌弹真实碰撞会扣除生命  {"livesBefore":3,"livesAfter":2,"alive":true}
+PASS  第五波生成 BOSS 并进入战斗  {"wave":5,"boss":{"hp":130,"maxHp":150,"state":"fight","x":367,"y":125}}
+SHOT  05-boss.png (443 KB)
+PASS  BOSS 会发射弹幕  {"enemyBullets":5,"bossHp":129}
+PASS  BOSS 受击进入爆炸演出  {"hp":0,"maxHp":150,"state":"dying","x":268,"y":127}
+PASS  BOSS 被击破并从场上移除  {"boss":null,"score":5820}
+PASS  击破 BOSS 获得大量分数  {"before":2770,"after":5820,"delta":3050}
+PASS  BOSS 战后自动进入下一波  {"wave":6,"wavePhase":"active"}
+PASS  三次受击分别扣除生命并最终归零  {"lives":[2,1,0]}
+PASS  生命归零后进入死亡演出状态  {"state":"dying"}
+PASS  死亡演出结束后显示结算界面
+PASS  结算面板分数与游戏状态一致  {"dom":{"finalScore":"005820","finalBest":"005820","finalWave":"WAVE 06"},"score":5820}
+SHOT  06-gameover.png (418 KB)
+PASS  最高分写入 localStorage（file:// 下）  {"savedHigh":"5820","highScore":5820}
+PASS  点击再来一次可重开且分数清零  {"state":"playing","score":0,"lives":3,"wave":1}
+PASS  重开后保留历史最高分  {"highScore":5820}
+PASS  移动端重新加载后回到主菜单
+PASS  移动端舞台完整适配视口  {"stage":{"left":14,"top":149.5,"width":362,"height":543,"right":376,"bottom":692.5},"viewport":{"width":390,"height":844}}
+PASS  移动端保持 2:3 比例且无溢出
+PASS  移动端菜单展示持久化的最高分  {"dom":"005820","state":5820}
+SHOT  07-mobile-menu.png (488 KB)
+PASS  触屏点击开始按钮可进入游戏  {"state":"playing","overlay":null}
+PASS  触屏拖动可操控战机  {"playerX":120}
+PASS  移动端炸弹按钮可触发炸弹  {"before":2,"after":1}
+SHOT  08-mobile-gameplay.png (665 KB)
+PASS  不带调试参数、直接以 file:// 打开可正常运行  {"debugHooks":"undefined","state":"menu","best":"005820"}
+PASS  双击场景下点击开始可进入游戏
+SHOT  09-file-open.png (433 KB)
+PASS  浏览器控制台无 error  []
+PASS  运行期间无未捕获 JS 异常  []
+PASS  无资源加载失败  []
+PASS  运行时无外部网络请求（完全离线）  []
+
+===== RESULT: ALL PASS (57/57) =====

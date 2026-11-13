@@ -1,0 +1,558 @@
+{
+  "task": "task_7c077f68",
+  "startedAt": "2026-11-13T03:39:40.897Z",
+  "pageUrl": "file:///Users/qiaoshengqiang/Documents/deepseek-harness/default-workspace/ai-economy/tasks/task_7c077f68/workspace/index.html?debug=1",
+  "browser": {
+    "product": "Chrome/157.0.8103.51",
+    "protocolVersion": "1.3",
+    "jsVersion": "15.7.112.23"
+  },
+  "checks": [
+    {
+      "name": "页面通过 file:// 直接打开并完成加载",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "游戏对象初始化成功",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "所有关键类均已加载",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "多文件资源全部由本地加载（无外部网络依赖）",
+      "pass": true,
+      "detail": {
+        "count": 10,
+        "scripts": [
+          "js/config.js",
+          "js/utils.js",
+          "js/audio.js",
+          "js/input.js",
+          "js/entities.js",
+          "js/player.js",
+          "js/game.js",
+          "js/main.js"
+        ],
+        "external": [],
+        "styleSheets": 1
+      }
+    },
+    {
+      "name": "初始状态为主菜单",
+      "pass": true,
+      "detail": {
+        "state": "menu",
+        "overlay": "start"
+      }
+    },
+    {
+      "name": "舞台保持 2:3 纵向比例",
+      "pass": true,
+      "detail": {
+        "width": 446,
+        "height": 669
+      }
+    },
+    {
+      "name": "页面无横向/纵向溢出",
+      "pass": true,
+      "detail": {
+        "overflowX": 0,
+        "overflowY": 0
+      }
+    },
+    {
+      "name": "主菜单完整位于舞台内",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "主标题有实际字号且文字正确",
+      "pass": true,
+      "detail": {
+        "fontSize": 51.5058,
+        "text": "星际突击"
+      }
+    },
+    {
+      "name": "初始只显示开始界面",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "暂停按钮在未开始时禁用",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "Canvas 已渲染非空画面",
+      "pass": true,
+      "detail": {
+        "mean": 18.956450956450933,
+        "std": 7.478200768869824,
+        "brightRatio": 0,
+        "width": 480,
+        "height": 720
+      }
+    },
+    {
+      "name": "点击开始后进入游戏",
+      "pass": true,
+      "detail": {
+        "state": "playing",
+        "overlay": null
+      }
+    },
+    {
+      "name": "开始后 Canvas 获得焦点（键盘可用）",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "暂停按钮变为可用",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "WebAudio 音效上下文已创建（点击手势后）",
+      "pass": true,
+      "detail": {
+        "hasContext": true,
+        "state": "running",
+        "muted": false
+      }
+    },
+    {
+      "name": "真实鼠标移动可精确操控战机位置",
+      "pass": true,
+      "detail": {
+        "expected": 150,
+        "actual": 150,
+        "playerY": 596
+      }
+    },
+    {
+      "name": "游戏过程中有敌机生成",
+      "pass": true,
+      "detail": {
+        "maxEnemies": 6
+      }
+    },
+    {
+      "name": "自动开火正常产生子弹",
+      "pass": true,
+      "detail": {
+        "maxPlayerBullets": 6
+      }
+    },
+    {
+      "name": "真实操作下击落敌机并获得分数",
+      "pass": true,
+      "detail": {
+        "maxScore": 1300,
+        "maxEnemies": 6
+      }
+    },
+    {
+      "name": "游戏过程中出现敌方弹幕",
+      "pass": true,
+      "detail": {
+        "maxEnemyBullets": 3,
+        "wave": 2
+      }
+    },
+    {
+      "name": "实时帧率可玩（>= 30fps）",
+      "pass": true,
+      "detail": {
+        "fps": 60.2,
+        "gameFps": 60
+      }
+    },
+    {
+      "name": "键盘（方向键）可操控战机",
+      "pass": true,
+      "detail": {
+        "before": 52,
+        "after": 20
+      }
+    },
+    {
+      "name": "P 键暂停生效",
+      "pass": true,
+      "detail": {
+        "state": "paused",
+        "overlay": "pause"
+      }
+    },
+    {
+      "name": "暂停面板可见",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "点击继续后恢复游戏",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "空格键可释放炸弹且数量减少",
+      "pass": true,
+      "detail": {
+        "before": 2,
+        "after": 1
+      }
+    },
+    {
+      "name": "可拾取火力强化补给",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "可拾取护盾补给",
+      "pass": true,
+      "detail": {
+        "shield": 6.98
+      }
+    },
+    {
+      "name": "护盾能吸收真实碰撞且不扣命",
+      "pass": true,
+      "detail": {
+        "shield": 0,
+        "livesBefore": 3,
+        "livesAfter": 3
+      }
+    },
+    {
+      "name": "敌弹真实碰撞会扣除生命",
+      "pass": true,
+      "detail": {
+        "livesBefore": 3,
+        "livesAfter": 2,
+        "alive": true
+      }
+    },
+    {
+      "name": "第五波生成 BOSS 并进入战斗",
+      "pass": true,
+      "detail": {
+        "wave": 5,
+        "boss": {
+          "hp": 130,
+          "maxHp": 150,
+          "state": "fight",
+          "x": 367,
+          "y": 125
+        }
+      }
+    },
+    {
+      "name": "BOSS 会发射弹幕",
+      "pass": true,
+      "detail": {
+        "enemyBullets": 5,
+        "bossHp": 129
+      }
+    },
+    {
+      "name": "BOSS 受击进入爆炸演出",
+      "pass": true,
+      "detail": {
+        "hp": 0,
+        "maxHp": 150,
+        "state": "dying",
+        "x": 268,
+        "y": 127
+      }
+    },
+    {
+      "name": "BOSS 被击破并从场上移除",
+      "pass": true,
+      "detail": {
+        "boss": null,
+        "score": 5820
+      }
+    },
+    {
+      "name": "击破 BOSS 获得大量分数",
+      "pass": true,
+      "detail": {
+        "before": 2770,
+        "after": 5820,
+        "delta": 3050
+      }
+    },
+    {
+      "name": "BOSS 战后自动进入下一波",
+      "pass": true,
+      "detail": {
+        "wave": 6,
+        "wavePhase": "active"
+      }
+    },
+    {
+      "name": "三次受击分别扣除生命并最终归零",
+      "pass": true,
+      "detail": {
+        "lives": [
+          2,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "name": "生命归零后进入死亡演出状态",
+      "pass": true,
+      "detail": {
+        "state": "dying"
+      }
+    },
+    {
+      "name": "死亡演出结束后显示结算界面",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "结算面板分数与游戏状态一致",
+      "pass": true,
+      "detail": {
+        "dom": {
+          "finalScore": "005820",
+          "finalBest": "005820",
+          "finalWave": "WAVE 06"
+        },
+        "score": 5820
+      }
+    },
+    {
+      "name": "最高分写入 localStorage（file:// 下）",
+      "pass": true,
+      "detail": {
+        "savedHigh": "5820",
+        "highScore": 5820
+      }
+    },
+    {
+      "name": "点击再来一次可重开且分数清零",
+      "pass": true,
+      "detail": {
+        "state": "playing",
+        "score": 0,
+        "lives": 3,
+        "wave": 1
+      }
+    },
+    {
+      "name": "重开后保留历史最高分",
+      "pass": true,
+      "detail": {
+        "highScore": 5820
+      }
+    },
+    {
+      "name": "移动端重新加载后回到主菜单",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "移动端舞台完整适配视口",
+      "pass": true,
+      "detail": {
+        "stage": {
+          "left": 14,
+          "top": 149.5,
+          "width": 362,
+          "height": 543,
+          "right": 376,
+          "bottom": 692.5
+        },
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      }
+    },
+    {
+      "name": "移动端保持 2:3 比例且无溢出",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "移动端菜单展示持久化的最高分",
+      "pass": true,
+      "detail": {
+        "dom": "005820",
+        "state": 5820
+      }
+    },
+    {
+      "name": "触屏点击开始按钮可进入游戏",
+      "pass": true,
+      "detail": {
+        "state": "playing",
+        "overlay": null
+      }
+    },
+    {
+      "name": "触屏拖动可操控战机",
+      "pass": true,
+      "detail": {
+        "playerX": 120
+      }
+    },
+    {
+      "name": "移动端炸弹按钮可触发炸弹",
+      "pass": true,
+      "detail": {
+        "before": 2,
+        "after": 1
+      }
+    },
+    {
+      "name": "不带调试参数、直接以 file:// 打开可正常运行",
+      "pass": true,
+      "detail": {
+        "debugHooks": "undefined",
+        "state": "menu",
+        "best": "005820"
+      }
+    },
+    {
+      "name": "双击场景下点击开始可进入游戏",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "浏览器控制台无 error",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "name": "运行期间无未捕获 JS 异常",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "name": "无资源加载失败",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "name": "运行时无外部网络请求（完全离线）",
+      "pass": true,
+      "detail": []
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "screenshots/01-start-desktop.png",
+      "bytes": 345060
+    },
+    {
+      "file": "screenshots/02-gameplay.png",
+      "bytes": 450559
+    },
+    {
+      "file": "screenshots/03-pause.png",
+      "bytes": 345792
+    },
+    {
+      "file": "screenshots/04-bomb.png",
+      "bytes": 499051
+    },
+    {
+      "file": "screenshots/05-boss.png",
+      "bytes": 453305
+    },
+    {
+      "file": "screenshots/06-gameover.png",
+      "bytes": 428145
+    },
+    {
+      "file": "screenshots/07-mobile-menu.png",
+      "bytes": 500040
+    },
+    {
+      "file": "screenshots/08-mobile-gameplay.png",
+      "bytes": 681341
+    },
+    {
+      "file": "screenshots/09-file-open.png",
+      "bytes": 443675
+    }
+  ],
+  "console": [],
+  "exceptions": [],
+  "failedRequests": [],
+  "resources": [
+    "/Users/qiaoshengqiang/Documents/deepseek-harness/default-workspace/ai-economy/tasks/task_7c077f68/workspace/js/config.js",
+    "/Users/qiaoshengqiang/Documents/deepseek-harness/default-workspace/ai-economy/tasks/task_7c077f68/workspace/js/utils.js",
+    "/Users/qiaoshengqiang/Documents/deepseek-harness/default-workspace/ai-economy/tasks/task_7c077f68/workspace/js/audio.js",
+    "/Users/qiaoshengqiang/Documents/deepseek-harness/default-workspace/ai-economy/tasks/task_7c077f68/workspace/js/input.js",
+    "/Users/qiaoshengqiang/Documents/deepseek-harness/default-workspace/ai-economy/tasks/task_7c077f68/workspace/js/entities.js",
+    "/Users/qiaoshengqiang/Documents/deepseek-harness/default-workspace/ai-economy/tasks/task_7c077f68/workspace/js/player.js",
+    "/Users/qiaoshengqiang/Documents/deepseek-harness/default-workspace/ai-economy/tasks/task_7c077f68/workspace/js/game.js",
+    "/Users/qiaoshengqiang/Documents/deepseek-harness/default-workspace/ai-economy/tasks/task_7c077f68/workspace/js/main.js",
+    "/Users/qiaoshengqiang/Documents/deepseek-harness/default-workspace/ai-economy/tasks/task_7c077f68/workspace/css/style.css",
+    "/Users/qiaoshengqiang/Documents/deepseek-harness/default-workspace/ai-economy/tasks/task_7c077f68/workspace/assets/favicon.svg"
+  ],
+  "notes": [
+    "chrome stderr: Created TensorFlow Lite XNNPACK delegate for CPU.",
+    "chrome stderr: [65075:14948647:1113/114000.279756:VERBOSE1:chrome/updater/updater.cc:380] Version: 159.0.8140.0, opt, ARM_64, command line: /Users/qiaoshengqiang/Library/Application Support/Google/GoogleUpdater/159.0.8140.0/GoogleUpdater.app/Contents/MacOS/GoogleUpdater --wake-all --enable-logging --vmodule=*/comp",
+    "chrome stderr: [65075:14948647:1113/114000.280021:VERBOSE1:chrome/updater/updater.cc:383] OS version: 14.5.0, arch: arm64, System uptime (seconds): 1087557, parent pid: 65029",
+    "chrome stderr: [65075:14948647:1113/114000.282190:VERBOSE1:chrome/updater/updater.cc:388] Available disk space in install directory (/Users/qiaoshengqiang/Library/Application Support/Google/GoogleUpdater): 125301604352B (116.696GiB) / 494384795648B (460.432GiB)",
+    "chrome stderr: [65075:14948647:1113/114000.282226:VERBOSE1:chrome/updater/updater.cc:392] Available disk space in temporary directory (/var/folders/zw/9m2kjq413t748_0_84xvxqph0000gn/T/): 125301604352B (116.696GiB) / 494384795648B (460.432GiB)",
+    "chrome stderr: [65075:14948647:1113/114000.282314:VERBOSE2:chrome/updater/event_history.cc:266] Emitted a UPDATER_PROCESS START event to the history log",
+    "chrome stderr: [65077:14948651:1113/114000.292802:VERBOSE1:chrome/updater/updater.cc:380] Version: 159.0.8140.0, opt, ARM_64, command line: /Users/qiaoshengqiang/Library/Application Support/Google/GoogleUpdater/159.0.8140.0/GoogleUpdater.app/Contents/MacOS/GoogleUpdater --crash-handler --database=/Users/qiaoshengq",
+    "chrome stderr: [65077:14948651:1113/114000.293060:VERBOSE1:chrome/updater/updater.cc:383] OS version: 14.5.0, arch: arm64, System uptime (seconds): 1087557, parent pid: 1",
+    "chrome stderr: [65077:14948651:1113/114000.295372:VERBOSE1:chrome/updater/updater.cc:388] Available disk space in install directory (/Users/qiaoshengqiang/Library/Application Support/Google/GoogleUpdater): 125301604352B (116.696GiB) / 494384795648B (460.432GiB)",
+    "chrome stderr: [65077:14948651:1113/114000.295407:VERBOSE1:chrome/updater/updater.cc:392] Available disk space in temporary directory (/var/folders/zw/9m2kjq413t748_0_84xvxqph0000gn/T/): 125301604352B (116.696GiB) / 494384795648B (460.432GiB)",
+    "chrome stderr: [65077:14948651:1113/114000.295501:VERBOSE2:chrome/updater/event_history.cc:266] Emitted a UPDATER_PROCESS START event to the history log",
+    "chrome stderr: [65075:14948647:1113/114000.296042:VERBOSE1:chrome/updater/crash_reporter.cc:121] Crash handler launched and ready.",
+    "chrome stderr: [65075:14948647:1113/114000.296934:VERBOSE1:chrome/updater/crash_client.cc:109] Found 0 completed crash reports",
+    "chrome stderr: [65075:14948647:1113/114000.297006:VERBOSE1:chrome/updater/crash_client.cc:132] Found 0 pending crash reports",
+    "chrome stderr: [65075:14948647:1113/114000.297087:ERROR:third_party/crashpad/crashpad/util/file/file_io_posix.cc:145] open /Users/qiaoshengqiang/Library/Application Support/Google/RLZ/Crashpad/settings.dat: No such file or directory (2)",
+    "chrome stderr: [65075:14948647:1113/114000.297351:VERBOSE1:chrome/updater/updater.cc:107] Crash reporting initialized.",
+    "chrome stderr: [65075:14948659:1113/114000.297954:VERBOSE1:chrome/updater/app/app_wakeall.cc:58] Launching `/Users/qiaoshengqiang/Library/Application Support/Google/GoogleUpdater/159.0.8140.0/GoogleUpdater.app/Contents/MacOS/GoogleUpdater --wake`",
+    "chrome stderr: [65078:14948665:1113/114000.307952:VERBOSE1:chrome/updater/updater.cc:380] Version: 159.0.8140.0, opt, ARM_64, command line: /Users/qiaoshengqiang/Library/Application Support/Google/GoogleUpdater/159.0.8140.0/GoogleUpdater.app/Contents/MacOS/GoogleUpdater --wake --enable-logging --vmodule=*/componen",
+    "chrome stderr: [65078:14948665:1113/114000.308198:VERBOSE1:chrome/updater/updater.cc:383] OS version: 14.5.0, arch: arm64, System uptime (seconds): 1087557, parent pid: 65075",
+    "chrome stderr: [65078:14948665:1113/114000.310386:VERBOSE1:chrome/updater/updater.cc:388] Available disk space in install directory (/Users/qiaoshengqiang/Library/Application Support/Google/GoogleUpdater): 125301604352B (116.696GiB) / 494384795648B (460.432GiB)\n[65078:14948665:1113/114000.310421:VERBOSE1:chrome/up",
+    "chrome stderr: [65078:14948665:1113/114000.310505:VERBOSE2:chrome/updater/event_history.cc:266] Emitted a UPDATER_PROCESS START event to the history log",
+    "chrome stderr: [65080:14948670:1113/114000.321029:VERBOSE1:chrome/updater/updater.cc:380] Version: 159.0.8140.0, opt, ARM_64, command line: /Users/qiaoshengqiang/Library/Application Support/Google/GoogleUpdater/159.0.8140.0/GoogleUpdater.app/Contents/MacOS/GoogleUpdater --crash-handler --database=/Users/qiaoshengq",
+    "chrome stderr: [65080:14948670:1113/114000.321308:VERBOSE1:chrome/updater/updater.cc:383] OS version: 14.5.0, arch: arm64, System uptime (seconds): 1087557, parent pid: 1",
+    "chrome stderr: [65080:14948670:1113/114000.323478:VERBOSE1:chrome/updater/updater.cc:388] Available disk space in install directory (/Users/qiaoshengqiang/Library/Application Support/Google/GoogleUpdater): 125301604352B (116.696GiB) / 494384795648B (460.432GiB)",
+    "chrome stderr: [65080:14948670:1113/114000.323511:VERBOSE1:chrome/updater/updater.cc:392] Available disk space in temporary directory (/var/folders/zw/9m2kjq413t748_0_84xvxqph0000gn/T/): 125301604352B (116.696GiB) / 494384795648B (460.432GiB)",
+    "chrome stderr: [65080:14948670:1113/114000.323603:VERBOSE2:chrome/updater/event_history.cc:266] Emitted a UPDATER_PROCESS START event to the history log",
+    "chrome stderr: [65078:14948665:1113/114000.324069:VERBOSE1:chrome/updater/crash_reporter.cc:121] Crash handler launched and ready.",
+    "chrome stderr: [65078:14948665:1113/114000.324976:VERBOSE1:chrome/updater/crash_client.cc:109] Found 0 completed crash reports",
+    "chrome stderr: [65078:14948665:1113/114000.325070:VERBOSE1:chrome/updater/crash_client.cc:132] Found 0 pending crash reports",
+    "chrome stderr: [65078:14948665:1113/114000.325154:ERROR:third_party/crashpad/crashpad/util/file/file_io_posix.cc:145] open /Users/qiaoshengqiang/Library/Application Support/Google/RLZ/Crashpad/settings.dat: No such file or directory (2)",
+    "chrome stderr: [65078:14948665:1113/114000.325404:VERBOSE1:chrome/updater/updater.cc:107] Crash reporting initialized.",
+    "chrome stderr: [65078:14948665:1113/114000.325697:VERBOSE1:chrome/updater/ipc/update_service_internal_proxy_mojo.cc:61] Run",
+    "chrome stderr: [65078:14948665:1113/114017.187350:VERBOSE1:chrome/updater/app/app.cc:52] Shutdown: 0",
+    "chrome stderr: [65078:14948665:1113/114017.187818:VERBOSE2:chrome/updater/event_history.cc:266] Emitted a UPDATER_PROCESS END event to the history log\n[65078:14948665:1113/114017.187839:VERBOSE1:chrome/updater/updater.cc:425] UpdaterMain (--wake) returned 0.",
+    "chrome stderr: [65075:14948659:1113/114017.334254:VERBOSE1:chrome/updater/app/app_wakeall.cc:68] `/Users/qiaoshengqiang/Library/Application Support/Google/GoogleUpdater/159.0.8140.0/GoogleUpdater.app/Contents/MacOS/GoogleUpdater --wake` exited 0",
+    "chrome stderr: [65075:14948647:1113/114017.334824:VERBOSE1:chrome/updater/app/app.cc:52] Shutdown: 0",
+    "chrome stderr: [65075:14948647:1113/114017.339358:VERBOSE2:chrome/updater/event_history.cc:266] Emitted a UPDATER_PROCESS END event to the history log",
+    "chrome stderr: [65075:14948647:1113/114017.339437:VERBOSE1:chrome/updater/updater.cc:425] UpdaterMain (--wake-all) returned 0.",
+    "chrome stderr: [65080:14948670:1113/114027.197657:VERBOSE2:chrome/updater/event_history.cc:266] Emitted a UPDATER_PROCESS END event to the history log",
+    "chrome stderr: [65080:14948670:1113/114027.197720:VERBOSE1:chrome/updater/updater.cc:425] UpdaterMain (--crash-handler) returned 0.",
+    "chrome stderr: [65077:14948651:1113/114027.199428:VERBOSE2:chrome/updater/event_history.cc:266] Emitted a UPDATER_PROCESS END event to the history log",
+    "chrome stderr: [65077:14948651:1113/114027.199618:VERBOSE1:chrome/updater/updater.cc:425] UpdaterMain (--crash-handler) returned 0."
+  ],
+  "finishedAt": "2026-11-13T03:40:30.561Z",
+  "summary": {
+    "totalChecks": 57,
+    "passed": 57,
+    "failed": 0,
+    "screenshots": 9
+  },
+  "passed": true
+}
