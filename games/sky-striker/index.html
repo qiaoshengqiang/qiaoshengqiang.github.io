@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>苍穹突击 SKY STRIKER 3D</title>
+  <link rel="stylesheet" href="./css/style.css" />
+  <script>
+    window.__errors = [];
+    window.addEventListener('error', (e) => window.__errors.push(String(e.message || e.error)));
+    window.addEventListener('unhandledrejection', (e) => window.__errors.push('rejection: ' + String(e.reason)));
+  </script>
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three.module.min.js" } }
+  </script>
+</head>
+<body>
+  <div id="app"></div>
+
+  <!-- 游戏内 HUD -->
+  <div id="hud" class="hidden">
+    <div id="hud-tl">
+      <div id="hud-score">0000000</div>
+      <div id="hud-stage">STAGE 1</div>
+    </div>
+    <div id="hud-tr"><canvas id="radar" width="150" height="150"></canvas></div>
+    <div id="hud-bl">
+      <div class="bar-label">机体装甲</div>
+      <div class="bar"><div id="hp-fill" class="fill"></div></div>
+      <div id="hud-lives">✦✦✦</div>
+    </div>
+    <div id="hud-br">
+      <div id="hud-missiles">导弹 10</div>
+      <div id="hud-bombs">炸弹 2</div>
+      <div id="hud-power">火力 ▮▯▯</div>
+    </div>
+    <div id="hud-combo" class="hidden"></div>
+    <div id="boss-bar" class="hidden">
+      <div id="boss-name"></div>
+      <div class="bar boss"><div id="boss-fill" class="fill"></div></div>
+    </div>
+    <div id="lock-reticle" class="hidden"></div>
+    <div id="hud-toast" class="hidden"></div>
+  </div>
+
+  <!-- 横幅 -->
+  <div id="banner-stage" class="banner hidden">
+    <div class="b-title"></div>
+    <div class="b-sub"></div>
+  </div>
+  <div id="banner-warning" class="hidden">
+    <div class="bw-text">⚠ WARNING ⚠</div>
+    <div class="bw-sub"></div>
+  </div>
+
+  <!-- 全屏闪光 / 氛围层 -->
+  <div id="flash-white"></div>
+  <div id="flash-red"></div>
+  <div id="vignette"></div>
+  <div id="scanlines"></div>
+
+  <!-- 主菜单 -->
+  <div id="menu">
+    <div class="menu-inner">
+      <div class="game-title">苍穹突击</div>
+      <div class="game-sub">SKY STRIKER · 3D</div>
+      <div id="title-best" class="title-best">最高分 0000000</div>
+      <div class="menu-buttons">
+        <button id="btn-start" class="btn primary">▶ 开始出击</button>
+        <button id="btn-levels" class="btn">关卡选择</button>
+        <button id="btn-help" class="btn">操作说明</button>
+      </div>
+      <div class="vol-row">
+        <span>🎵 音乐</span><input type="range" class="vol-music" min="0" max="1" step="0.01" />
+        <span>🔊 音效</span><input type="range" class="vol-sfx" min="0" max="1" step="0.01" />
+      </div>
+      <div class="menu-hint">鼠标 / WASD 机动 · 空格 机炮 · X 导弹 · Z 炸弹 · Shift 加力</div>
+    </div>
+  </div>
+
+  <!-- 关卡选择 -->
+  <div id="screen-levels" class="screen hidden">
+    <div class="panel">
+      <h2>关卡选择</h2>
+      <div id="level-grid"></div>
+      <button class="btn" data-back>返回</button>
+    </div>
+  </div>
+
+  <!-- 操作说明 -->
+  <div id="screen-help" class="screen hidden">
+    <div class="panel">
+      <h2>操作说明</h2>
+      <div class="help-grid">
+        <span>鼠标移动 / WASD·方向键</span><b>机体机动</b>
+        <span>空格 / 鼠标左键</span><b>机炮连射</b>
+        <span>X / 鼠标右键</span><b>追踪导弹（自动锁定）</b>
+        <span>Z / L</span><b>清屏炸弹</b>
+        <span>Shift</span><b>加力冲刺</b>
+        <span>Ctrl</span><b>减速</b>
+        <span>Esc / P</span><b>暂停</b>
+      </div>
+      <p class="help-tip">击坠敌机维持连击倍率；收集 P/M/B/H/S 补给强化火力；小心敌方追踪导弹——听警报！</p>
+      <button class="btn" data-back>返回</button>
+    </div>
+  </div>
+
+  <!-- 暂停 -->
+  <div id="screen-pause" class="screen hidden">
+    <div class="panel">
+      <h2>暂停</h2>
+      <div class="menu-buttons">
+        <button id="btn-pause-resume" class="btn primary">继续战斗</button>
+        <button id="btn-pause-retry" class="btn">重开本关</button>
+        <button id="btn-pause-quit" class="btn">返回标题</button>
+      </div>
+      <div class="vol-row">
+        <span>🎵 音乐</span><input type="range" class="vol-music" min="0" max="1" step="0.01" />
+        <span>🔊 音效</span><input type="range" class="vol-sfx" min="0" max="1" step="0.01" />
+      </div>
+    </div>
+  </div>
+
+  <!-- 通关结算 -->
+  <div id="screen-clear" class="screen hidden">
+    <div class="panel">
+      <h2 class="ok">STAGE CLEAR</h2>
+      <div id="clear-stage" class="big-line"></div>
+      <div class="stat-grid">
+        <div id="clear-score"></div>
+        <div id="clear-kills"></div>
+        <div id="clear-acc"></div>
+        <div id="clear-total"></div>
+      </div>
+      <div class="menu-buttons">
+        <button id="clear-next" class="btn primary">下一关</button>
+        <button id="clear-retry" class="btn">重打本关</button>
+        <button id="clear-menu" class="btn">返回标题</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 失败 -->
+  <div id="screen-gameover" class="screen hidden">
+    <div class="panel">
+      <h2 class="bad">MISSION FAILED</h2>
+      <div class="big-line">机体已损毁……</div>
+      <div class="stat-grid">
+        <div id="go-score"></div>
+        <div id="go-best"></div>
+      </div>
+      <div class="menu-buttons">
+        <button id="go-retry" class="btn primary">重新出击</button>
+        <button id="go-menu" class="btn">返回标题</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 全通关 -->
+  <div id="screen-victory" class="screen hidden">
+    <div class="panel">
+      <h2 class="ok">MISSION COMPLETE</h2>
+      <div class="big-line">六大战区全部光复，你是最强的王牌！</div>
+      <div class="stat-grid">
+        <div id="v-score"></div>
+        <div id="v-best"></div>
+      </div>
+      <div class="menu-buttons">
+        <button id="v-menu" class="btn primary">返回标题</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>
